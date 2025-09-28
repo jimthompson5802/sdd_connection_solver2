@@ -16,10 +16,10 @@
 ## Phase 3.1: Setup
 - [x] T001 Create backend project structure with uv package management in `backend/`
 - [x] T002 Create frontend project structure with TypeScript and React in `frontend/`
-- [ ] T003 [P] Configure backend linting (black, mypy) and testing (pytest) in `backend/pyproject.toml`
-- [ ] T004 [P] Configure frontend linting (ESLint, Prettier) and testing (Jest) in `frontend/package.json`
-- [ ] T005 [P] Create `.env` file with application configuration variables
-- [ ] T006 [P] Setup backend development server configuration with uvicorn in `backend/src/main.py`
+- [x] T003 [P] Configure backend linting (black, mypy) and testing (pytest) in `backend/pyproject.toml`
+- [x] T004 [P] Configure frontend linting (ESLint, Prettier) and testing (Jest) in `frontend/package.json`
+- [x] T005 [P] Create `.env` file with application configuration variables
+- [x] T006 [P] Setup backend development server configuration with uvicorn in `backend/src/main.py`
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
