@@ -77,3 +77,11 @@ strict_equality = true
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
+
+[dependency-groups]
+dev = [
+    "fastapi>=0.117.1",
+    "httpx>=0.28.1",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+]

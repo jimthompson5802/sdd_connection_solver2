@@ -6,6 +6,8 @@ from typing import Dict, Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .api import router as api_router
+
 
 def create_app() -> FastAPI:
     """Create and configure FastAPI application."""
@@ -37,6 +39,9 @@ def create_app() -> FastAPI:
         allow_methods=["GET", "POST", "PUT", "DELETE"],
         allow_headers=["*"],
     )
+
+    # Include API routes
+    app.include_router(api_router, prefix="", tags=["puzzle"])
 
     return app
 
