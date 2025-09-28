@@ -1,0 +1,217 @@
+openapi: 3.0.3
+info:
+  title: NYT Connections Puzzle Assistant API
+  description: REST API for puzzle assistance web application
+  version: 1.0.0
+  
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /api/puzzle/setup_puzzle:
+    post:
+      summary: Initialize puzzle from CSV file
+      description: Upload CSV file with 16 words and initialize puzzle state
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file_content:
+                  type: string
+                  description: CSV content with 16 words in single row
+                  example: "word1,word2,word3,word4,word5,word6,word7,word8,word9,word10,word11,word12,word13,word14,word15,word16"
+              required:
+                - file_content
+      responses:
+        '200':
+          description: Puzzle successfully initialized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  remaining_words:
+                    type: array
+                    items:
+                      type: string
+                    minItems: 16
+                    maxItems: 16
+                    description: The 16 words loaded from CSV
+                  status:
+                    type: string
+                    enum: ["success"]
+        '400':
+          description: Invalid CSV format or content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Error message
+                    example: "Display error message and prevent setup"
+
+  /api/puzzle/next_recommendation:
+    get:
+      summary: Get next word group recommendation
+      description: Generate recommendation for next 4-word group
+      responses:
+        '200':
+          description: Recommendation generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  words:
+                    type: array
+                    items:
+                      type: string
+                    minItems: 4
+                    maxItems: 4
+                    description: 4 recommended words
+                  connection:
+                    type: string
+                    description: Rationale for grouping
+                    example: "group of related words"
+                  status:
+                    type: string
+                    enum: ["success"]
+        '400':
+          description: Cannot generate recommendation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Error message
+                    example: "Not enough words remaining"
+
+  /api/puzzle/record_response:
+    post:
+      summary: Record user response to recommendation
+      description: Process user's response (correct color, incorrect, one-away)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                response_type:
+                  type: string
+                  enum: ["correct", "incorrect", "one-away"]
+                  description: Type of response to recommendation
+                color:
+                  type: string
+                  enum: ["Yellow", "Green", "Blue", "Purple"]
+                  description: Color assignment (required if response_type is "correct")
+              required:
+                - response_type
+      responses:
+        '200':
+          description: Response processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  remaining_words:
+                    type: array
+                    items:
+                      type: string
+                    description: Updated list of remaining words
+                  correct_count:
+                    type: integer
+                    minimum: 0
+                    maximum: 4
+                    description: Number of correct groups found
+                  mistake_count:
+                    type: integer
+                    minimum: 0
+                    maximum: 4
+                    description: Number of mistakes made
+                  game_status:
+                    type: string
+                    enum: ["active", "won", "lost"]
+                    description: Current game state
+        '400':
+          description: Invalid response or no active recommendation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Error message
+                    example: "No recommendation to respond to"
+
+components:
+  schemas:
+    WordGroup:
+      type: object
+      properties:
+        words:
+          type: array
+          items:
+            type: string
+          minItems: 4
+          maxItems: 4
+        connection:
+          type: string
+        color:
+          type: string
+          enum: ["Yellow", "Green", "Blue", "Purple"]
+          nullable: true
+      required:
+        - words
+        - connection
+    
+    PuzzleState:
+      type: object
+      properties:
+        remaining_words:
+          type: array
+          items:
+            type: string
+        correct_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/WordGroup'
+        incorrect_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncorrectGroup'
+        correct_count:
+          type: integer
+          minimum: 0
+          maximum: 4
+        mistake_count:
+          type: integer
+          minimum: 0
+          maximum: 4
+      required:
+        - remaining_words
+        - correct_groups
+        - incorrect_groups
+        - correct_count
+        - mistake_count
+    
+    IncorrectGroup:
+      allOf:
+        - $ref: '#/components/schemas/WordGroup'
+        - type: object
+          properties:
+            mistake_type:
+              type: string
+              enum: ["incorrect", "one-away"]
+          required:
+            - mistake_type
