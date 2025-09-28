@@ -37,50 +37,55 @@
 - Include exact file paths in descriptions
 
 ## Path Conventions
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- **Web application**: `backend/src/`, `frontend/src/` (Constitution: Full-Stack Separation)
+- Backend: FastAPI + Pydantic + pytest + uvicorn + uv (no persistent storage)
+- Frontend: React + TypeScript + Jest + React Testing Library
+- Paths shown below follow web application structure
 
 ## Phase 3.1: Setup
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T001 Create backend project structure with uv package management
+- [ ] T002 Create frontend project structure with TypeScript and React
+- [ ] T003 [P] Configure backend linting (black, mypy) and testing (pytest)
+- [ ] T004 [P] Configure frontend linting (ESLint, Prettier) and testing (Jest)
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
-- [ ] T004 [P] Contract test POST /api/users in tests/contract/test_users_post.py
-- [ ] T005 [P] Contract test GET /api/users/{id} in tests/contract/test_users_get.py
-- [ ] T006 [P] Integration test user registration in tests/integration/test_registration.py
-- [ ] T007 [P] Integration test auth flow in tests/integration/test_auth.py
+- [ ] T005 [P] Contract test POST /api/[endpoint] in backend/tests/contract/
+- [ ] T006 [P] Contract test GET /api/[endpoint] in backend/tests/contract/
+- [ ] T007 [P] Backend integration tests in backend/tests/integration/
+- [ ] T008 [P] Frontend component tests in frontend/tests/components/
+- [ ] T009 [P] Frontend integration tests with API in frontend/tests/integration/
 
-## Phase 3.3: Core Implementation (ONLY after tests are failing)
-- [ ] T008 [P] User model in src/models/user.py
-- [ ] T009 [P] UserService CRUD in src/services/user_service.py
-- [ ] T010 [P] CLI --create-user in src/cli/user_commands.py
-- [ ] T011 POST /api/users endpoint
-- [ ] T012 GET /api/users/{id} endpoint
-- [ ] T013 Input validation
-- [ ] T014 Error handling and logging
+## Phase 3.3: Backend Implementation (ONLY after backend tests are failing)
+- [ ] T010 [P] Pydantic models in backend/src/models/ with full type annotations
+- [ ] T011 [P] Service layer with in-memory data handling in backend/src/services/
+- [ ] T012 [P] FastAPI routes with OpenAPI documentation in backend/src/api/
+- [ ] T013 Input validation with Pydantic validators
+- [ ] T014 Error handling and structured logging
 
-## Phase 3.4: Integration
-- [ ] T015 Connect UserService to DB
-- [ ] T016 Auth middleware
-- [ ] T017 Request/response logging
-- [ ] T018 CORS and security headers
+## Phase 3.4: Frontend Implementation (ONLY after frontend tests are failing)
+- [ ] T015 [P] TypeScript type definitions in frontend/src/types/
+- [ ] T016 [P] API client service in frontend/src/services/
+- [ ] T017 [P] React components with props typing in frontend/src/components/
+- [ ] T018 [P] Page components in frontend/src/pages/
+- [ ] T019 State management and error handling (session-based only)
+- [ ] T020 Responsive design and accessibility
 
-## Phase 3.5: Polish
-- [ ] T019 [P] Unit tests for validation in tests/unit/test_validation.py
-- [ ] T020 Performance tests (<200ms)
-- [ ] T021 [P] Update docs/api.md
-- [ ] T022 Remove duplication
-- [ ] T023 Run manual-testing.md
+## Phase 3.5: Integration & Polish
+- [ ] T021 End-to-end testing with full stack
+- [ ] T022 Performance validation (<100ms API, <2s frontend load)
+- [ ] T023 [P] Achieve 80% test coverage on backend business logic
+- [ ] T024 [P] Achieve 80% test coverage on frontend components
+- [ ] T025 [P] mypy type checking passes without errors
+- [ ] T026 [P] TypeScript compilation passes without errors
+- [ ] T027 OpenAPI documentation generation and validation
 
 ## Dependencies
-- Tests (T004-T007) before implementation (T008-T014)
-- T008 blocks T009, T015
-- T016 blocks T018
-- Implementation before polish (T019-T023)
+- Tests (T005-T009) before implementation (T010-T014)
+- T010 blocks T011, T012
+- T011 blocks T012
+- Backend implementation (T010-T014) before frontend (T015-T020)
+- Implementation before polish (T021-T027)
 
 ## Parallel Example
 ```

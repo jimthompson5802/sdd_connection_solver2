@@ -47,7 +47,14 @@
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+**I. Full-Stack Separation**: ✅ Frontend/backend developed independently with API boundaries  
+**II. API-First Design**: ✅ REST APIs with OpenAPI specs defined before frontend implementation  
+**III. Test-First Development**: ✅ TDD cycle enforced, 80% coverage requirement on business logic  
+**IV. Type Safety**: ✅ TypeScript frontend, Pydantic backend, mypy static checking  
+**V. Local-First Architecture**: ✅ Standalone desktop app, no external service dependencies, no persistent storage  
+
+**Technology Standards Compliance**: ✅ FastAPI + Pydantic + React + TypeScript stack alignment  
+**Development Workflow Compliance**: ✅ Independent build systems, automated testing gates
 
 ## Project Structure
 
@@ -63,50 +70,33 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 ```
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
-
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
 backend/
 ├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
+│   ├── models/          # Pydantic models for data validation
+│   ├── services/        # Business logic layer
+│   └── api/            # FastAPI routes and endpoints
+├── tests/
+│   ├── contract/       # API contract tests
+│   ├── integration/    # Full-stack integration tests
+│   └── unit/          # Unit tests for services/models
+└── pyproject.toml      # uv-managed dependencies
 
 frontend/
 ├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+│   ├── components/     # Reusable React components
+│   ├── pages/         # Page-level components
+│   ├── services/      # API client and business logic
+│   ├── types/         # TypeScript type definitions
+│   └── utils/         # Helper functions
+├── tests/
+│   ├── components/    # Component unit tests
+│   ├── integration/   # Frontend integration tests
+│   └── e2e/          # End-to-end tests
+└── package.json       # npm/yarn managed dependencies
 ```
 
-**Structure Decision**: [Document the selected structure and reference the real
-directories captured above]
+**Structure Decision**: Web application architecture with independent frontend/backend build systems, following Full-Stack Separation principle. Each stack maintains isolated dependencies and testing suites. No persistent data storage - operates on session/transient data only.
 
 ## Phase 0: Outline & Research
 1. **Extract unknowns from Technical Context** above:
@@ -216,4 +206,4 @@ directories captured above]
 - [ ] Complexity deviations documented
 
 ---
-*Based on Constitution v2.1.1 - See `/memory/constitution.md`*
+*Based on Constitution v2.0.0 - See `.specify/memory/constitution.md`*
