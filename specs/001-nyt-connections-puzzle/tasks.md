@@ -14,8 +14,8 @@
 - Paths shown below follow web application structure
 
 ## Phase 3.1: Setup
-- [ ] T001 Create backend project structure with uv package management in `backend/`
-- [ ] T002 Create frontend project structure with TypeScript and React in `frontend/`
+- [x] T001 Create backend project structure with uv package management in `backend/`
+- [x] T002 Create frontend project structure with TypeScript and React in `frontend/`
 - [ ] T003 [P] Configure backend linting (black, mypy) and testing (pytest) in `backend/pyproject.toml`
 - [ ] T004 [P] Configure frontend linting (ESLint, Prettier) and testing (Jest) in `frontend/package.json`
 - [ ] T005 [P] Create `.env` file with application configuration variables
