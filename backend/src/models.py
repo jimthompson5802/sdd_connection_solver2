@@ -26,7 +26,7 @@ class SetupPuzzleRequest(BaseModel):
     file_content: str = Field(..., description="Comma-separated list of 16 words")
 
     @validator("file_content")
-    def validate_file_content(cls, v):
+    def validate_file_content(cls, v: str) -> str:
         if not v or not v.strip():
             raise ValueError("File content cannot be empty")
 
@@ -50,7 +50,7 @@ class NextRecommendationRequest(BaseModel):
     session_id: str = Field(..., description="Unique session identifier")
 
     @validator("session_id")
-    def validate_session_id(cls, v):
+    def validate_session_id(cls, v: str) -> str:
         if not v or not v.strip():
             raise ValueError("Session ID cannot be empty")
         return v.strip()
@@ -63,14 +63,14 @@ class RecordResponseRequest(BaseModel):
     color: Optional[str] = Field(None, description="Color for correct responses")
 
     @validator("response_type")
-    def validate_response_type(cls, v):
+    def validate_response_type(cls, v: str) -> str:
         valid_types = ["correct", "incorrect", "one-away"]
         if v not in valid_types:
             raise ValueError(f"response_type must be one of {valid_types}")
         return v
 
     @validator("color")
-    def validate_color(cls, v, values):
+    def validate_color(cls, v: Optional[str], values: dict) -> Optional[str]:
         if values.get("response_type") == "correct" and not v:
             raise ValueError("color is required for correct responses")
         if v and v not in ["Yellow", "Green", "Blue", "Purple"]:
@@ -113,7 +113,7 @@ class WordGroup:
     difficulty: int  # 1-4, where 4 is hardest
     found: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if len(self.words) != 4:
             raise ValueError("Word group must contain exactly 4 words")
         if not 1 <= self.difficulty <= 4:
@@ -129,7 +129,7 @@ class UserAttempt:
     timestamp: datetime
     was_recommendation: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if len(self.words) != 4:
             raise ValueError("Attempt must contain exactly 4 words")
 
@@ -154,7 +154,7 @@ class PuzzleSession:
         # Initialize placeholder groups (will be populated by ML analysis)
         self._initialize_placeholder_groups()
 
-    def _initialize_placeholder_groups(self):
+    def _initialize_placeholder_groups(self) -> None:
         """Initialize placeholder groups until ML analysis is implemented."""
         # This is a simplified placeholder - in real implementation,
         # this would use ML/NLP to analyze word relationships
@@ -164,7 +164,7 @@ class PuzzleSession:
             group_words = words_copy[i * 4 : (i + 1) * 4]
             self.groups.append(WordGroup(category=f"Category {i+1}", words=group_words, difficulty=i + 1))
 
-    def record_attempt(self, words: List[str], result: ResponseResult, was_recommendation: bool = False):
+    def record_attempt(self, words: List[str], result: ResponseResult, was_recommendation: bool = False) -> None:
         """Record a user attempt."""
         attempt = UserAttempt(
             words=[word.strip().lower() for word in words],
@@ -181,7 +181,7 @@ class PuzzleSession:
 
         self._check_game_completion()
 
-    def _mark_group_found(self, words: List[str]):
+    def _mark_group_found(self, words: List[str]) -> None:
         """Mark a group as found based on the words."""
         normalized_words = [word.strip().lower() for word in words]
 
@@ -190,7 +190,7 @@ class PuzzleSession:
                 group.found = True
                 break
 
-    def _check_game_completion(self):
+    def _check_game_completion(self) -> None:
         """Check if the game is complete (won or lost)."""
         found_groups = sum(1 for group in self.groups if group.found)
 
@@ -235,7 +235,7 @@ class PuzzleSession:
 class SessionManager:
     """Manages puzzle sessions in memory."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._sessions: Dict[str, PuzzleSession] = {}
 
     def create_session(self, words: List[str]) -> PuzzleSession:

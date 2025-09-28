@@ -18,7 +18,7 @@ router = APIRouter()
 
 
 @router.post("/api/puzzle/setup_puzzle", response_model=SetupPuzzleResponse)
-async def setup_puzzle(request: SetupPuzzleRequest):
+async def setup_puzzle(request: SetupPuzzleRequest) -> SetupPuzzleResponse:
     """
     Set up a new puzzle with the provided 16 words.
 
@@ -42,7 +42,7 @@ async def setup_puzzle(request: SetupPuzzleRequest):
 
 
 @router.get("/api/puzzle/next_recommendation", response_model=NextRecommendationResponse)
-async def get_next_recommendation():
+async def get_next_recommendation() -> NextRecommendationResponse:
     """
     Get the next recommended group of 4 words.
 
@@ -64,7 +64,7 @@ async def get_next_recommendation():
 
 
 @router.post("/api/puzzle/record_response", response_model=RecordResponseResponse)
-async def record_user_response(request: RecordResponseRequest):
+async def record_user_response(request: RecordResponseRequest) -> RecordResponseResponse:
     """
     Record the result of a user's attempt at finding a word group.
 

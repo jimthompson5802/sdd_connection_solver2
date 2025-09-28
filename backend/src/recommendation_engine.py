@@ -20,7 +20,7 @@ class RecommendationEngine:
     would use more sophisticated NLP and ML techniques.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Common word categories and patterns for basic matching
         self.category_patterns = {
             "colors": ["red", "blue", "green", "yellow", "orange", "purple", "pink", "black", "white", "brown"],
@@ -204,7 +204,7 @@ class RecommendationEngine:
         word_set = set(word.lower() for word in words)
 
         # Count how often each word appeared in incorrect attempts
-        incorrect_word_frequency = Counter()
+        incorrect_word_frequency: Counter[str] = Counter()
         for attempt in incorrect_attempts:
             for word in attempt.words:
                 incorrect_word_frequency[word] += 1
