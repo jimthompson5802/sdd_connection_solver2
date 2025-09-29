@@ -130,7 +130,7 @@ describe('Frontend Component Integration', () => {
     expect(appContainer).toContainElement(main);
     
     // File upload should be inside main
-    const fileUploadContainer = screen.getByText('Setup Puzzle').closest('.file-upload');
+    const fileUploadContainer = screen.getByText('Setup Puzzle').closest('.file-upload') as HTMLElement;
     expect(main).toContainElement(fileUploadContainer);
   });
 
