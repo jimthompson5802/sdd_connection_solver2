@@ -4,11 +4,7 @@ Uses basic heuristics and pattern matching to suggest likely word groupings.
 """
 
 from typing import List, Tuple, Optional
-import random
-from itertools import combinations
-from collections import defaultdict, Counter
-
-from .models import PuzzleSession, ResponseResult
+from .models import PuzzleSession
 
 
 class RecommendationEngine:
@@ -41,184 +37,33 @@ class RecommendationEngine:
             "ness": ["darkness", "sadness", "happiness", "kindness"],
         }
 
-    def get_recommendation(self, session: PuzzleSession) -> Tuple[List[str], float]:
+    def get_recommendation(self, session: PuzzleSession) -> Tuple[List[str], str]:
         """
-        Get the next best recommendation for the given session.
+        Get a simple recommendation for the given session.
+
+        This simplified implementation returns the first four remaining words
+        as the recommended word group and a fixed explanation string.
 
         Returns:
-            Tuple of (recommended_words, confidence_score)
+            Tuple of (recommended_words, recommended_connection)
         """
         remaining_words = session.get_remaining_words()
 
+        # If there aren't at least 4 remaining words, return empty results
         if len(remaining_words) < 4:
-            return [], 0.0
+            return [], ""
 
-        # Get all possible 4-word combinations
-        all_combinations = list(combinations(remaining_words, 4))
+        # Recommend the first four remaining words (simple deterministic fallback)
+        recommended_word_group = list(remaining_words[:4])
 
-        if not all_combinations:
-            return [], 0.0
+        # Fixed human-readable explanation for why these words are grouped
+        recommended_connection = "this is the connection reason"
 
-        # Score each combination based on various heuristics
-        scored_combinations = []
-        for combo in all_combinations:
-            score = self._score_combination(list(combo), session)
-            if score > 0:  # Only consider combinations with some potential
-                scored_combinations.append((list(combo), score))
+        return recommended_word_group, recommended_connection
 
-        if not scored_combinations:
-            # Fallback to random selection if no good matches found
-            random_combo = random.choice(all_combinations)
-            return list(random_combo), 0.1
-
-        # Sort by score and return the best one
-        scored_combinations.sort(key=lambda x: x[1], reverse=True)
-        best_combo, best_score = scored_combinations[0]
-
-        # Normalize confidence to 0-1 range
-        confidence = min(best_score / 10.0, 1.0)
-
-        return best_combo, confidence
-
-    def _score_combination(self, words: List[str], session: PuzzleSession) -> float:
-        """
-        Score a combination of 4 words based on how likely they are to form a group.
-
-        Higher scores indicate more likely groupings.
-        """
-        score = 0.0
-
-        # Check for exact matches with known categories
-        score += self._score_category_match(words) * 5.0
-
-        # Check for pattern-based similarities
-        score += self._score_pattern_similarity(words) * 3.0
-
-        # Check for length similarities
-        score += self._score_length_similarity(words) * 1.0
-
-        # Check for alphabetical clustering
-        score += self._score_alphabetical_clustering(words) * 0.5
-
-        # Penalize combinations that were already tried incorrectly
-        score -= self._score_previous_attempts(words, session) * 2.0
-
-        # Bonus for combinations that avoid previously incorrect patterns
-        score += self._score_avoidance_patterns(words, session) * 1.0
-
-        return max(score, 0.0)
-
-    def _score_category_match(self, words: List[str]) -> float:
-        """Score based on matching known categories."""
-        for category, category_words in self.category_patterns.items():
-            matches = sum(1 for word in words if word.lower() in category_words)
-            if matches >= 3:  # At least 3 words match a category
-                return matches / 4.0
-        return 0.0
-
-    def _score_pattern_similarity(self, words: List[str]) -> float:
-        """Score based on similar patterns (prefixes, suffixes, etc.)."""
-        score = 0.0
-
-        # Check suffix patterns
-        for suffix, examples in self.suffix_patterns.items():
-            suffix_matches = sum(1 for word in words if word.lower().endswith(suffix))
-            if suffix_matches >= 3:
-                score += suffix_matches / 4.0
-
-        # Check prefix patterns (first 2-3 characters)
-        for prefix_len in [2, 3]:
-            if all(len(word) >= prefix_len for word in words):
-                prefixes = [word[:prefix_len].lower() for word in words]
-                if len(set(prefixes)) == 1:  # All same prefix
-                    score += 1.0
-
-        # Check for rhyming patterns (same ending sounds)
-        endings = defaultdict(list)
-        for word in words:
-            if len(word) >= 3:
-                ending = word[-2:].lower()
-                endings[ending].append(word)
-
-        for ending, ending_words in endings.items():
-            if len(ending_words) >= 3:
-                score += len(ending_words) / 4.0
-
-        return score
-
-    def _score_length_similarity(self, words: List[str]) -> float:
-        """Score based on similar word lengths."""
-        lengths = [len(word) for word in words]
-        length_counter = Counter(lengths)
-
-        # Bonus if most words have same length
-        most_common_count = length_counter.most_common(1)[0][1]
-        return most_common_count / 4.0
-
-    def _score_alphabetical_clustering(self, words: List[str]) -> float:
-        """Score based on alphabetical proximity."""
-        first_letters = [word[0].lower() for word in words]
-        first_letters.sort()
-
-        # Check if letters are consecutive or close together
-        ascii_values = [ord(letter) for letter in first_letters]
-        max_gap = max(ascii_values) - min(ascii_values)
-
-        if max_gap <= 3:  # Letters are close together
-            return 1.0 if max_gap <= 1 else 0.5
-
-        return 0.0
-
-    def _score_previous_attempts(self, words: List[str], session: PuzzleSession) -> float:
-        """Penalize combinations similar to previous incorrect attempts."""
-        penalty = 0.0
-        word_set = set(word.lower() for word in words)
-
-        for attempt in session.attempts:
-            if attempt.result == ResponseResult.INCORRECT:
-                attempt_set = set(attempt.words)
-                overlap = len(word_set.intersection(attempt_set))
-
-                if overlap == 4:  # Exact same combination
-                    penalty += 10.0
-                elif overlap == 3:  # 3 out of 4 words same
-                    penalty += 3.0
-                elif overlap >= 2:  # 2 out of 4 words same
-                    penalty += 1.0
-
-        return penalty
-
-    def _score_avoidance_patterns(self, words: List[str], session: PuzzleSession) -> float:
-        """Bonus for avoiding patterns that led to mistakes."""
-        if not session.attempts:
-            return 0.0
-
-        # Look for patterns in incorrect attempts
-        incorrect_attempts = [attempt for attempt in session.attempts if attempt.result == ResponseResult.INCORRECT]
-
-        if not incorrect_attempts:
-            return 0.0
-
-        # Simple heuristic: avoid word combinations that share characteristics
-        # with many incorrect attempts
-        word_set = set(word.lower() for word in words)
-
-        # Count how often each word appeared in incorrect attempts
-        incorrect_word_frequency: Counter[str] = Counter()
-        for attempt in incorrect_attempts:
-            for word in attempt.words:
-                incorrect_word_frequency[word] += 1
-
-        # Bonus if this combination uses words that weren't often incorrect
-        total_incorrect_frequency = sum(incorrect_word_frequency.get(word, 0) for word in word_set)
-
-        # Lower frequency in incorrect attempts = higher bonus
-        if total_incorrect_frequency == 0:
-            return 1.0
-        elif total_incorrect_frequency <= 2:
-            return 0.5
-        else:
-            return 0.0
+    # NOTE: Scoring helper methods were removed — recommendation is a simple
+    # deterministic selection of the first four remaining words. If you want
+    # to reintroduce scoring later, these helpers can be added back.
 
     def get_hint(self, session: PuzzleSession, words: List[str]) -> Optional[str]:
         """

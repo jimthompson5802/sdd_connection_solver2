@@ -50,11 +50,11 @@ class TestRecommendationEngine:
         # Verify recommendation structure
         assert isinstance(recommendation, tuple)
         assert len(recommendation) == 2
-        words, confidence = recommendation
+        words, connection = recommendation
         assert isinstance(words, list)
-        assert isinstance(confidence, float)
+        assert isinstance(connection, str)
         assert len(words) == 4
-        assert 0.0 <= confidence <= 1.0
+        assert connection == "this is the connection reason"
 
     def test_get_recommendation_with_fruits(self):
         """Test recommendation generation with clear fruit grouping."""
@@ -77,13 +77,12 @@ class TestRecommendationEngine:
             "plane",
         ]
         session = PuzzleSession(fruit_words)
-
         recommendation = self.engine.get_recommendation(session)
 
         # Should identify some grouping
-        words, confidence = recommendation
+        words, connection = recommendation
         assert len(words) == 4
-        assert 0.0 <= confidence <= 1.0
+        assert connection == "this is the connection reason"
 
     def test_get_recommendation_insufficient_remaining_words(self):
         """Test recommendation generation with insufficient remaining words."""
@@ -94,11 +93,11 @@ class TestRecommendationEngine:
             session.groups[i].found = True
 
         recommendation = self.engine.get_recommendation(session)
-        words, confidence = recommendation
+        words, connection = recommendation
 
         # Should still return 4 words (the last group)
         assert len(words) == 4
-        assert 0.0 <= confidence <= 1.0
+        assert connection == "this is the connection reason"
 
     def test_get_recommendation_no_remaining_words(self):
         """Test recommendation generation with no remaining words."""
@@ -108,11 +107,11 @@ class TestRecommendationEngine:
             group.found = True
 
         recommendation = self.engine.get_recommendation(session)
-        words, confidence = recommendation
+        words, connection = recommendation
 
-        # Should return empty list with 0 confidence
+        # Should return empty list with empty connection
         assert words == []
-        assert confidence == 0.0
+        assert connection == ""
 
     def test_get_recommendation_consistency(self):
         """Test that recommendations are consistent for the same input."""
@@ -121,12 +120,12 @@ class TestRecommendationEngine:
 
         # Results should be consistent (since no randomness in current implementation)
         assert recommendation1[0] == recommendation2[0]  # words
-        assert recommendation1[1] == recommendation2[1]  # confidence
+        assert recommendation1[1] == recommendation2[1]  # connection string
 
     def test_recommendation_words_are_from_remaining(self):
         """Test that recommended words are from remaining words."""
         recommendation = self.engine.get_recommendation(self.sample_session)
-        words, confidence = recommendation
+        words, connection = recommendation
 
         remaining_words = self.sample_session.get_remaining_words()
         for word in words:
@@ -135,10 +134,10 @@ class TestRecommendationEngine:
     def test_confidence_score_range(self):
         """Test that confidence scores are in valid range."""
         recommendation = self.engine.get_recommendation(self.sample_session)
-        words, confidence = recommendation
+        words, connection = recommendation
 
-        assert isinstance(confidence, float)
-        assert 0.0 <= confidence <= 1.0
+        assert isinstance(connection, str)
+        assert connection == "this is the connection reason"
 
     def test_multiple_recommendations_different_sessions(self):
         """Test that different sessions can produce different recommendations."""
@@ -181,7 +180,6 @@ class TestRecommendationEngine:
 
         session1 = PuzzleSession(words1)
         session2 = PuzzleSession(words2)
-
         rec1 = self.engine.get_recommendation(session1)
         rec2 = self.engine.get_recommendation(session2)
 
@@ -202,6 +200,6 @@ class TestRecommendationEngine:
         assert execution_time < 5.0, f"Recommendation took {execution_time:.2f} seconds"
 
         # Verify result is still valid
-        words, confidence = recommendation
+        words, connection = recommendation
         assert len(words) == 4
-        assert 0.0 <= confidence <= 1.0
+        assert connection == "this is the connection reason"
