@@ -391,6 +391,20 @@ input[type="file"] {
   border-left: 4px solid #95a5a6;
 }
 
+/* Keep the history visible at the bottom of the puzzle area when recommendations are displayed */
+.puzzle-interface {
+  position: relative;
+}
+
+.previous-responses {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  box-shadow: 0 -4px 8px rgba(0,0,0,0.03);
+  max-height: 220px;
+  overflow: auto;
+}
+
 .previous-responses h4 {
   margin: 0 0 0.75rem 0;
   color: #2c3e50;
@@ -410,6 +424,11 @@ input[type="file"] {
   background: white;
   border-radius: 4px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.previous-item.empty {
+  justify-content: center;
+  color: #7f8c8d;
 }
 
 .response-badge {

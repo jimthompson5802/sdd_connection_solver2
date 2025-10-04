@@ -159,19 +159,26 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
   };
 
   const renderPreviousResponses = () => {
-    if (!previousResponses || previousResponses.length === 0) return null;
+    // Show the history panel for any non-waiting game state so it persists after responses
+    if (gameStatus === 'waiting') return null;
 
     return (
       <div className="previous-responses">
         <h4>Previous Guesses</h4>
         <div className="previous-list">
-          {previousResponses.map((resp, idx) => (
-            <div key={idx} className="previous-item">
-              <div className={`response-badge ${resp.type} ${resp.color ? resp.color.toLowerCase() : ''}`}></div>
-              <div className="response-words">{resp.words.join(', ')}</div>
-              <div className="response-meta">{new Date(resp.timestamp).toLocaleTimeString()}</div>
+          {previousResponses && previousResponses.length > 0 ? (
+            previousResponses.map((resp, idx) => (
+              <div key={idx} className="previous-item">
+                <div className={`response-badge ${resp.type} ${resp.color ? resp.color.toLowerCase() : ''}`}></div>
+                <div className="response-words">{resp.words.join(', ')}</div>
+                <div className="response-meta">{new Date(resp.timestamp).toLocaleTimeString()}</div>
+              </div>
+            ))
+          ) : (
+            <div className="previous-item empty">
+              <div className="response-words">No previous guesses yet</div>
             </div>
-          ))}
+          )}
         </div>
       </div>
     );
