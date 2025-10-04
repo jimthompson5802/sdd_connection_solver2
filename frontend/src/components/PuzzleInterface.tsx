@@ -3,7 +3,7 @@
  * Displays current state, recommendations, and handles user interactions.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { PuzzleInterfaceProps } from '../types/puzzle';
 
 const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
@@ -27,9 +27,27 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
 
   const handleResponseClick = (type: 'correct' | 'incorrect' | 'one-away', color?: string) => {
     if (!isLoading && gameStatus === 'active') {
+      // If this is a correct response with a color, immediately disable that color button
+      // so the UI reflects the selection (FR-014). The actual recording is handled by the
+      // parent via onRecordResponse.
+      if (type === 'correct' && color) {
+        setDisabledColors(prev => new Set(prev).add(color));
+      }
+
       onRecordResponse(type, color);
     }
   };
+
+  // Track which color buttons have been disabled by the user (after selecting that color)
+  const [disabledColors, setDisabledColors] = useState<Set<string>>(new Set());
+
+  // When a new puzzle is started (gameStatus goes back to 'waiting') reset the disabled colors
+  // so buttons are re-enabled and return to their original color.
+  useEffect(() => {
+    if (gameStatus === 'waiting') {
+      setDisabledColors(new Set());
+    }
+  }, [gameStatus]);
 
   const renderGameStatus = () => {
     switch (gameStatus) {
@@ -92,29 +110,29 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
         <div className="button-group">
           <button
             onClick={() => handleResponseClick('correct', 'Yellow')}
-            disabled={isLoading}
-            className="response-button correct yellow"
+            disabled={isLoading || disabledColors.has('Yellow')}
+            className={`response-button correct yellow ${disabledColors.has('Yellow') ? 'gray-button' : ''}`}
           >
             Correct (Yellow)
           </button>
           <button
             onClick={() => handleResponseClick('correct', 'Green')}
-            disabled={isLoading}
-            className="response-button correct green"
+            disabled={isLoading || disabledColors.has('Green')}
+            className={`response-button correct green ${disabledColors.has('Green') ? 'gray-button' : ''}`}
           >
             Correct (Green)
           </button>
           <button
             onClick={() => handleResponseClick('correct', 'Blue')}
-            disabled={isLoading}
-            className="response-button correct blue"
+            disabled={isLoading || disabledColors.has('Blue')}
+            className={`response-button correct blue ${disabledColors.has('Blue') ? 'gray-button' : ''}`}
           >
             Correct (Blue)
           </button>
           <button
             onClick={() => handleResponseClick('correct', 'Purple')}
-            disabled={isLoading}
-            className="response-button correct purple"
+            disabled={isLoading || disabledColors.has('Purple')}
+            className={`response-button correct purple ${disabledColors.has('Purple') ? 'gray-button' : ''}`}
           >
             Correct (Purple)
           </button>

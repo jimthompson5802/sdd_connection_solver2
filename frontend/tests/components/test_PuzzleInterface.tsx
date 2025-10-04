@@ -238,4 +238,78 @@ describe('PuzzleInterface Component', () => {
       expect(screen.getByText(/no recommendation to respond to/i)).toBeInTheDocument();
     });
   });
+
+  test('resets disabled/gray state for color buttons when a new puzzle is started', async () => {
+    const mockRecordResponse = require('../../src/services/apiService').recordResponse;
+    mockRecordResponse.mockResolvedValue({
+      remaining_words: ['word5', 'word6', 'word7', 'word8'],
+      correct_count: 1,
+      mistake_count: 0,
+      game_status: 'active'
+    });
+
+    const { rerender } = render(
+      <PuzzleInterface
+        words={['w1','w2','w3','w4','w5']}
+        recommendation={['w1','w2','w3','w4']}
+        recommendationConnection={'conn'}
+        correctCount={0}
+        mistakeCount={0}
+        gameStatus={'active'}
+        isLoading={false}
+        error={null}
+        onGetRecommendation={jest.fn()}
+        onRecordResponse={jest.fn()}
+        previousResponses={[]}
+      />
+    );
+
+    const yellowButton = screen.getByRole('button', { name: /yellow/i });
+    // click to disable and gray it
+    fireEvent.click(yellowButton);
+
+    await waitFor(() => {
+      expect(yellowButton).toBeDisabled();
+      expect(yellowButton).toHaveClass('gray-button');
+    });
+
+    // Simulate starting a new puzzle: component will be re-rendered with gameStatus 'waiting'
+    rerender(
+      <PuzzleInterface
+        words={[]}
+        recommendation={['w1','w2','w3','w4']}
+        recommendationConnection={''}
+        correctCount={0}
+        mistakeCount={0}
+        gameStatus={'waiting'}
+        isLoading={false}
+        error={null}
+        onGetRecommendation={jest.fn()}
+        onRecordResponse={jest.fn()}
+        previousResponses={[]}
+      />
+    );
+
+    // Then simulate setting up a new active puzzle (gameStatus -> active) so buttons reappear
+    rerender(
+      <PuzzleInterface
+        words={['w1','w2','w3','w4','w5']}
+        recommendation={['w1','w2','w3','w4']}
+        recommendationConnection={'conn'}
+        correctCount={0}
+        mistakeCount={0}
+        gameStatus={'active'}
+        isLoading={false}
+        error={null}
+        onGetRecommendation={jest.fn()}
+        onRecordResponse={jest.fn()}
+        previousResponses={[]}
+      />
+    );
+
+    const yellowButtonAfter = screen.getByRole('button', { name: /yellow/i });
+    // After a new puzzle start the button should be enabled and no longer gray
+    expect(yellowButtonAfter).not.toBeDisabled();
+    expect(yellowButtonAfter).not.toHaveClass('gray-button');
+  });
 });
