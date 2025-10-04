@@ -20,7 +20,7 @@ flowchart TB
     Models["PuzzleSession (models.py)"]
   end
 
-  %% Network / infra
+  %% Network
   BrowserPage --- FileUpload
   BrowserPage --- PuzzleInterface
   FileUpload -->|"upload CSV (content)"| APIService
