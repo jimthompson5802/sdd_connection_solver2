@@ -1,25 +1,44 @@
 ```mermaid
 flowchart TB
-  subgraph UserLayer
-    U[User] -->|interacts via browser| Browser["Web Page (React)"]
+  %% User and browser
+  User["User (Browser)"]
+
+  %% Frontend subgraph
+  subgraph Frontend ["Frontend (React app)"]
+    BrowserPage["Web Page(React App)"]
+    FileUpload["FileUpload (component)"]
+    PuzzleInterface["PuzzleInterface (component)"]
+    APIService["apiService (client)"]
   end
 
-  subgraph FrontendLayer
-    Browser -->|UI actions: upload / get recommendation / record response| FrontendApp["React App (App.tsx)"]
-    FrontendApp -->|POST /api/puzzle/setup_puzzle| FrontendAPI["(apiService)"]
-    FrontendApp -->|GET /api/puzzle/next_recommendation| FrontendAPI
-    FrontendApp -->|POST /api/puzzle/record_response| FrontendAPI
-    FrontendAPI -->|HTTP requests| BackendAPI["Backend (FastAPI) at :8000"]
+  %% Backend subgraph
+  subgraph Backend ["Backend (FastAPI)"]
+    FastAPIApp["FastAPI app (main.py)"]
+    APIRouter["API Router (api.py)\n(endpoints)"]
+    RecEngine["Recommendation Engine (recommendation_engine.py)"]
+    SessionMgr["Session Manager (models - in-memory)"]
+    Models["PuzzleSession (models.py)"]
   end
 
-  subgraph BackendLayer
-    BackendAPI -->|routes in src/api.py| Router["(Router)"]
-    Router -->|uses `session_manager`/`PuzzleSession`| SessionManager["(SessionManager / PuzzleSession (src/models.py))"]
-    Router -->|calls| RecEngine["(RecommendationEngine (src/recommendation_engine.py))"]
-    RecEngine -->|"heuristic get_recommendation(session)"| Groups["(Group candidates)"]
-    SessionManager -->|stores attempts, last_recommendation| Router
-    Router -->|responds with JSON| FrontendAPI
-  end
+  %% Network / infra
+  BrowserPage --- FileUpload
+  BrowserPage --- PuzzleInterface
+  FileUpload -->|"upload CSV (content)"| APIService
+  PuzzleInterface -->|request recommendation| APIService
+  PuzzleInterface -->|record response| APIService
 
+  APIService -->|POST /api/puzzle/setup_puzzle| APIRouter
+  APIService -->|GET /api/puzzle/next_recommendation| APIRouter
+  APIService -->|POST /api/puzzle/record_response| APIRouter
+
+  APIRouter -->|create/read/update| SessionMgr
+  APIRouter -->|ask for recommendations| RecEngine
+  RecEngine -->|reads/writes| Models
+  SessionMgr -->|stores/reads| Models
+
+ 
+
+  %% User interaction flow
+  User -->|interacts with page| BrowserPage
  
 ```
