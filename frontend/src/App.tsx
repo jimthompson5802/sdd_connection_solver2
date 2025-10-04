@@ -20,6 +20,7 @@ const App: React.FC = () => {
     gameStatus: 'waiting',
     isLoading: false,
     error: null,
+    previousResponses: [],
   });
 
   const handleFileUpload = useCallback(async (content: string) => {
@@ -77,8 +78,10 @@ const App: React.FC = () => {
     setPuzzleState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
+      // include the current recommendation words so backend can record; if empty, backend will ignore
       const response = await apiService.recordResponse(type, color);
       
+      // Append to previousResponses locally for UI history. Use the previous recommendation words
       setPuzzleState(prev => ({
         ...prev,
         words: response.remaining_words,
@@ -89,6 +92,15 @@ const App: React.FC = () => {
         recommendationConnection: '',
         isLoading: false,
         error: null,
+        previousResponses: [
+          ...prev.previousResponses,
+          {
+            type,
+            color,
+            words: prev.currentRecommendation,
+            timestamp: new Date(),
+          },
+        ],
       }));
     } catch (error) {
       setPuzzleState(prev => ({
@@ -126,6 +138,7 @@ const App: React.FC = () => {
                   gameStatus: 'waiting',
                   isLoading: false,
                   error: null,
+                  previousResponses: [],
                 })}
                 className="secondary-button"
               >
@@ -144,6 +157,7 @@ const App: React.FC = () => {
               error={puzzleState.error}
               onGetRecommendation={handleGetRecommendation}
               onRecordResponse={handleRecordResponse}
+              previousResponses={puzzleState.previousResponses}
             />
           </div>
         )}

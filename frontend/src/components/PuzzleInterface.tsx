@@ -17,6 +17,7 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
   error,
   onGetRecommendation,
   onRecordResponse,
+  previousResponses,
 }) => {
   const handleGetRecommendation = () => {
     if (!isLoading && gameStatus === 'active') {
@@ -157,6 +158,25 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
     );
   };
 
+  const renderPreviousResponses = () => {
+    if (!previousResponses || previousResponses.length === 0) return null;
+
+    return (
+      <div className="previous-responses">
+        <h4>Previous Guesses</h4>
+        <div className="previous-list">
+          {previousResponses.map((resp, idx) => (
+            <div key={idx} className="previous-item">
+              <div className={`response-badge ${resp.type} ${resp.color ? resp.color.toLowerCase() : ''}`}></div>
+              <div className="response-words">{resp.words.join(', ')}</div>
+              <div className="response-meta">{new Date(resp.timestamp).toLocaleTimeString()}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="puzzle-interface">
       {error && (
@@ -184,6 +204,7 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
 
           {renderRecommendation()}
           {renderResponseButtons()}
+          {renderPreviousResponses()}
         </>
       )}
 
