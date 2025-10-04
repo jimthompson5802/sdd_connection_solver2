@@ -150,6 +150,8 @@ class PuzzleSession:
         self.max_mistakes = 4
         self.game_complete = False
         self.game_won = False
+        # Tracks the last recommendation issued to the user (list of 4 words)
+        self.last_recommendation: Optional[List[str]] = None
 
         # Initialize placeholder groups (will be populated by ML analysis)
         self._initialize_placeholder_groups()
@@ -176,7 +178,8 @@ class PuzzleSession:
 
         if result == ResponseResult.CORRECT:
             self._mark_group_found(words)
-        elif result == ResponseResult.INCORRECT:
+        elif result in (ResponseResult.INCORRECT, ResponseResult.ONE_AWAY):
+            # Treat one-away as a mistake for game progression
             self.mistakes_made += 1
 
         self._check_game_completion()

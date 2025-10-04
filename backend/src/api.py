@@ -12,6 +12,7 @@ from .models import (
     RecordResponseRequest,
     RecordResponseResponse,
     session_manager,
+    ResponseResult,
 )
 
 router = APIRouter()
@@ -36,6 +37,8 @@ async def setup_puzzle(request: SetupPuzzleRequest) -> SetupPuzzleResponse:
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"status": str(e)})
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to setup puzzle: {str(e)}"
         )
@@ -50,14 +53,38 @@ async def get_next_recommendation() -> NextRecommendationResponse:
     integrated with the test contract yet.
     """
     try:
-        # Static recommendation for contract compliance
-        # In real implementation, this would use session management and recommendation engine
-        recommended_words = ["apple", "banana", "cherry", "date"]
-        connection = "These are all fruits"
+        # If no session exists, return a generic static recommendation
+        if session_manager.get_session_count() == 0:
+            recommended_words = ["apple", "banana", "cherry", "date"]
+            connection = "These are all fruits"
+            return NextRecommendationResponse(words=recommended_words, connection=connection, status="success")
+
+        # Use last-created session
+        session = list(session_manager._sessions.values())[-1]
+
+        # If game is over, no recommendations should be provided
+        if session.is_game_over():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail={"status": "No recommendations: game over"}
+            )
+
+        remaining = session.get_remaining_words()
+
+        if len(remaining) < 4:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail={"status": "Not enough words remaining"}
+            )
+
+        # For now, recommend the first 4 remaining words and record them as the last recommendation
+        recommended_words = remaining[:4]
+        connection = "this is the connection reason"
+        session.last_recommendation = recommended_words
 
         return NextRecommendationResponse(words=recommended_words, connection=connection, status="success")
 
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to get recommendation: {str(e)}"
         )
@@ -71,57 +98,63 @@ async def record_user_response(request: RecordResponseRequest) -> RecordResponse
     For now, returns a static response for contract compliance.
     """
     try:
-        # Static response for contract compliance
-        # In real implementation, this would update session state
+        # Use the most recently created session if available
+        if session_manager.get_session_count() == 0:
+            # No session yet — can't record a response
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"status": "No active session"})
 
-        # Simulate different game states based on response type
-        all_words = [
-            "apple",
-            "banana",
-            "cherry",
-            "date",
-            "elderberry",
-            "fig",
-            "grape",
-            "honeydew",
-            "kiwi",
-            "lemon",
-            "mango",
-            "orange",
-            "papaya",
-            "quince",
-            "raspberry",
-            "strawberry",
-        ]
+        # Get the last-created session (dict preserves insertion order)
+        session = list(session_manager._sessions.values())[-1]
 
+        # Ensure there is an active recommendation to respond to
+        if not session.last_recommendation:
+            # No recommendation has been issued yet
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={"status": "No recommendation to respond to"},
+            )
+
+        # Determine words to record for the attempt as the last recommendation
+        attempt_words = session.last_recommendation
+
+        # Map request to ResponseResult and record the attempt
+        # Validate required fields for correct responses
         if request.response_type == "correct":
-            remaining_after_correct = [
-                "kiwi",
-                "lemon",
-                "mango",
-                "orange",
-                "papaya",
-                "quince",
-                "raspberry",
-                "strawberry",
-                "elderberry",
-                "fig",
-                "grape",
-                "honeydew",
-            ]
-            return RecordResponseResponse(
-                remaining_words=remaining_after_correct, correct_count=1, mistake_count=0, game_status="active"
-            )
+            if not request.color:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail={"status": "color is required for correct responses"},
+                )
+
+            result = ResponseResult.CORRECT
+            # Record the correct attempt using the last recommendation
+            session.record_attempt(attempt_words, result, was_recommendation=True)
         elif request.response_type == "incorrect":
-            return RecordResponseResponse(
-                remaining_words=all_words, correct_count=0, mistake_count=1, game_status="active"
-            )
+            result = ResponseResult.INCORRECT
+            session.record_attempt(attempt_words, result, was_recommendation=True)
         else:  # one-away
-            return RecordResponseResponse(
-                remaining_words=all_words, correct_count=0, mistake_count=0, game_status="active"
-            )
+            result = ResponseResult.ONE_AWAY
+            session.record_attempt(attempt_words, result, was_recommendation=True)
+
+        # Build response from current session state
+        remaining_words = session.get_remaining_words()
+        correct_count = sum(1 for g in session.groups if g.found)
+        mistake_count = session.mistakes_made
+        if session.is_game_over():
+            game_status = "won" if session.game_won else "lost"
+        else:
+            game_status = "active"
+
+        return RecordResponseResponse(
+            remaining_words=remaining_words,
+            correct_count=correct_count,
+            mistake_count=mistake_count,
+            game_status=game_status,
+        )
 
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to record response: {str(e)}"
         )
