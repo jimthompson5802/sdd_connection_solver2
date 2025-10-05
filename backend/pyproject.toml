@@ -8,6 +8,10 @@ dependencies = [
     "pydantic>=2.4.0",
     "uvicorn[standard]>=0.24.0",
     "python-multipart>=0.0.6",
+    "langchain>=0.3.27",
+    "openai>=2.1.0",
+    "python-dotenv>=1.1.1",
+    "langchain-community>=0.3.30",
 ]
 
 [project.optional-dependencies]
@@ -39,6 +43,12 @@ addopts = [
     "--cov-report=term-missing",
     "--cov-report=html:htmlcov",
     "--cov-fail-under=80",
+]
+markers = [
+    "llm_mock: marks tests that mock LLM provider responses",
+    "integration: marks tests as integration tests",
+    "contract: marks tests as API contract tests",
+    "slow: marks tests as slow running",
 ]
 
 [tool.black]
@@ -78,10 +88,24 @@ strict_equality = true
 module = "tests.*"
 disallow_untyped_defs = false
 
+[[tool.mypy.overrides]]
+module = "langchain.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "langchain_community.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "openai.*"
+ignore_missing_imports = true
+
 [dependency-groups]
 dev = [
+    "aioresponses>=0.7.8",
     "fastapi>=0.117.1",
     "httpx>=0.28.1",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
+    "pytest-mock>=3.15.1",
 ]
