@@ -1,0 +1,311 @@
+openapi: 3.0.3
+info:
+  title: Connection Puzzle Solver - LLM Provider Integration API
+  description: Extended API for connection puzzle solver with LLM provider support
+  version: 2.0.0
+  
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /api/v2/recommendations:
+    post:
+      summary: Generate word recommendations using specified LLM provider
+      description: Get 4 word recommendations for connection puzzle using simple algorithm or LLM provider
+      operationId: generate_recommendation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecommendationRequest'
+            examples:
+              simple_provider:
+                summary: Simple algorithm request
+                value:
+                  llm_provider:
+                    provider_type: "simple"
+                    model_name: null
+                  remaining_words: ["BASS", "FLOUNDER", "SALMON", "TROUT", "PIANO", "GUITAR", "VIOLIN", "DRUMS"]
+                  previous_guesses: []
+              ollama_provider:
+                summary: Ollama LLM request
+                value:
+                  llm_provider:
+                    provider_type: "ollama"
+                    model_name: "llama2"
+                  remaining_words: ["BASS", "FLOUNDER", "SALMON", "TROUT", "PIANO", "GUITAR", "VIOLIN", "DRUMS"]
+                  previous_guesses:
+                    - words: ["RED", "BLUE", "GREEN", "YELLOW"]
+                      outcome: "incorrect"
+                      actual_connection: null
+                      timestamp: "2025-10-05T10:30:00Z"
+      responses:
+        '200':
+          description: Successful recommendation generation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecommendationResponse'
+              examples:
+                simple_response:
+                  summary: Simple algorithm response
+                  value:
+                    recommended_words: ["BASS", "FLOUNDER", "SALMON", "TROUT"]
+                    connection_explanation: null
+                    confidence_score: null
+                    provider_used:
+                      provider_type: "simple"
+                      model_name: null
+                    generation_time_ms: null
+                llm_response:
+                  summary: LLM provider response
+                  value:
+                    recommended_words: ["BASS", "FLOUNDER", "SALMON", "TROUT"]
+                    connection_explanation: "These are all types of fish"
+                    confidence_score: 0.87
+                    provider_used:
+                      provider_type: "ollama"
+                      model_name: "llama2"
+                    generation_time_ms: 2340
+        '400':
+          description: Invalid request format or provider configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_provider:
+                  summary: Invalid provider format
+                  value:
+                    error: "Invalid provider format"
+                    detail: "Provider must be 'simple' or '<provider>:<model>' format. Valid providers: ollama, openai"
+                    error_code: "INVALID_PROVIDER_FORMAT"
+                insufficient_words:
+                  summary: Not enough remaining words
+                  value:
+                    error: "Insufficient remaining words"
+                    detail: "Cannot generate recommendation with fewer than 4 remaining words"
+                    error_code: "INSUFFICIENT_WORDS"
+        '422':
+          description: LLM provider returned invalid response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalid_llm_response:
+                  summary: LLM returned invalid words
+                  value:
+                    error: "Invalid LLM response"
+                    detail: "LLM returned words not in remaining word list. Please try again."
+                    error_code: "INVALID_LLM_RESPONSE"
+        '503':
+          description: LLM provider unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                provider_unavailable:
+                  summary: Provider service unavailable
+                  value:
+                    error: "Provider unavailable"
+                    detail: "Unable to connect to ollama provider. Please check configuration."
+                    error_code: "PROVIDER_UNAVAILABLE"
+
+  /api/v2/providers/validate:
+    post:
+      summary: Validate LLM provider configuration
+      description: Check if a provider configuration is valid and available
+      operationId: validate_provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LLMProvider'
+            examples:
+              simple_provider:
+                summary: Simple provider validation
+                value:
+                  provider_type: "simple"
+                  model_name: null
+              ollama_provider:
+                summary: Ollama provider validation
+                value:
+                  provider_type: "ollama"
+                  model_name: "llama2"
+      responses:
+        '200':
+          description: Provider validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderValidationResponse'
+              examples:
+                valid_provider:
+                  summary: Valid and available provider
+                  value:
+                    is_valid: true
+                    is_available: true
+                    message: "Provider is configured and available"
+                invalid_provider:
+                  summary: Invalid provider format
+                  value:
+                    is_valid: false
+                    is_available: false
+                    message: "Invalid provider format. Expected 'simple' or '<provider>:<model>'"
+
+components:
+  schemas:
+    LLMProvider:
+      type: object
+      required:
+        - provider_type
+      properties:
+        provider_type:
+          type: string
+          enum: ["simple", "ollama", "openai"]
+          description: The LLM service provider type
+        model_name:
+          type: string
+          nullable: true
+          description: The specific model identifier (required for non-simple providers)
+          examples:
+            - "llama2"
+            - "gpt-3.5-turbo"
+            - "gpt-4"
+      examples:
+        - provider_type: "simple"
+          model_name: null
+        - provider_type: "ollama"
+          model_name: "llama2"
+        - provider_type: "openai"
+          model_name: "gpt-3.5-turbo"
+
+    GuessAttempt:
+      type: object
+      required:
+        - words
+        - outcome
+        - timestamp
+      properties:
+        words:
+          type: array
+          items:
+            type: string
+          minItems: 4
+          maxItems: 4
+          description: The 4 words that were guessed together
+        outcome:
+          type: string
+          enum: ["correct", "incorrect", "one_away"]
+          description: Result of the guess attempt
+        actual_connection:
+          type: string
+          nullable: true
+          description: The real connection if correct, null otherwise
+        timestamp:
+          type: string
+          format: date-time
+          description: When the guess was made
+
+    RecommendationRequest:
+      type: object
+      required:
+        - llm_provider
+        - remaining_words
+        - previous_guesses
+      properties:
+        llm_provider:
+          $ref: '#/components/schemas/LLMProvider'
+        remaining_words:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Words still available in the puzzle
+        previous_guesses:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuessAttempt'
+          description: Historical guess attempts with outcomes
+        puzzle_context:
+          type: string
+          nullable: true
+          description: Optional additional context about the puzzle
+
+    RecommendationResponse:
+      type: object
+      required:
+        - recommended_words
+        - provider_used
+      properties:
+        recommended_words:
+          type: array
+          items:
+            type: string
+          minItems: 4
+          maxItems: 4
+          description: Exactly 4 words recommended for grouping
+        connection_explanation:
+          type: string
+          nullable: true
+          description: Why these words are connected (null for simple provider)
+        confidence_score:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          nullable: true
+          description: Provider's confidence in recommendation (null for simple)
+        provider_used:
+          $ref: '#/components/schemas/LLMProvider'
+        generation_time_ms:
+          type: integer
+          minimum: 0
+          nullable: true
+          description: Time taken to generate (null for simple)
+
+    ProviderValidationResponse:
+      type: object
+      required:
+        - is_valid
+        - is_available
+        - message
+      properties:
+        is_valid:
+          type: boolean
+          description: Whether the provider configuration is valid
+        is_available:
+          type: boolean
+          description: Whether the provider is currently accessible
+        message:
+          type: string
+          description: Human-readable validation result message
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - detail
+        - error_code
+      properties:
+        error:
+          type: string
+          description: Short error message
+        detail:
+          type: string
+          description: Detailed error explanation
+        error_code:
+          type: string
+          description: Machine-readable error code for client handling
+          enum:
+            - "INVALID_PROVIDER_FORMAT"
+            - "INSUFFICIENT_WORDS"
+            - "INVALID_LLM_RESPONSE"
+            - "PROVIDER_UNAVAILABLE"
+            - "PROVIDER_AUTHENTICATION_FAILED"
+            - "VALIDATION_ERROR"
