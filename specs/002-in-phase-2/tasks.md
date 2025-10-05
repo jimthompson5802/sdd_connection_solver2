@@ -57,13 +57,13 @@
 - [x] T012 [P] Frontend component test LLM provider input field in `frontend/tests/components/test_llm_provider_input.test.tsx` ✅
 - [x] T013 [P] Frontend integration test provider selection flow in `frontend/tests/integration/test_provider_selection.test.tsx` ✅
 
-## Phase 3.3: Backend Pydantic Models (ONLY after contract tests are failing)
-- [ ] T014 [P] LLMProvider model in `backend/src/models/llm_provider.py` with provider_type validation
-- [ ] T015 [P] GuessAttempt model in `backend/src/models/guess_attempt.py` with outcome enum validation
-- [ ] T016 [P] RecommendationRequest model in `backend/src/models/recommendation_request.py` with word list validation
-- [ ] T017 [P] RecommendationResponse model in `backend/src/models/recommendation_response.py` with confidence score validation
-- [ ] T018 [P] PuzzleState model in `backend/src/models/puzzle_state.py` with 16-word constraint validation
-- [ ] T019 [P] CompletedGroup model in `backend/src/models/completed_group.py` with difficulty level enum
+## Phase 3.3: Backend Pydantic Models (ONLY after contract tests are failing) ✅ COMPLETED
+- [x] T014 [P] LLMProvider model in `backend/src/llm_models/llm_provider.py` with provider_type validation ✅
+- [x] T015 [P] GuessAttempt model in `backend/src/llm_models/guess_attempt.py` with outcome enum validation ✅
+- [x] T016 [P] RecommendationRequest model in `backend/src/llm_models/recommendation_request.py` with word list validation ✅
+- [x] T017 [P] RecommendationResponse model in `backend/src/llm_models/recommendation_response.py` with confidence score validation ✅
+- [x] T018 [P] PuzzleState model in `backend/src/llm_models/puzzle_state.py` with 16-word constraint validation ✅
+- [x] T019 [P] CompletedGroup model in `backend/src/llm_models/completed_group.py` with difficulty level enum ✅
 
 ## Phase 3.4: Backend LLM Services (ONLY after model tests pass)
 - [ ] T020 [P] Environment configuration service in `backend/src/services/config_service.py` for .env loading

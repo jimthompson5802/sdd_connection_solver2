@@ -10,6 +10,14 @@ from enum import Enum
 import uuid
 from datetime import datetime
 
+# LLM Provider Integration Models (Phase 2)
+from .llm_models.llm_provider import LLMProvider
+from .llm_models.guess_attempt import GuessAttempt
+from .llm_models.recommendation_request import RecommendationRequest
+from .llm_models.recommendation_response import RecommendationResponse
+from .llm_models.puzzle_state import PuzzleState
+from .llm_models.completed_group import CompletedGroup
+
 
 class ResponseResult(str, Enum):
     """Valid response results from user attempts."""
@@ -269,3 +277,26 @@ class SessionManager:
 
 # Global session manager instance
 session_manager = SessionManager()
+
+
+# Export all models for backward compatibility and new functionality
+__all__ = [
+    # Original Phase 1 models
+    "ResponseResult",
+    "SetupPuzzleRequest",
+    "NextRecommendationRequest",
+    "RecordResponseRequest",
+    "SetupPuzzleResponse",
+    "NextRecommendationResponse",
+    "RecordResponseResponse",
+    "PuzzleSession",
+    "SessionManager",
+    "session_manager",
+    # New Phase 2 LLM models
+    "LLMProvider",
+    "GuessAttempt",
+    "RecommendationRequest",
+    "RecommendationResponse",
+    "PuzzleState",
+    "CompletedGroup",
+]
