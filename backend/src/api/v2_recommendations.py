@@ -65,7 +65,7 @@ async def generate_recommendation(
         )
 
         # Generate recommendation using service
-        response = await service.generate_recommendation(request_data)
+        response = service.generate_recommendation(request_data)
 
         # Log successful response
         log_request_info(
@@ -73,7 +73,7 @@ async def generate_recommendation(
             {
                 "status_code": 200,
                 "provider_used": response.provider_used,
-                "recommendation_count": len(response.recommendations),
+                "recommendation_count": len(response.recommended_words),
                 "confidence_score": response.confidence_score,
             },
         )

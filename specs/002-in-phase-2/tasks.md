@@ -95,8 +95,8 @@
 - [x] T040 API service client in `frontend/src/services/llm-api.ts` for v2 endpoints integration ✅
 
 ## Phase 3.8: Integration & Testing
-- [ ] T041 Create comprehensive LLM provider mocks in `backend/tests/mocks/llm_mocks.py` for consistent testing
-- [ ] T042 End-to-end testing with quickstart scenarios in `backend/tests/e2e/test_quickstart_scenarios.py`
+- [x] T041 Create comprehensive LLM provider mocks in `backend/tests/mocks/llm_mocks.py` for consistent testing
+- [x] T042 End-to-end testing with quickstart scenarios in `backend/tests/e2e/test_quickstart_scenarios.py`
 - [ ] T043 Frontend-backend integration testing in `frontend/tests/e2e/test_full_application_flow.test.tsx`
 
 ## Dependencies

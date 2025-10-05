@@ -69,10 +69,10 @@ class SimpleRecommendationService:
 
         return RecommendationResponse(
             recommended_words=recommended_words,
-            connection_explanation="Simple pattern-based recommendation",
+            connection_explanation=None,  # Simple provider doesn't provide explanations
             confidence_score=0.5,  # Always moderate confidence for simple provider
             provider_used=provider,
-            generation_time_ms=10,  # Fast generation time
+            generation_time_ms=None,  # Simple provider doesn't track timing
         )
 
     def _find_pattern_match(self, available_words: List[str]) -> List[str]:
