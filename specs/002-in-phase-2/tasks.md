@@ -65,21 +65,21 @@
 - [x] T018 [P] PuzzleState model in `backend/src/llm_models/puzzle_state.py` with 16-word constraint validation ✅
 - [x] T019 [P] CompletedGroup model in `backend/src/llm_models/completed_group.py` with difficulty level enum ✅
 
-## Phase 3.4: Backend LLM Services (ONLY after model tests pass)
-- [ ] T020 [P] Environment configuration service in `backend/src/services/config_service.py` for .env loading
-- [ ] T021 [P] LLM provider factory in `backend/src/services/llm_provider_factory.py` with langchain integration
-- [ ] T022 [P] Prompt template service in `backend/src/services/prompt_service.py` for context injection
-- [ ] T023 [P] Simple recommendation service in `backend/src/services/simple_recommendation_service.py` (Phase 1 compatibility)
-- [ ] T024 Ollama integration service in `backend/src/services/ollama_service.py` with langchain ollama provider
-- [ ] T025 OpenAI integration service in `backend/src/services/openai_service.py` with langchain openai provider
-- [ ] T026 Response validation service in `backend/src/services/response_validator.py` for LLM output validation
-- [ ] T027 Recommendation orchestration service in `backend/src/services/recommendation_service.py` that routes to providers
+## Phase 3.4: Backend LLM Services (ONLY after model tests pass) ✅ COMPLETED
+- [x] T020 [P] Environment configuration service in `backend/src/services/config_service.py` for .env loading ✅
+- [x] T021 [P] LLM provider factory in `backend/src/services/llm_provider_factory.py` with langchain integration ✅
+- [x] T022 [P] Prompt template service in `backend/src/services/prompt_service.py` for context injection ✅
+- [x] T023 [P] Simple recommendation service in `backend/src/services/simple_recommendation_service.py` (Phase 1 compatibility) ✅
+- [x] T024 Ollama integration service in `backend/src/services/ollama_service.py` with langchain ollama provider ✅
+- [x] T025 OpenAI integration service in `backend/src/services/openai_service.py` with langchain openai provider ✅
+- [x] T026 Response validation service in `backend/src/services/response_validator.py` for LLM output validation ✅
+- [x] T027 Recommendation orchestration service in `backend/src/services/recommendation_service.py` that routes to providers ✅
 
-## Phase 3.5: Backend API Endpoints (ONLY after service tests pass)
-- [ ] T028 POST /api/v2/recommendations endpoint in `backend/src/api/recommendations.py` with OpenAPI documentation
-- [ ] T029 POST /api/v2/providers/validate endpoint in `backend/src/api/provider_validation.py` with availability checking
-- [ ] T030 Error handling middleware in `backend/src/api/error_handlers.py` for consistent error responses
-- [ ] T031 Update main FastAPI app in `backend/src/main.py` to include v2 routes with CORS for frontend
+## Phase 3.5: Backend API Endpoints (ONLY after service tests pass) ✅ COMPLETED
+- [x] T028 POST /api/v2/recommendations endpoint in `backend/src/api/v2_recommendations.py` with OpenAPI documentation ✅
+- [x] T029 POST /api/v2/providers/validate endpoint in `backend/src/api/v2_providers.py` with availability checking ✅
+- [x] T030 Error handling middleware in `backend/src/middleware/error_handler.py` for consistent error responses ✅
+- [x] T031 Update main FastAPI app in `backend/src/main.py` to include v2 routes with CORS for frontend ✅
 
 ## Phase 3.6: Frontend TypeScript Types (ONLY after backend contracts defined)
 - [ ] T032 [P] LLM provider types in `frontend/src/types/llm-provider.ts` matching backend models

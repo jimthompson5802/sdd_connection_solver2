@@ -6,7 +6,8 @@ from typing import Dict, Any
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api import router as api_router
+from .api import v2_recommendations_router, v2_providers_router
+from .api_v1 import router as v1_router
 
 
 def create_app() -> FastAPI:
@@ -41,7 +42,9 @@ def create_app() -> FastAPI:
     )
 
     # Include API routes
-    app.include_router(api_router, prefix="", tags=["puzzle"])
+    app.include_router(v1_router, prefix="", tags=["puzzle"])
+    app.include_router(v2_recommendations_router, tags=["v2-recommendations"])
+    app.include_router(v2_providers_router, tags=["v2-providers"])
 
     return app
 
