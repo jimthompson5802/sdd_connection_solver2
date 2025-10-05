@@ -8,7 +8,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import App from '../../src/App';
+import App from '../../App';
 
 // Mock responses for testing
 const mockRecommendationResponses = {
@@ -37,10 +37,9 @@ const mockRecommendationResponses = {
 
 // Mock fetch for API calls
 const originalFetch = global.fetch;
-const mockFetch = jest.fn();
 
 beforeAll(() => {
-  global.fetch = mockFetch;
+  global.fetch = jest.fn();
 });
 
 afterAll(() => {
@@ -48,7 +47,7 @@ afterAll(() => {
 });
 
 beforeEach(() => {
-  mockFetch.mockClear();
+  (global.fetch as any).mockClear();
 });
 
 describe('Full Application Flow E2E Tests', () => {
@@ -64,7 +63,7 @@ describe('Full Application Flow E2E Tests', () => {
       // Look for common UI elements that should exist
       const commonElements = [
         screen.queryByText(/connections/i),
-        screen.queryByText(/puzzle/i),
+        screen.queryAllByText(/puzzle/i),
         screen.queryByText(/game/i),
         screen.queryByRole('button'),
         screen.queryByRole('textbox'),
@@ -73,7 +72,9 @@ describe('Full Application Flow E2E Tests', () => {
       ];
       
       // At least one common element should be present
-      const foundElements = commonElements.filter(element => element !== null);
+      const foundElements = commonElements.filter(element => 
+        Array.isArray(element) ? element.length > 0 : element !== null
+      );
       expect(foundElements.length).toBeGreaterThan(0);
     });
 
@@ -110,7 +111,7 @@ describe('Full Application Flow E2E Tests', () => {
 
     test('simple provider flow - handles basic interaction', async () => {
       // Mock successful API response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => mockRecommendationResponses.simple,
       });
@@ -154,7 +155,7 @@ describe('Full Application Flow E2E Tests', () => {
     
     test('handles fetch errors gracefully', async () => {
       // Mock network error
-      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+      (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
 
       render(<App />);
       
@@ -171,7 +172,7 @@ describe('Full Application Flow E2E Tests', () => {
 
     test('handles invalid API responses gracefully', async () => {
       // Mock invalid response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 500,
         json: async () => ({ error: 'Server error' }),
@@ -311,7 +312,7 @@ describe('Full Application Flow E2E Tests', () => {
     
     test('handles successful API responses', async () => {
       // Mock successful response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => mockRecommendationResponses.simple,
       });
@@ -333,7 +334,7 @@ describe('Full Application Flow E2E Tests', () => {
 
     test('handles API validation requests', async () => {
       // Mock validation response
-      (global.fetch as jest.Mock).mockResolvedValueOnce({
+      (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({ valid: true, provider_type: 'simple' }),
       });
@@ -393,7 +394,7 @@ describe('Full Application Flow E2E Tests', () => {
 
 // Helper to mock API responses
 export const mockApiResponse = (data: any, status: number = 200) => {
-  (global.fetch as jest.Mock).mockResolvedValueOnce({
+  (global.fetch as any).mockResolvedValueOnce({
     ok: status >= 200 && status < 300,
     status,
     json: async () => data,
@@ -402,7 +403,7 @@ export const mockApiResponse = (data: any, status: number = 200) => {
 
 // Helper to mock API errors
 export const mockApiError = (message: string = 'Network error') => {
-  (global.fetch as jest.Mock).mockRejectedValueOnce(new Error(message));
+  (global.fetch as any).mockRejectedValueOnce(new Error(message));
 };
 
 // Helper to simulate user interaction
