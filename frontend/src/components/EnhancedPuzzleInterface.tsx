@@ -220,8 +220,16 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     );
   };
 
-  const renderResponseButtons = () => {
-    if (gameStatus !== 'active' || recommendation.length === 0) return null;
+  const renderResponseButtons = (useLlm: boolean = false) => {
+    // Only render when game is active
+    if (gameStatus !== 'active') return null;
+
+    // Determine which recommendation to check: LLM or traditional
+    if (useLlm) {
+      if (!llmRecommendation) return null;
+    } else {
+      if (recommendation.length === 0) return null;
+    }
 
     return (
       <div className="response-buttons">
@@ -377,6 +385,8 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
                   showMetadata={true}
                 />
               )}
+              {/* Render response buttons for LLM recommendation below the LLM display */}
+              {renderResponseButtons(true)}
             </div>
           )}
 
@@ -393,7 +403,6 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
             </div>
 
             {renderTraditionalRecommendation()}
-            {renderResponseButtons()}
           </div>
 
           {renderPreviousResponses()}
