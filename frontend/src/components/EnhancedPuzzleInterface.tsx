@@ -57,8 +57,11 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
   const [llmRecommendation, setLlmRecommendation] = useState<RecommendationResponse | null>(null);
   const [llmLoading, setLlmLoading] = useState(false);
   const [llmError, setLlmError] = useState<string | null>(null);
-  const [currentProvider, setCurrentProvider] = useState<LLMProvider | null>(llmProvider || null);
+  const [currentProvider, setCurrentProvider] = useState<LLMProvider | null>(
+    llmProvider || { provider_type: 'simple', model_name: null }
+  );
   const [disabledColors, setDisabledColors] = useState<Set<string>>(new Set());
+  const [recordingResponse, setRecordingResponse] = useState(false);
 
   // Reset state when game status changes
   useEffect(() => {
@@ -80,9 +83,23 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     setLlmError(null);
   }, [onProviderChange]);
 
+  // Notify parent of the default provider on mount if none was passed in
+  useEffect(() => {
+    if (!llmProvider && currentProvider && onProviderChange) {
+      onProviderChange(currentProvider);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Get LLM recommendation
   const handleGetLlmRecommendation = useCallback(async () => {
-    if (!currentProvider || llmLoading || gameStatus !== 'active') {
+    if (llmLoading || gameStatus !== 'active') {
+      return;
+    }
+
+    if (!currentProvider) {
+      // Prompt user to choose a provider before making a request
+      setLlmError('Please select an AI provider before requesting a recommendation.');
       return;
     }
 
@@ -116,14 +133,25 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
   }, [isLoading, gameStatus, onGetRecommendation]);
 
   // Handle response recording
-  const handleResponseClick = useCallback((type: 'correct' | 'incorrect' | 'one-away', color?: string) => {
-    if (!isLoading && gameStatus === 'active') {
+  const handleResponseClick = useCallback(async (type: 'correct' | 'incorrect' | 'one-away', color?: string) => {
+    if (isLoading || gameStatus !== 'active' || recordingResponse) return;
+
+    setRecordingResponse(true);
+    try {
+      // Await the parent's record response so we can only disable UI on success
+      await onRecordResponse(type, color);
+
+      // Only mark the color disabled after a successful API call
       if (type === 'correct' && color) {
         setDisabledColors(prev => new Set(prev).add(color));
       }
-      onRecordResponse(type, color);
+    } catch (err) {
+      // Parent will typically surface the error via props; no local change to disabledColors
+      // Optionally, we could set a local error state here if desired
+    } finally {
+      setRecordingResponse(false);
     }
-  }, [isLoading, gameStatus, onRecordResponse]);
+  }, [isLoading, gameStatus, onRecordResponse, recordingResponse]);
 
   // Handle LLM recommendation acceptance
   const handleAcceptLlmRecommendation = useCallback((words: string[]) => {
@@ -340,17 +368,15 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
                 disabled={llmLoading}
               />
               
-              {currentProvider && (
-                <div className="llm-controls">
-                  <button
-                    onClick={handleGetLlmRecommendation}
-                    disabled={llmLoading || !currentProvider}
-                    className="primary-button get-llm-recommendation"
-                  >
-                    Get AI Recommendation
-                  </button>
-                </div>
-              )}
+              <div className="llm-controls">
+                <button
+                  onClick={handleGetLlmRecommendation}
+                  disabled={llmLoading}
+                  className="primary-button get-llm-recommendation"
+                >
+                  Get AI Recommendation
+                </button>
+              </div>
 
               {llmLoading && (
                 <LoadingIndicator
