@@ -6,7 +6,7 @@
 import React, { useState, useCallback } from 'react';
 import './App.css';
 import FileUpload from './components/FileUpload';
-import PuzzleInterface from './components/PuzzleInterface';
+import EnhancedPuzzleInterface from './components/EnhancedPuzzleInterface';
 import { PuzzleState } from './types/puzzle';
 import { apiService } from './services/api';
 
@@ -22,6 +22,9 @@ const App: React.FC = () => {
     error: null,
     previousResponses: [],
   });
+
+  // LLM provider selection stored at app-level so it can be persisted or shared
+  const [llmProvider, setLlmProvider] = useState<import('./types/llm-provider').LLMProvider | null>(null);
 
   const handleFileUpload = useCallback(async (content: string) => {
     setPuzzleState(prev => ({ ...prev, isLoading: true, error: null }));
@@ -146,7 +149,7 @@ const App: React.FC = () => {
               </button>
             </div>
             
-            <PuzzleInterface
+            <EnhancedPuzzleInterface
               words={puzzleState.words}
               recommendation={puzzleState.currentRecommendation}
               recommendationConnection={puzzleState.recommendationConnection}
@@ -158,6 +161,12 @@ const App: React.FC = () => {
               onGetRecommendation={handleGetRecommendation}
               onRecordResponse={handleRecordResponse}
               previousResponses={puzzleState.previousResponses}
+              // LLM-related props (start with no provider configured)
+              llmProvider={llmProvider}
+              onProviderChange={(p) => setLlmProvider(p)}
+              showProviderControls={true}
+              puzzleContext={''}
+              previousGuesses={[]}
             />
           </div>
         )}
