@@ -85,7 +85,9 @@ const App: React.FC = () => {
       // include the provided attemptWords so backend can record; if undefined, backend will fallback
       const response = await apiService.recordResponse(type, color, attemptWords);
 
-      // Append to previousResponses locally for UI history. Use the previous recommendation words
+      // Append to previousResponses locally for UI history.
+      // Prefer the explicit attemptWords when provided (LLM or traditional),
+      // otherwise fall back to the previous recommendation words.
       setPuzzleState(prev => ({
         ...prev,
         words: response.remaining_words,
@@ -101,7 +103,7 @@ const App: React.FC = () => {
           {
             type,
             color,
-            words: prev.currentRecommendation,
+            words: attemptWords ?? prev.currentRecommendation,
             timestamp: new Date(),
           },
         ],
