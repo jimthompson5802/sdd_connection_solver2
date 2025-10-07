@@ -69,7 +69,6 @@ export interface PuzzleInterfaceProps {
   gameStatus: 'waiting' | 'active' | 'won' | 'lost';
   isLoading: boolean;
   error: string | null;
-  onGetRecommendation: () => void;
   onRecordResponse: (type: 'correct' | 'incorrect' | 'one-away', color?: string, words?: string[] ) => void;
   previousResponses: UserResponse[];
 }
@@ -77,7 +76,6 @@ export interface PuzzleInterfaceProps {
 export interface RecommendationDisplayProps {
   words: string[];
   connection: string;
-  onGetRecommendation: () => void;
   isLoading?: boolean;
 }
 

@@ -23,7 +23,7 @@ describe('PuzzleInterface Component', () => {
   });
 
   test('renders all required UI elements per functional requirements', () => {
-    render(<PuzzleInterface />);
+  render(<PuzzleInterface />);
     
     // FR-002: File picker input with placeholder "Puzzle File" and gray "Setup Puzzle" button
     const fileInput = screen.getByLabelText(/puzzle file/i);
@@ -59,7 +59,7 @@ describe('PuzzleInterface Component', () => {
   });
 
   test('renders color-coded response buttons per FR-006', () => {
-    render(<PuzzleInterface />);
+  render(<PuzzleInterface />);
     
     // FR-006: Color-coded response buttons (Yellow, Green, Blue, Purple)
     const yellowButton = screen.getByRole('button', { name: /yellow/i });
@@ -89,7 +89,7 @@ describe('PuzzleInterface Component', () => {
   });
 
   test('renders previous guesses display per FR-008', () => {
-    render(<PuzzleInterface />);
+  render(<PuzzleInterface />);
     
     // FR-008: Track and display previous guesses with color coding
     const previousGuesses = screen.getByLabelText(/previous guesses/i);
@@ -103,7 +103,7 @@ describe('PuzzleInterface Component', () => {
       status: 'success'
     });
 
-    render(<PuzzleInterface />);
+  render(<PuzzleInterface />);
     
     const fileInput = screen.getByLabelText(/puzzle file/i);
     const setupButton = screen.getByRole('button', { name: /setup puzzle/i });
@@ -135,7 +135,7 @@ describe('PuzzleInterface Component', () => {
       status: 'success'
     });
 
-    render(<PuzzleInterface />);
+  render(<PuzzleInterface />);
     
     const nextRecButton = screen.getByRole('button', { name: /next recommendation/i });
     fireEvent.click(nextRecButton);
@@ -161,7 +161,7 @@ describe('PuzzleInterface Component', () => {
       game_status: 'active'
     });
 
-    render(<PuzzleInterface />);
+  render(<PuzzleInterface />);
     
     const yellowButton = screen.getByRole('button', { name: /yellow/i });
     fireEvent.click(yellowButton);
@@ -258,7 +258,6 @@ describe('PuzzleInterface Component', () => {
         gameStatus={'active'}
         isLoading={false}
         error={null}
-        onGetRecommendation={jest.fn()}
         onRecordResponse={jest.fn()}
         previousResponses={[]}
       />
@@ -284,7 +283,6 @@ describe('PuzzleInterface Component', () => {
         gameStatus={'waiting'}
         isLoading={false}
         error={null}
-        onGetRecommendation={jest.fn()}
         onRecordResponse={jest.fn()}
         previousResponses={[]}
       />
@@ -301,7 +299,6 @@ describe('PuzzleInterface Component', () => {
         gameStatus={'active'}
         isLoading={false}
         error={null}
-        onGetRecommendation={jest.fn()}
         onRecordResponse={jest.fn()}
         previousResponses={[]}
       />

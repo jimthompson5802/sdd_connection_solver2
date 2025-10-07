@@ -52,28 +52,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleGetRecommendation = useCallback(async () => {
-    setPuzzleState(prev => ({ ...prev, isLoading: true, error: null }));
-
-    try {
-      const response = await apiService.getNextRecommendation();
-      
-      setPuzzleState(prev => ({
-        ...prev,
-        currentRecommendation: response.words,
-        recommendationConnection: response.connection,
-        isLoading: false,
-        error: null,
-      }));
-    } catch (error) {
-      setPuzzleState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to get recommendation',
-      }));
-    }
-  }, []);
-
   const handleRecordResponse = useCallback(async (
     type: 'correct' | 'incorrect' | 'one-away',
     color?: string,
@@ -161,7 +139,6 @@ const App: React.FC = () => {
               gameStatus={puzzleState.gameStatus}
               isLoading={puzzleState.isLoading}
               error={puzzleState.error}
-              onGetRecommendation={handleGetRecommendation}
               onRecordResponse={handleRecordResponse}
               previousResponses={puzzleState.previousResponses}
               // LLM-related props (start with no provider configured)

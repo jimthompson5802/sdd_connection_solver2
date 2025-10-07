@@ -15,15 +15,10 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
   gameStatus,
   isLoading,
   error,
-  onGetRecommendation,
   onRecordResponse,
   previousResponses,
 }) => {
-  const handleGetRecommendation = () => {
-    if (!isLoading && gameStatus === 'active') {
-      onGetRecommendation();
-    }
-  };
+  // traditional recommendation removed
 
   const handleResponseClick = (type: 'correct' | 'incorrect' | 'one-away', color?: string) => {
     if (!isLoading && gameStatus === 'active') {
@@ -218,15 +213,7 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
           {renderStats()}
           {renderWordGrid()}
           
-          <div className="recommendation-controls">
-            <button
-              onClick={handleGetRecommendation}
-              disabled={isLoading}
-              className="primary-button get-recommendation"
-            >
-              {isLoading ? 'Getting Recommendation...' : 'Get Recommendation'}
-            </button>
-          </div>
+          {/* traditional recommendation controls removed */}
 
           {renderRecommendation()}
           {renderResponseButtons()}

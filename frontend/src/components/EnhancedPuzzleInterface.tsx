@@ -47,7 +47,6 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
   gameStatus,
   isLoading,
   error,
-  onGetRecommendation,
   onRecordResponse,
   previousResponses,
   llmProvider,
@@ -128,12 +127,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     }
   }, [currentProvider, words, previousGuesses, puzzleContext, llmLoading, gameStatus]);
 
-  // Handle traditional recommendation request
-  const handleGetTraditionalRecommendation = useCallback(() => {
-    if (!isLoading && gameStatus === 'active') {
-      onGetRecommendation();
-    }
-  }, [isLoading, gameStatus, onGetRecommendation]);
+  // traditional recommendation removed
 
   // Handle response recording
   const handleResponseClick = useCallback(async (
@@ -234,27 +228,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     );
   };
 
-  const renderTraditionalRecommendation = () => {
-    if (recommendation.length === 0) return null;
-
-    return (
-      <div className="recommendation-section traditional">
-        <h3>Traditional Recommendation</h3>
-        <div className="recommendation-words">
-          {recommendation.map((word, index) => (
-            <span key={index} className="recommended-word">
-              {word}
-            </span>
-          ))}
-        </div>
-        {recommendationConnection && (
-          <p className="recommendation-connection">
-            <strong>Connection:</strong> {recommendationConnection}
-          </p>
-        )}
-      </div>
-    );
-  };
+  // traditional recommendation display removed
 
   const renderResponseButtons = (useLlm: boolean = false) => {
     // Only render when game is active
@@ -425,20 +399,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
             </div>
           )}
 
-          <div className="traditional-recommendation-section">
-            <h3>Traditional Recommendation</h3>
-            <div className="recommendation-controls">
-              <button
-                onClick={handleGetTraditionalRecommendation}
-                disabled={isLoading}
-                className="primary-button get-recommendation"
-              >
-                {isLoading ? 'Getting Recommendation...' : 'Get Traditional Recommendation'}
-              </button>
-            </div>
-
-            {renderTraditionalRecommendation()}
-          </div>
+          {/* traditional recommendation section removed per branch remove-traditional-recommendation-section */}
 
           {renderPreviousResponses()}
         </>

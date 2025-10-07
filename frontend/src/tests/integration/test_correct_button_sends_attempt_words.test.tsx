@@ -24,7 +24,6 @@ describe('Correct button integration (PuzzleInterface)', () => {
         gameStatus={'active'}
         isLoading={false}
         error={null}
-        onGetRecommendation={jest.fn()}
         onRecordResponse={mockRecord}
         previousResponses={[]}
       />
