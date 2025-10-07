@@ -20,38 +20,38 @@ class ResponseValidatorService:
         """Load common English words for validation."""
         # Basic word list - in a real implementation, this might come from a file
         return {
-            "APPLE",
-            "BANANA",
-            "ORANGE",
-            "GRAPE",
-            "BASS",
-            "TROUT",
-            "SALMON",
-            "FLOUNDER",
-            "PIANO",
-            "GUITAR",
-            "VIOLIN",
-            "DRUMS",
-            "RED",
-            "BLUE",
-            "GREEN",
-            "YELLOW",
-            "DOG",
-            "CAT",
-            "BIRD",
-            "FISH",
-            "CAR",
-            "TRUCK",
-            "BIKE",
-            "PLANE",
-            "BOOK",
-            "PEN",
-            "PAPER",
-            "DESK",
-            "CHAIR",
-            "TABLE",
-            "DOOR",
-            "WINDOW",
+            "apple",
+            "banana",
+            "orange",
+            "grape",
+            "bass",
+            "trout",
+            "salmon",
+            "flounder",
+            "piano",
+            "guitar",
+            "violin",
+            "drums",
+            "red",
+            "blue",
+            "green",
+            "yellow",
+            "dog",
+            "cat",
+            "bird",
+            "fish",
+            "car",
+            "truck",
+            "bike",
+            "plane",
+            "book",
+            "pen",
+            "paper",
+            "desk",
+            "chair",
+            "table",
+            "door",
+            "window",
         }
 
     def _load_validation_rules(self) -> Dict[str, Dict[str, Any]]:
@@ -74,7 +74,7 @@ class ResponseValidatorService:
         }
 
     def validate_response(
-        self, response: RecommendationResponse, previous_guesses: List[GuessAttempt] = None
+        self, response: RecommendationResponse, previous_guesses: Optional[List[GuessAttempt]] = None
     ) -> Dict[str, Any]:
         """Validate a recommendation response comprehensively.
 
@@ -160,7 +160,7 @@ class ResponseValidatorService:
 
     def _validate_word_uniqueness(self, words: List[str]) -> Dict[str, Any]:
         """Validate that all words are unique."""
-        unique_words = set(word.upper() for word in words)
+        unique_words = set(word.lower() for word in words)
         score = 1.0 if len(unique_words) == len(words) else 0.0
         return {
             "score": score,
@@ -174,20 +174,20 @@ class ResponseValidatorService:
         issues = []
 
         for word in words:
-            word_upper = word.upper()
+            word_lower = word.lower()
 
             # Check if word contains only letters
-            if not word_upper.isalpha():
+            if not word_lower.isalpha():
                 issues.append(f"'{word}' contains non-letter characters")
                 continue
 
             # Check minimum length
-            if len(word_upper) < 2:
+            if len(word_lower) < 2:
                 issues.append(f"'{word}' is too short")
                 continue
 
             # Check if it's a common word (basic check)
-            if word_upper in self.common_words or len(word_upper) >= 3:
+            if word_lower in self.common_words or len(word_lower) >= 3:
                 valid_count += 1
             else:
                 issues.append(f"'{word}' may not be a valid word")
@@ -200,7 +200,7 @@ class ResponseValidatorService:
             "details": {"valid_words": valid_count, "issues": issues},
         }
 
-    def _validate_explanation_quality(self, explanation: str) -> Dict[str, Any]:
+    def _validate_explanation_quality(self, explanation: Optional[str]) -> Dict[str, Any]:
         """Validate the quality of the connection explanation."""
         if not explanation:
             return {
@@ -234,7 +234,7 @@ class ResponseValidatorService:
             "details": {"length": len(explanation), "quality_indicators": quality_indicators},
         }
 
-    def _validate_confidence_range(self, confidence: float) -> Dict[str, Any]:
+    def _validate_confidence_range(self, confidence: Optional[float]) -> Dict[str, Any]:
         """Validate that confidence score is in reasonable range."""
         if confidence is None:
             return {
@@ -267,11 +267,11 @@ class ResponseValidatorService:
                 "details": {"repeated_guesses": 0},
             }
 
-        current_set = set(word.upper() for word in words)
+        current_set = set(word.lower() for word in words)
         repeated_guesses = 0
 
         for guess in previous_guesses:
-            guess_set = set(word.upper() for word in guess.words)
+            guess_set = set(word.lower() for word in guess.words)
             if current_set == guess_set:
                 repeated_guesses += 1
 

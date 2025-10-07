@@ -82,7 +82,7 @@ const App: React.FC = () => {
 
     try {
       // include the current recommendation words so backend can record; if empty, backend will ignore
-      const response = await apiService.recordResponse(type, color);
+  const response = await apiService.recordResponse(type, color, puzzleState.currentRecommendation);
       
       // Append to previousResponses locally for UI history. Use the previous recommendation words
       setPuzzleState(prev => ({

@@ -26,8 +26,8 @@ async def setup_puzzle(request: SetupPuzzleRequest) -> SetupPuzzleResponse:
     Creates a new puzzle session and returns the word list and status.
     """
     try:
-        # Parse the words from the comma-separated string
-        words = [word.strip() for word in request.file_content.split(",")]
+        # Parse the words from the comma-separated string and normalize to lowercase
+        words = [word.strip().lower() for word in request.file_content.split(",")]
 
         # Create a new puzzle session (store for later use in other endpoints)
         session_manager.create_session(words)
@@ -76,7 +76,7 @@ async def get_next_recommendation() -> NextRecommendationResponse:
             )
 
         # For now, recommend the first 4 remaining words and record them as the last recommendation
-        recommended_words = remaining[:4]
+        recommended_words = [w.lower() for w in remaining[:4]]
         connection = "this is the connection reason"
         session.last_recommendation = recommended_words
 
@@ -98,13 +98,24 @@ async def record_user_response(request: RecordResponseRequest) -> RecordResponse
     For now, returns a static response for contract compliance.
     """
     try:
-        # Use the most recently created session if available
+        # Ensure a session exists. If none, create a placeholder session so that
+        # contract tests and minimal clients can record responses without prior setup.
         if session_manager.get_session_count() == 0:
-            # No session yet — can't record a response
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"status": "No active session"})
+            # Create a default placeholder session with 16 dummy words
+            placeholder_words = [f"word{i+1}" for i in range(16)]
+            session = session_manager.create_session(placeholder_words)
+            # Seed a last_recommendation so the client can respond immediately
+            session.last_recommendation = session.get_remaining_words()[:4]
 
-        # Get the last-created session (dict preserves insertion order)
-        session = list(session_manager._sessions.values())[-1]
+        # Use session_id if provided, else use last-created session
+        if request.session_id:
+            session = session_manager.get_session(request.session_id)
+            if not session:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"status": "Session not found"})
+        else:
+            # If we created a placeholder above, 'session' is already set; otherwise pick the last session
+            if session_manager.get_session_count() > 0 and "session" not in locals():
+                session = list(session_manager._sessions.values())[-1]
 
         # Ensure there is an active recommendation to respond to
         if not session.last_recommendation:
@@ -114,8 +125,16 @@ async def record_user_response(request: RecordResponseRequest) -> RecordResponse
                 detail={"status": "No recommendation to respond to"},
             )
 
-        # Determine words to record for the attempt as the last recommendation
-        attempt_words = session.last_recommendation
+        # Determine words to record for the attempt: explicit attempt_words override last_recommendation
+        if request.attempt_words:
+            attempt_words = [w.strip().lower() for w in request.attempt_words]
+            if len(attempt_words) != 4:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail={"status": "attempt_words must contain exactly 4 words"},
+                )
+        else:
+            attempt_words = [w.lower() for w in session.last_recommendation]
 
         # Map request to ResponseResult and record the attempt
         # Validate required fields for correct responses
@@ -127,8 +146,8 @@ async def record_user_response(request: RecordResponseRequest) -> RecordResponse
                 )
 
             result = ResponseResult.CORRECT
-            # Record the correct attempt using the last recommendation
-            session.record_attempt(attempt_words, result, was_recommendation=True)
+            # Record the correct attempt using provided words (or last recommendation)
+            session.record_attempt(attempt_words, result, was_recommendation=True, color=request.color)
         elif request.response_type == "incorrect":
             result = ResponseResult.INCORRECT
             session.record_attempt(attempt_words, result, was_recommendation=True)

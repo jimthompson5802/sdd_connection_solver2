@@ -22,6 +22,8 @@ export interface NextRecommendationResponse {
 export interface RecordResponseRequest {
   response_type: 'correct' | 'incorrect' | 'one-away';
   color?: 'Yellow' | 'Green' | 'Blue' | 'Purple';
+  session_id?: string;
+  attempt_words?: string[];
 }
 
 export interface RecordResponseResponse {

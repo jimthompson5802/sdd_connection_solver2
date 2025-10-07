@@ -69,6 +69,10 @@ class RecordResponseRequest(BaseModel):
 
     response_type: str = Field(..., description="Type of response: correct, incorrect, one-away")
     color: Optional[str] = Field(None, description="Color for correct responses")
+    session_id: Optional[str] = Field(None, description="Optional session id to target")
+    attempt_words: Optional[List[str]] = Field(
+        None, description="Optional explicit list of 4 words for the attempt (overrides last_recommendation)"
+    )
 
     @validator("response_type")
     def validate_response_type(cls, v: str) -> str:
@@ -120,6 +124,7 @@ class WordGroup:
     words: List[str]
     difficulty: int  # 1-4, where 4 is hardest
     found: bool = False
+    color: Optional[str] = None
 
     def __post_init__(self) -> None:
         if len(self.words) != 4:
@@ -174,10 +179,21 @@ class PuzzleSession:
             group_words = words_copy[i * 4 : (i + 1) * 4]
             self.groups.append(WordGroup(category=f"Category {i+1}", words=group_words, difficulty=i + 1))
 
-    def record_attempt(self, words: List[str], result: ResponseResult, was_recommendation: bool = False) -> None:
+    def record_attempt(
+        self, words: List[str], result: ResponseResult, was_recommendation: bool = False, color: Optional[str] = None
+    ) -> None:
         """Record a user attempt."""
+        # Normalize words for comparison
+        normalized_words = [word.strip().lower() for word in words]
+
+        # Idempotency: if an identical attempt (same word set and same result) was already recorded, ignore it
+        for prev in self.attempts:
+            if set(prev.words) == set(normalized_words) and prev.result == result:
+                # Do not record duplicate attempts or change game state
+                return
+
         attempt = UserAttempt(
-            words=[word.strip().lower() for word in words],
+            words=normalized_words,
             result=result,
             timestamp=datetime.now(),
             was_recommendation=was_recommendation,
@@ -185,20 +201,23 @@ class PuzzleSession:
         self.attempts.append(attempt)
 
         if result == ResponseResult.CORRECT:
-            self._mark_group_found(words)
+            self._mark_group_found(words, color=color)
         elif result in (ResponseResult.INCORRECT, ResponseResult.ONE_AWAY):
             # Treat one-away as a mistake for game progression
             self.mistakes_made += 1
 
         self._check_game_completion()
 
-    def _mark_group_found(self, words: List[str]) -> None:
-        """Mark a group as found based on the words."""
+    def _mark_group_found(self, words: List[str], color: Optional[str] = None) -> None:
+        """Mark a group as found based on the words and optionally record a color."""
         normalized_words = [word.strip().lower() for word in words]
 
         for group in self.groups:
             if set(group.words) == set(normalized_words):
                 group.found = True
+                # Persist UI color if provided
+                if color:
+                    group.color = color
                 break
 
     def _check_game_completion(self) -> None:

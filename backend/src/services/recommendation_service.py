@@ -12,6 +12,7 @@ from src.services.ollama_service import OllamaService
 from src.services.openai_service import OpenAIService
 from src.services.response_validator import ResponseValidatorService
 from src.services.llm_provider_factory import get_provider_factory
+from src.models import session_manager
 
 
 class RecommendationService:
@@ -35,6 +36,13 @@ class RecommendationService:
             RecommendationResponse from the specified provider.
         """
         try:
+            # If no session exists, return a generic static recommendation
+            if session_manager.get_session_count() == 0:
+                raise ValueError("No active session available")
+
+            # Use last-created session
+            session = list(session_manager._sessions.values())[-1]
+
             # Validate provider availability
             if not self._validate_provider_availability(request.llm_provider):
                 # Fall back to simple provider if requested provider unavailable
@@ -50,6 +58,8 @@ class RecommendationService:
             # If validation fails, try to fix or fallback
             if not validation_result["valid"]:
                 response = self._handle_invalid_response(request, response, validation_result)
+
+            session.last_recommendation = response.recommended_words
 
             return response
 
