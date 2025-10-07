@@ -180,7 +180,7 @@
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.9rem;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.5px;
   box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
   transition: transform 0.2s ease-in-out;
@@ -200,7 +200,7 @@
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.5px;
   border: 2px solid;
   background-color: white;
@@ -341,7 +341,7 @@
   border-radius: 6px;
   font-size: 0.8rem;
   font-weight: 500;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.25px;
 }
 
@@ -399,7 +399,7 @@
   border-radius: 4px;
   font-size: 0.8rem;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.5px;
 }
 
