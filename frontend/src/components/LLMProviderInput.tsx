@@ -3,7 +3,7 @@
  * Allows users to select and configure LLM providers for recommendations.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { LLMProvider, LLMProviderType } from '../types/llm-provider';
 import './LLMProviderInput.css';
 
@@ -88,11 +88,11 @@ export const LLMProviderInput: React.FC<LLMProviderInputProps> = ({
     }
   };
 
-  const validateProvider = async () => {
+  const validateProvider = useCallback(async () => {
     if (!onValidate) return;
 
     setState(prev => ({ ...prev, isValidating: true }));
-    
+
     try {
       const isValid = await onValidate(value);
       setState(prev => ({
@@ -100,8 +100,8 @@ export const LLMProviderInput: React.FC<LLMProviderInputProps> = ({
         isValidating: false,
         validationResult: {
           isValid,
-          message: isValid 
-            ? `${value.provider_type} provider is available` 
+          message: isValid
+            ? `${value.provider_type} provider is available`
             : `${value.provider_type} provider is not available`
         }
       }));
@@ -115,7 +115,7 @@ export const LLMProviderInput: React.FC<LLMProviderInputProps> = ({
         }
       }));
     }
-  };
+  }, [onValidate, value]);
 
   useEffect(() => {
     // Auto-validate when provider changes (if validation is enabled)
@@ -123,7 +123,7 @@ export const LLMProviderInput: React.FC<LLMProviderInputProps> = ({
       const timeoutId = setTimeout(validateProvider, 500);
       return () => clearTimeout(timeoutId);
     }
-  }, [value, showValidation, onValidate]);
+  }, [value, showValidation, onValidate, state.isValidating, validateProvider]);
 
   const selectedOption = providerOptions.find(opt => opt.value === value.provider_type);
   const requiresModelName = value.provider_type !== 'simple';

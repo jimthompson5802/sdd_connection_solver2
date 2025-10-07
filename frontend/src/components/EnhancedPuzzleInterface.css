@@ -171,65 +171,12 @@
 }
 
 /* Traditional Recommendation Section */
-.traditional-recommendation-section {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background-color: #fff;
-  border-radius: 12px;
-  border: 2px solid #e9ecef;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.traditional-recommendation-section h3 {
-  margin: 0 0 1.5rem 0;
-  color: #2c3e50;
-  font-size: 1.3rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.traditional-recommendation-section h3::before {
-  content: '⚡';
-  font-size: 1.5rem;
-}
-
+/* recommendation-controls kept for generic use */
 .recommendation-controls {
   margin-bottom: 1.5rem;
 }
 
-.get-recommendation {
-  background: linear-gradient(135deg, #28a745, #20c997);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  font-size: 0.9rem;
-}
-
-.get-recommendation:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-}
-
-.get-recommendation:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Traditional Recommendation Display */
-.recommendation-section.traditional {
-  background-color: #f8f9fa;
-  padding: 1.25rem;
-  border-radius: 8px;
-  border: 1px solid #dee2e6;
-  margin-bottom: 1.5rem;
-}
-
+/* recommendation-words and connection styles are shared with other displays */
 .recommendation-section h3 {
   margin: 0 0 1rem 0;
   color: #2c3e50;
@@ -241,18 +188,6 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 1rem;
-}
-
-.recommended-word {
-  background-color: #28a745;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-transform: none;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
 }
 
 .recommendation-connection {
@@ -510,8 +445,7 @@
     font-size: 0.8rem;
   }
   
-  .llm-provider-section,
-  .traditional-recommendation-section {
+  .llm-provider-section {
     padding: 1rem;
   }
   
@@ -548,13 +482,11 @@
     font-size: 0.75rem;
   }
   
-  .llm-provider-section h3,
-  .traditional-recommendation-section h3 {
+  .llm-provider-section h3 {
     font-size: 1.1rem;
   }
   
-  .get-llm-recommendation,
-  .get-recommendation {
+  .get-llm-recommendation {
     padding: 0.625rem 1.25rem;
     font-size: 0.8rem;
   }
@@ -609,21 +541,16 @@
     border-color: #6f98d6;
   }
   
-  .llm-provider-section,
-  .traditional-recommendation-section {
+  .llm-provider-section {
     background-color: #2d2d2d;
     border-color: #555;
   }
   
-  .llm-provider-section h3,
-  .traditional-recommendation-section h3 {
+  .llm-provider-section h3 {
     color: #fff;
   }
   
-  .recommendation-section.traditional {
-    background-color: #3d3d3d;
-    border-color: #555;
-  }
+  /* no traditional recommendation-specific dark mode styles */
   
   .recommendation-connection {
     color: #ccc;
@@ -648,14 +575,12 @@
 @media (prefers-contrast: high) {
   .word-item,
   .response-button,
-  .llm-provider-section,
-  .traditional-recommendation-section {
+  .llm-provider-section {
     border-width: 3px;
   }
   
   .primary-button,
-  .get-llm-recommendation,
-  .get-recommendation {
+  .get-llm-recommendation {
     border: 3px solid #000;
   }
 }
@@ -665,8 +590,7 @@
   .word-item:hover,
   .response-button:hover,
   .primary-button:hover,
-  .get-llm-recommendation:hover,
-  .get-recommendation:hover {
+  .get-llm-recommendation:hover {
     transform: none;
   }
   

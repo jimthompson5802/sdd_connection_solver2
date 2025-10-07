@@ -4,7 +4,6 @@
  */
 
 import {
-  LLMProvider,
   ProviderValidationRequest,
   ProviderValidationResponse,
   ProvidersStatusResponse,
@@ -13,11 +12,10 @@ import {
 
 import {
   GenerateRecommendationRequest,
-  GenerateRecommendationResponse,
-  RecommendationError
+  GenerateRecommendationResponse
 } from '../types/recommendation';
 
-import { ApiError, ApiResponse } from '../types/api';
+// ApiError/ApiResponse not currently used in this service
 
 /**
  * LLM API Service for provider management and recommendations
