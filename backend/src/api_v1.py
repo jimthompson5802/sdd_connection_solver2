@@ -100,6 +100,7 @@ async def record_user_response(request: RecordResponseRequest) -> RecordResponse
     try:
         # Ensure a session exists. If none, create a placeholder session so that
         # contract tests and minimal clients can record responses without prior setup.
+        session = None
         if session_manager.get_session_count() == 0:
             # Create a default placeholder session with 16 dummy words
             placeholder_words = [f"word{i+1}" for i in range(16)]
@@ -114,8 +115,15 @@ async def record_user_response(request: RecordResponseRequest) -> RecordResponse
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"status": "Session not found"})
         else:
             # If we created a placeholder above, 'session' is already set; otherwise pick the last session
-            if session_manager.get_session_count() > 0 and "session" not in locals():
+            if session_manager.get_session_count() > 0 and session is None:
                 session = list(session_manager._sessions.values())[-1]
+
+        # Sanity check for static analysis: ensure session is set
+        if session is None:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail={"status": "Internal server error: session not set"},
+            )
 
         # Ensure there is an active recommendation to respond to
         if not session.last_recommendation:

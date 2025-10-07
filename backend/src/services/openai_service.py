@@ -72,11 +72,11 @@ class OpenAIService:
 IMPORTANT: Format your response as follows:
 1. First, provide your reasoning and explanation
 2. Then, on a new line, provide ONLY the 4 words separated by commas
-3. Make sure the words are in UPPERCASE
+3. Please provide the words in lowercase
 
 Example format:
 These words are all types of fish commonly found in North American waters.
-BASS, FLOUNDER, SALMON, TROUT"""
+bass, flounder, salmon, trout"""
 
         return prompt + structured_suffix
 
@@ -98,7 +98,7 @@ BASS, FLOUNDER, SALMON, TROUT"""
             # Look for the line with exactly 4 comma-separated words
             for i, line in enumerate(lines):
                 if "," in line:
-                    potential_words = [word.strip().upper() for word in line.split(",")]
+                    potential_words = [word.strip().lower() for word in line.split(",")]
 
                     # Check if it's exactly 4 valid words
                     if len(potential_words) == 4 and all(word.isalpha() and len(word) > 1 for word in potential_words):
@@ -128,9 +128,9 @@ BASS, FLOUNDER, SALMON, TROUT"""
             }
 
         except Exception as e:
-            # Fallback response
+            # Fallback response (lowercase)
             return {
-                "words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],
+                "words": ["bass", "flounder", "salmon", "trout"],
                 "explanation": f"Failed to parse OpenAI response: {str(e)}",
                 "confidence": 0.2,
             }
@@ -146,21 +146,21 @@ BASS, FLOUNDER, SALMON, TROUT"""
         """
         import re
 
-        # Try to find any group of 4 words
-        word_pattern = r"\b[A-Z]{2,}\b"
+        # Try to find any group of 4 words (case-insensitive)
+        word_pattern = r"\b[A-Za-z]{2,}\b"
         all_words = re.findall(word_pattern, response)
 
         if len(all_words) >= 4:
-            return all_words[:4]
+            return [w.lower() for w in all_words[:4]]
 
         # Try comma-separated pattern with any case
         comma_pattern = r"([A-Za-z]+),\s*([A-Za-z]+),\s*([A-Za-z]+),\s*([A-Za-z]+)"
         comma_match = re.search(comma_pattern, response)
         if comma_match:
-            return [word.upper() for word in comma_match.groups()]
+            return [word.lower() for word in comma_match.groups()]
 
         # Last resort fallback
-        return ["BASS", "FLOUNDER", "SALMON", "TROUT"]
+        return ["bass", "flounder", "salmon", "trout"]
 
     def _extract_explanation(self, response: str, words: List[str]) -> str:
         """Extract explanation from response.
@@ -214,7 +214,7 @@ BASS, FLOUNDER, SALMON, TROUT"""
             confidence += 0.05
 
         # Decrease confidence for fallback words
-        if words == ["BASS", "FLOUNDER", "SALMON", "TROUT"]:
+        if words == ["bass", "flounder", "salmon", "trout"]:
             confidence = min(confidence, 0.4)
 
         return min(confidence, 1.0)

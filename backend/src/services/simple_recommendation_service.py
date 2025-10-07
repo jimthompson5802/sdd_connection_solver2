@@ -21,23 +21,23 @@ class SimpleRecommendationService:
     def _load_common_patterns(self) -> Dict[str, List[str]]:
         """Load common word patterns for pattern matching."""
         return {
-            "fish": ["BASS", "FLOUNDER", "SALMON", "TROUT", "COD", "TUNA", "HALIBUT", "MACKEREL"],
-            "instruments": ["PIANO", "GUITAR", "VIOLIN", "DRUMS", "FLUTE", "TRUMPET", "CELLO", "HARP"],
-            "colors": ["RED", "BLUE", "GREEN", "YELLOW", "ORANGE", "PURPLE", "PINK", "BLACK"],
-            "animals": ["DOG", "CAT", "BIRD", "FISH", "HORSE", "COW", "PIG", "SHEEP"],
-            "food": ["APPLE", "BANANA", "ORANGE", "GRAPE", "BREAD", "MILK", "CHEESE", "MEAT"],
-            "sports": ["FOOTBALL", "BASKETBALL", "BASEBALL", "SOCCER", "TENNIS", "GOLF", "HOCKEY", "VOLLEYBALL"],
-            "body_parts": ["HEAD", "ARM", "LEG", "HAND", "FOOT", "EYE", "EAR", "NOSE"],
-            "weather": ["SUN", "RAIN", "SNOW", "WIND", "CLOUD", "STORM", "FOG", "HAIL"],
+            "fish": ["bass", "flounder", "salmon", "trout", "cod", "tuna", "halibut", "mackerel"],
+            "instruments": ["piano", "guitar", "violin", "drums", "flute", "trumpet", "cello", "harp"],
+            "colors": ["red", "blue", "green", "yellow", "orange", "purple", "pink", "black"],
+            "animals": ["dog", "cat", "bird", "fish", "horse", "cow", "pig", "sheep"],
+            "food": ["apple", "banana", "orange", "grape", "bread", "milk", "cheese", "meat"],
+            "sports": ["football", "basketball", "baseball", "soccer", "tennis", "golf", "hockey", "volleyball"],
+            "body_parts": ["head", "arm", "leg", "hand", "foot", "eye", "ear", "nose"],
+            "weather": ["sun", "rain", "snow", "wind", "cloud", "storm", "fog", "hail"],
         }
 
     def _load_fallback_groups(self) -> List[List[str]]:
         """Load fallback word groups when no patterns match."""
         return [
-            ["BASS", "FLOUNDER", "SALMON", "TROUT"],
-            ["PIANO", "GUITAR", "VIOLIN", "DRUMS"],
-            ["RED", "BLUE", "GREEN", "YELLOW"],
-            ["APPLE", "BANANA", "ORANGE", "GRAPE"],
+            ["bass", "flounder", "salmon", "trout"],
+            ["piano", "guitar", "violin", "drums"],
+            ["red", "blue", "green", "yellow"],
+            ["apple", "banana", "orange", "grape"],
         ]
 
     def generate_recommendation(self, request: RecommendationRequest) -> RecommendationResponse:
@@ -84,12 +84,12 @@ class SimpleRecommendationService:
         Returns:
             List of 4 words that match a pattern, or empty list if none found.
         """
-        # Convert to uppercase for matching
-        available_upper = [word.upper() for word in available_words]
+        # Normalize available words to lowercase for matching
+        available_lower = [word.lower() for word in available_words]
 
         # Check each pattern
         for pattern_name, pattern_words in self.common_patterns.items():
-            matches = [word for word in available_upper if word in pattern_words]
+            matches = [word for word in available_lower if word in pattern_words]
 
             # If we have at least 4 matches, return the first 4
             if len(matches) >= 4:
@@ -108,8 +108,9 @@ class SimpleRecommendationService:
         """
         if len(available_words) < 4:
             # If we don't have enough words, try fallback groups
+            available_lower = [word.lower() for word in available_words]
             for fallback_group in self.fallback_groups:
-                if all(word.upper() in [w.upper() for w in available_words] for word in fallback_group):
+                if all(word in available_lower for word in fallback_group):
                     return fallback_group
 
             # Last resort: return whatever words we have

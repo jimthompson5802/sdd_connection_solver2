@@ -78,7 +78,7 @@ class OllamaService:
 
                 # Check if line contains 4 comma-separated words
                 if "," in line:
-                    potential_words = [word.strip().upper() for word in line.split(",")]
+                    potential_words = [word.strip().lower() for word in line.split(",")]
                     if len(potential_words) == 4 and all(word.isalpha() for word in potential_words):
                         words = potential_words
                         break
@@ -87,7 +87,7 @@ class OllamaService:
             if not words:
                 last_line = lines[-1].strip()
                 if "," in last_line:
-                    words = [word.strip().upper() for word in last_line.split(",")][:4]
+                    words = [word.strip().lower() for word in last_line.split(",")][:4]
 
             # Extract explanation (everything except the final word line)
             explanation_lines = []
@@ -100,7 +100,7 @@ class OllamaService:
 
             # Fallback if no valid words found
             if not words or len(words) != 4:
-                words = ["BASS", "FLOUNDER", "SALMON", "TROUT"]  # Fallback
+                words = ["bass", "flounder", "salmon", "trout"]  # Fallback
                 explanation = "Unable to parse LLM response properly (fallback used)"
 
             # Calculate confidence based on response quality
