@@ -34,7 +34,8 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
         setDisabledColors(prev => new Set(prev).add(color));
       }
 
-      onRecordResponse(type, color);
+      // Pass the current recommendation words explicitly so backend can record the correct group
+      onRecordResponse(type, color, recommendation);
     }
   };
 

@@ -34,6 +34,8 @@ interface EnhancedPuzzleInterfaceProps extends PuzzleInterfaceProps {
     actual_connection?: string;
     timestamp: string;
   }>;
+  /** Optional override for LLM recommendation (testing) */
+  llmRecommendationOverride?: RecommendationResponse | null;
 }
 
 const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
@@ -52,7 +54,8 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
   onProviderChange,
   showProviderControls = true,
   puzzleContext,
-  previousGuesses = []
+  previousGuesses = [],
+  llmRecommendationOverride = null,
 }) => {
   const [llmRecommendation, setLlmRecommendation] = useState<RecommendationResponse | null>(null);
   const [llmLoading, setLlmLoading] = useState(false);
@@ -133,13 +136,18 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
   }, [isLoading, gameStatus, onGetRecommendation]);
 
   // Handle response recording
-  const handleResponseClick = useCallback(async (type: 'correct' | 'incorrect' | 'one-away', color?: string) => {
+  const handleResponseClick = useCallback(async (
+    type: 'correct' | 'incorrect' | 'one-away',
+    color?: string,
+    attemptWords?: string[]
+  ) => {
     if (isLoading || gameStatus !== 'active' || recordingResponse) return;
 
     setRecordingResponse(true);
     try {
       // Await the parent's record response so we can only disable UI on success
-      await onRecordResponse(type, color);
+      // Pass the provided attemptWords (LLM or traditional) so backend can record the correct group
+      await onRecordResponse(type, color, attemptWords);
 
       // Only mark the color disabled after a successful API call
       if (type === 'correct' && color) {
@@ -253,8 +261,9 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     if (gameStatus !== 'active') return null;
 
     // Determine which recommendation to check: LLM or traditional
+    const effectiveLlmRecommendation = llmRecommendationOverride ?? llmRecommendation;
     if (useLlm) {
-      if (!llmRecommendation) return null;
+      if (!effectiveLlmRecommendation) return null;
     } else {
       if (recommendation.length === 0) return null;
     }
@@ -264,28 +273,28 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
         <h4>How was this recommendation?</h4>
         <div className="button-group">
           <button
-            onClick={() => handleResponseClick('correct', 'Yellow')}
+            onClick={() => handleResponseClick('correct', 'Yellow', useLlm ? (llmRecommendationOverride ?? llmRecommendation)?.recommended_words : recommendation)}
             disabled={isLoading || disabledColors.has('Yellow')}
             className={`response-button correct yellow ${disabledColors.has('Yellow') ? 'gray-button' : ''}`}
           >
             Correct (Yellow)
           </button>
           <button
-            onClick={() => handleResponseClick('correct', 'Green')}
+            onClick={() => handleResponseClick('correct', 'Green', useLlm ? (llmRecommendationOverride ?? llmRecommendation)?.recommended_words : recommendation)}
             disabled={isLoading || disabledColors.has('Green')}
             className={`response-button correct green ${disabledColors.has('Green') ? 'gray-button' : ''}`}
           >
             Correct (Green)
           </button>
           <button
-            onClick={() => handleResponseClick('correct', 'Blue')}
+            onClick={() => handleResponseClick('correct', 'Blue', useLlm ? (llmRecommendationOverride ?? llmRecommendation)?.recommended_words : recommendation)}
             disabled={isLoading || disabledColors.has('Blue')}
             className={`response-button correct blue ${disabledColors.has('Blue') ? 'gray-button' : ''}`}
           >
             Correct (Blue)
           </button>
           <button
-            onClick={() => handleResponseClick('correct', 'Purple')}
+            onClick={() => handleResponseClick('correct', 'Purple', useLlm ? (llmRecommendationOverride ?? llmRecommendation)?.recommended_words : recommendation)}
             disabled={isLoading || disabledColors.has('Purple')}
             className={`response-button correct purple ${disabledColors.has('Purple') ? 'gray-button' : ''}`}
           >
@@ -294,14 +303,14 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
         </div>
         <div className="button-group">
           <button
-            onClick={() => handleResponseClick('incorrect')}
+            onClick={() => handleResponseClick('incorrect', undefined, useLlm ? (llmRecommendationOverride ?? llmRecommendation)?.recommended_words : recommendation)}
             disabled={isLoading}
             className="response-button incorrect"
           >
             Incorrect
           </button>
           <button
-            onClick={() => handleResponseClick('one-away')}
+            onClick={() => handleResponseClick('one-away', undefined, useLlm ? (llmRecommendationOverride ?? llmRecommendation)?.recommended_words : recommendation)}
             disabled={isLoading}
             className="response-button one-away"
           >

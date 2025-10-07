@@ -76,14 +76,15 @@ const App: React.FC = () => {
 
   const handleRecordResponse = useCallback(async (
     type: 'correct' | 'incorrect' | 'one-away',
-    color?: string
+    color?: string,
+    attemptWords?: string[]
   ) => {
     setPuzzleState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // include the current recommendation words so backend can record; if empty, backend will ignore
-  const response = await apiService.recordResponse(type, color, puzzleState.currentRecommendation);
-      
+      // include the provided attemptWords so backend can record; if undefined, backend will fallback
+      const response = await apiService.recordResponse(type, color, attemptWords);
+
       // Append to previousResponses locally for UI history. Use the previous recommendation words
       setPuzzleState(prev => ({
         ...prev,

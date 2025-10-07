@@ -70,7 +70,7 @@ export interface PuzzleInterfaceProps {
   isLoading: boolean;
   error: string | null;
   onGetRecommendation: () => void;
-  onRecordResponse: (type: 'correct' | 'incorrect' | 'one-away', color?: string, words?: string[]) => void;
+  onRecordResponse: (type: 'correct' | 'incorrect' | 'one-away', color?: string, words?: string[] ) => void;
   previousResponses: UserResponse[];
 }
 
