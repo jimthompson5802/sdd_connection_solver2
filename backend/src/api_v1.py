@@ -126,7 +126,8 @@ async def record_user_response(request: RecordResponseRequest) -> RecordResponse
             )
 
         # Ensure there is an active recommendation to respond to
-        if not session.last_recommendation:
+        # If explicit attempt_words are provided, allow recording without requiring last_recommendation
+        if not request.attempt_words and not session.last_recommendation:
             # No recommendation has been issued yet
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -141,7 +142,28 @@ async def record_user_response(request: RecordResponseRequest) -> RecordResponse
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                     detail={"status": "attempt_words must contain exactly 4 words"},
                 )
+            # Validate words belong to this puzzle and haven't already been found
+            all_words = set(session.words)
+            remaining = set(session.get_remaining_words())
+            if any(w not in all_words for w in attempt_words):
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail={"status": "attempt_words contain words not in the current puzzle"},
+                )
+            if any(w not in remaining for w in attempt_words):
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail={"status": "attempt_words contain already-found words"},
+                )
+            # Optionally set as last recommendation for traceability
+            session.last_recommendation = attempt_words.copy()
         else:
+            # mypy/pylance guard: last_recommendation is guaranteed by earlier check, but guard explicitly
+            if session.last_recommendation is None:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail={"status": "No recommendation to respond to"},
+                )
             attempt_words = [w.lower() for w in session.last_recommendation]
 
         # Map request to ResponseResult and record the attempt

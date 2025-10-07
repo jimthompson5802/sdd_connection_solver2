@@ -212,13 +212,27 @@ class PuzzleSession:
         """Mark a group as found based on the words and optionally record a color."""
         normalized_words = [word.strip().lower() for word in words]
 
+        # First, try to match an existing group (placeholder or previously created)
         for group in self.groups:
             if set(group.words) == set(normalized_words):
                 group.found = True
                 # Persist UI color if provided
                 if color:
                     group.color = color
-                break
+                return
+
+        # If we reach here, the attempt doesn't match any existing predefined group.
+        # Treat this as a user-confirmed correct group and create it dynamically,
+        # as long as none of these words have been found already (validated earlier in API layer).
+        user_group_index = sum(1 for g in self.groups if g.category.startswith("User Group")) + 1
+        new_group = WordGroup(
+            category=f"User Group {user_group_index}",
+            words=normalized_words,
+            difficulty=1,  # default difficulty for user-confirmed groups
+            found=True,
+            color=color,
+        )
+        self.groups.append(new_group)
 
     def _check_game_completion(self) -> None:
         """Check if the game is complete (won or lost)."""
