@@ -72,7 +72,8 @@ class OpenAIService:
 IMPORTANT: Format your response as follows:
 1. First, provide your reasoning and explanation
 2. Then, on a new line, provide ONLY the 4 words separated by commas
-3. Please provide the words in lowercase
+3. The four words MUST each appear in the AVAILABLE WORDS list above
+4. Do NOT invent or alter any word; return each word exactly as listed in AVAILABLE WORDS
 
 Example format:
 These words are all types of fish commonly found in North American waters.

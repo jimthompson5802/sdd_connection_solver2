@@ -35,6 +35,9 @@ class RecommendationService:
         Returns:
             RecommendationResponse from the specified provider.
         """
+        # Default to the incoming request; will be replaced with server-authoritative version below
+        authoritative_request: RecommendationRequest = request
+
         try:
             # If no session exists, return a generic static recommendation
             if session_manager.get_session_count() == 0:
@@ -43,21 +46,30 @@ class RecommendationService:
             # Use last-created session
             session = list(session_manager._sessions.values())[-1]
 
+            # Use server-authoritative remaining words from current session
+            server_remaining_words = session.get_remaining_words()
+            authoritative_request = RecommendationRequest(
+                llm_provider=request.llm_provider,
+                remaining_words=[w.strip().lower() for w in server_remaining_words],
+                previous_guesses=request.previous_guesses,
+                puzzle_context=request.puzzle_context,
+            )
+
             # Validate provider availability
             if not self._validate_provider_availability(request.llm_provider):
                 # Fall back to simple provider if requested provider unavailable
-                fallback_request = self._create_fallback_request(request)
-                return self._generate_with_fallback(fallback_request, request)
+                fallback_request = self._create_fallback_request(authoritative_request)
+                return self._generate_with_fallback(fallback_request, authoritative_request)
 
             # Route to appropriate service
-            response = self._route_request(request)
+            response = self._route_request(authoritative_request)
 
             # Validate response
-            validation_result = self.validator.validate_response(response, request.previous_guesses)
+            validation_result = self.validator.validate_response(response, authoritative_request.previous_guesses)
 
             # If validation fails, try to fix or fallback
             if not validation_result["valid"]:
-                response = self._handle_invalid_response(request, response, validation_result)
+                response = self._handle_invalid_response(authoritative_request, response, validation_result)
 
             session.last_recommendation = response.recommended_words
 
@@ -65,7 +77,7 @@ class RecommendationService:
 
         except Exception as e:
             # Last resort fallback
-            return self._create_error_response(request, str(e))
+            return self._create_error_response(authoritative_request, str(e))
 
     def _validate_provider_availability(self, provider: LLMProvider) -> bool:
         """Check if the requested provider is available.
@@ -141,10 +153,12 @@ class RecommendationService:
             f"unavailable). {response.connection_explanation}"
         )
 
+        # Adjust confidence safely in case response.confidence_score is None
+        base_conf = response.confidence_score if response.confidence_score is not None else 0.5
         return RecommendationResponse(
             recommended_words=response.recommended_words,
             connection_explanation=fallback_explanation,
-            confidence_score=max(0.1, response.confidence_score - 0.2),  # Lower confidence
+            confidence_score=max(0.1, base_conf - 0.2),  # Lower confidence
             provider_used=response.provider_used,
             generation_time_ms=response.generation_time_ms,
         )
@@ -230,10 +244,16 @@ class RecommendationService:
                     seen.add(word)
                     break
 
+        base_conf = response.confidence_score if response.confidence_score is not None else 0.5
+        fixed_expl = (
+            (response.connection_explanation + " (auto-corrected)")
+            if response.connection_explanation
+            else "Auto-corrected"
+        )
         return RecommendationResponse(
             recommended_words=unique_words[:4],
-            connection_explanation=response.connection_explanation + " (auto-corrected)",
-            confidence_score=max(0.1, response.confidence_score - 0.3),
+            connection_explanation=fixed_expl,
+            confidence_score=max(0.1, base_conf - 0.3),
             provider_used=response.provider_used,
             generation_time_ms=response.generation_time_ms,
         )
@@ -292,7 +312,7 @@ class RecommendationService:
 
         except Exception as e:
             return {
-                "error": f"Failed to get provider information: {str(e)}",
+                "error": {"message": f"Failed to get provider information: {str(e)}"},
                 "simple": {"available": True, "info": {}, "requires_config": False},
             }
 

@@ -25,7 +25,9 @@ RULES:
 - The connection should be specific and clear
 - Avoid obvious or generic connections
 - Consider wordplay, categories, and subtle relationships
-- Return ONLY the 4 words, separated by commas
+- Use ONLY words from the AVAILABLE WORDS list below
+- Do NOT invent, modify, or reformat words; return each word exactly as listed in AVAILABLE WORDS
+- Return ONLY the 4 words, separated by commas, on a final line
 
 PUZZLE CONTEXT:
 {context}
@@ -34,6 +36,9 @@ AVAILABLE WORDS:
 {remaining_words}
 
 {previous_guesses_section}
+
+IMPORTANT VALIDATION:
+- Your answer is INVALID if any selected word is not present in AVAILABLE WORDS
 
 Please recommend 4 words that form a strong connection. \
 Explain your reasoning briefly, then provide the 4 words on a new line."""
@@ -172,7 +177,11 @@ Provide your rating and brief reasoning."""
 
         elif provider_type == "ollama":
             # Ollama gets more detailed reasoning instructions
-            return base_prompt + "\n\nThink step by step and provide clear reasoning for your choice."
+            return (
+                base_prompt
+                + "\n\nThink step by step and provide clear reasoning for your choice."
+                + "\nEnsure all four words come exclusively from the AVAILABLE WORDS list above."
+            )
 
         elif provider_type == "openai":
             # OpenAI gets sophisticated analysis instructions
@@ -180,6 +189,8 @@ Provide your rating and brief reasoning."""
                 base_prompt
                 + "\n\nUse your advanced reasoning capabilities to find "
                 + "subtle connections and provide insightful explanations."
+                + "\nAll four output words must come exclusively from the AVAILABLE WORDS list above."
+                + " If any word is not in that list, revise your selection."
             )
 
         return base_prompt
