@@ -44,7 +44,9 @@ export interface RecommendationResponse {
   recommended_words: string[];
   connection_explanation: string;
   confidence_score: number; // 0.0 to 1.0
-  provider_used: string;
+  // Backend returns an LLMProvider object; some tests/mocks may still use a string.
+  // Support both to be resilient during transition.
+  provider_used: string | LLMProvider;
   generation_time_ms?: number; // null for simple provider
   puzzle_state?: PuzzleState;
   alternative_suggestions?: string[][];

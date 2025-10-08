@@ -89,6 +89,15 @@ export const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({
     }
   };
 
+  // Handle provider_used which can be a string or object depending on backend/test mocks
+  const getProviderUsedLabel = (prov: RecommendationResponse['provider_used']) => {
+    if (!prov) return '';
+    if (typeof prov === 'string') return prov;
+    // prov is LLMProvider
+    const name = getProviderDisplayName(prov);
+    return prov.model_name ? `${name} (${prov.model_name})` : name;
+  };
+
   const handleAccept = () => {
     if (onAcceptRecommendation && recommendation) {
       onAcceptRecommendation(recommendation.recommended_words);
@@ -162,7 +171,7 @@ export const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({
                 ⏱️ {formatDuration(recommendation.generation_time_ms)}
               </span>
               <span className="metadata-item">
-                � {recommendation.provider_used}
+                🤖 {getProviderUsedLabel(recommendation.provider_used)}
               </span>
             </div>
           )}
