@@ -1,12 +1,8 @@
 Keep ollama models in memory longer:
 ```bash
-curl -X POST http://localhost:11434/api/generate -d '{
-  "model": "llama2",
-  "prompt": "Tell me a story.",
-  "keep_alive": "30m"
-}'
+curl -X POST http://localhost:11434/api/generate -d '{"model": "llama2:13b", "keep_alive": "60m"}'
 ```
-This will keep the model in memory for 30 minutes after the request completes.
+This will keep the model in memory for 60 minutes after the request completes.
 
 Change `model` to the name of the model you want to use.
 
