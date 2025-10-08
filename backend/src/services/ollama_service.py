@@ -41,7 +41,40 @@ class OllamaService:
         # Generate response from LLM
         llm_response = ollama_provider.generate_recommendation(enhanced_prompt)
 
-        # Parse the response
+        # If provider returned a structured dict (new format), prefer it
+        if isinstance(llm_response, dict):
+            words = llm_response.get("recommended_words") or llm_response.get("words") or []
+            explanation = (
+                llm_response.get("explanation")
+                or llm_response.get("connection")
+                or llm_response.get("connection_explanation")
+                or ""
+            )
+            confidence = llm_response.get("confidence") or llm_response.get("confidence_score")
+            generation_time = llm_response.get("generation_time_ms")
+
+            # If generation_time missing, compute elapsed time
+            if generation_time is None:
+                generation_time = int((time.time() - start_time) * 1000)
+
+            # If confidence missing, compute using available textual data
+            if confidence is None:
+                try:
+                    import json
+
+                    confidence = self._calculate_confidence(json.dumps(llm_response), words or [], explanation or "")
+                except Exception:
+                    confidence = None
+
+            return RecommendationResponse(
+                recommended_words=words,
+                connection_explanation=explanation or None,
+                confidence_score=confidence,
+                provider_used=request.llm_provider,
+                generation_time_ms=generation_time,
+            )
+
+        # Legacy/string response path
         parsed_response = self._parse_llm_response(llm_response)
 
         # Calculate generation time
