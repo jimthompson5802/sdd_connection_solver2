@@ -108,3 +108,10 @@ class PromptGenerationError(BaseApplicationError):
         message = f"Prompt generation failed: {error_details}"
         super().__init__(message, error_code="PROMPT_GENERATION_ERROR")
         self.prompt_type = prompt_type
+
+
+class InvalidInputError(BaseApplicationError):
+    """Exception raised for invalid user input scenarios."""
+
+    def __init__(self, message: str, error_code: str = "INVALID_INPUT"):
+        super().__init__(message, error_code=error_code)

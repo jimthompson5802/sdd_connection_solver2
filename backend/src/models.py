@@ -12,7 +12,7 @@ from datetime import datetime
 
 # LLM Provider Integration Models (Phase 2)
 from .llm_models.llm_provider import LLMProvider
-from .llm_models.guess_attempt import GuessAttempt
+from .llm_models.guess_attempt import GuessAttempt as PreviousGuess, GuessAttempt
 from .llm_models.recommendation_request import RecommendationRequest
 from .llm_models.recommendation_response import RecommendationResponse
 from .llm_models.puzzle_state import PuzzleState
@@ -325,6 +325,8 @@ __all__ = [
     "PuzzleSession",
     "SessionManager",
     "session_manager",
+    # Back-compat alias for tests
+    "PreviousGuess",
     # New Phase 2 LLM models
     "LLMProvider",
     "GuessAttempt",

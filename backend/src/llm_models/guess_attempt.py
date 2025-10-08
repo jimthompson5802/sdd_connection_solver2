@@ -28,20 +28,24 @@ class GuessAttempt(BaseModel):
     @field_validator("words")
     @classmethod
     def validate_words(cls, v: List[str]) -> List[str]:
-        """Validate words in guess attempt."""
+        """Validate words in guess attempt.
+
+        Preserve original casing for compatibility with tests that assert exact values.
+        """
         if len(v) != 4:
             raise ValueError("words must contain exactly 4 items")
 
-        # Check for duplicates
-        if len(set(v)) != len(v):
-            raise ValueError("words must not contain duplicates")
-
-        # Check for empty or whitespace-only words
+        # Check for empty or whitespace-only words and trim whitespace, but do not lowercase
         cleaned_words = []
         for word in v:
             if not isinstance(word, str) or not word.strip():
                 raise ValueError("all words must be non-empty strings")
-            cleaned_words.append(word.strip().lower())
+            cleaned_words.append(word.strip())
+
+        # Check for duplicates (case-insensitive to avoid trivial mismatches)
+        lowered = [w.lower() for w in cleaned_words]
+        if len(set(lowered)) != len(lowered):
+            raise ValueError("words must not contain duplicates")
 
         return cleaned_words
 

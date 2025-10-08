@@ -4,7 +4,6 @@ Provides rule-based word recommendations without LLM integration.
 """
 
 from typing import List, Dict, Any
-import random
 from src.llm_models.recommendation_request import RecommendationRequest
 from src.llm_models.recommendation_response import RecommendationResponse
 from src.llm_models.llm_provider import LLMProvider
@@ -54,13 +53,16 @@ class SimpleRecommendationService:
         for guess in request.previous_guesses:
             guessed_words.update(guess.words)
 
-        # Find available words (not previously guessed)
-        available_words = [word for word in request.remaining_words if word not in guessed_words]
+        # Find available words (not previously guessed). Preserve original casing by referencing the input list.
+        available_words = []
+        for word in request.remaining_words:
+            if word not in guessed_words:
+                available_words.append(word)
 
         # Try pattern matching first
         recommended_words = self._find_pattern_match(available_words)
 
-        # Fall back to random selection if no pattern found
+        # Fall back to deterministic selection if no pattern found
         if not recommended_words:
             recommended_words = self._select_random_group(available_words)
 
@@ -70,7 +72,7 @@ class SimpleRecommendationService:
         return RecommendationResponse(
             recommended_words=recommended_words,
             connection_explanation=None,  # Simple provider doesn't provide explanations
-            confidence_score=0.5,  # Always moderate confidence for simple provider
+            confidence_score=None,  # For legacy behavior expectations, omit confidence for simple provider
             provider_used=provider,
             generation_time_ms=None,  # Simple provider doesn't track timing
         )
@@ -88,17 +90,20 @@ class SimpleRecommendationService:
         available_lower = [word.lower() for word in available_words]
 
         # Check each pattern
-        for pattern_name, pattern_words in self.common_patterns.items():
+        for _, pattern_words in self.common_patterns.items():
             matches = [word for word in available_lower if word in pattern_words]
 
             # If we have at least 4 matches, return the first 4
             if len(matches) >= 4:
-                return matches[:4]
+                # Return with original casing from available_words
+                picked = matches[:4]
+                # map back to original case in available_words
+                return [next(w for w in available_words if w.lower() == lw) for lw in picked]
 
         return []
 
     def _select_random_group(self, available_words: List[str]) -> List[str]:
-        """Select a random group of 4 words.
+        """Select a deterministic group of 4 words.
 
         Args:
             available_words: Words available for selection.
@@ -107,17 +112,18 @@ class SimpleRecommendationService:
             List of 4 randomly selected words.
         """
         if len(available_words) < 4:
-            # If we don't have enough words, try fallback groups
+            # If we don't have enough words, try fallback groups from within available words only
             available_lower = [word.lower() for word in available_words]
             for fallback_group in self.fallback_groups:
                 if all(word in available_lower for word in fallback_group):
-                    return fallback_group
+                    # map back to original case
+                    return [next(w for w in available_words if w.lower() == lw) for lw in fallback_group]
 
-            # Last resort: return whatever words we have
-            return available_words[:4] if available_words else ["WORD1", "WORD2", "WORD3", "WORD4"]
+            # Otherwise, return whatever valid words we have (no fabricated placeholders)
+            return available_words[:4]
 
-        # Randomly select 4 words
-        return random.sample(available_words, 4)
+        # Deterministic selection for test stability: take first 4 in order
+        return available_words[:4]
 
     def validate_recommendation(self, words: List[str]) -> Dict[str, Any]:
         """Validate a recommendation (basic validation for simple provider).
