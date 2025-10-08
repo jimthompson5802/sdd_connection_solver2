@@ -67,7 +67,7 @@ class RecommendationResponse(BaseModel):
             v = v.strip()
             if not v:
                 return None
-            if len(v) > 500:
+            if len(v) > 1024:
                 raise ValueError("connection_explanation cannot exceed 500 characters")
 
         return v
