@@ -84,82 +84,10 @@ class OllamaService:
                 generation_time_ms=generation_time,
             )
 
-        # Legacy/string response path
-        # NOTE: This branch will only be hit if provider returned a non-dict but no ValueError was raised.
-        else:
-            parsed_response = self._parse_llm_response(llm_response)
+        # Legacy/string response path -- freeform parsing removed
+        raise ValueError("not json object")
 
-            # Calculate generation time
-            generation_time = int((time.time() - start_time) * 1000)
-
-            return RecommendationResponse(
-                recommended_words=parsed_response["words"],
-                connection_explanation=parsed_response["explanation"],
-                confidence_score=parsed_response["confidence"],
-                provider_used=request.llm_provider,
-                generation_time_ms=generation_time,
-            )
-
-    def _parse_llm_response(self, response: str) -> Dict[str, Any]:
-        """Parse LLM response to extract words and explanation.
-
-        Args:
-            response: Raw response from the LLM.
-
-        Returns:
-            Dictionary with parsed words, explanation, and confidence.
-        """
-        try:
-            lines = response.strip().split("\n")
-
-            # Look for lines with 4 comma-separated words
-            words = []
-            explanation = ""
-
-            for line in lines:
-                line = line.strip()
-                if not line:
-                    continue
-
-                # Check if line contains 4 comma-separated words
-                if "," in line:
-                    potential_words = [word.strip().lower() for word in line.split(",")]
-                    if len(potential_words) == 4 and all(word.isalpha() for word in potential_words):
-                        words = potential_words
-                        break
-
-            # If no words found, try to extract from the last line
-            if not words:
-                last_line = lines[-1].strip()
-                if "," in last_line:
-                    words = [word.strip().lower() for word in last_line.split(",")][:4]
-
-            # Extract explanation (everything except the final word line)
-            explanation_lines = []
-            for line in lines:
-                line = line.strip()
-                if line and not (len(line.split(",")) == 4 and all(word.strip().isalpha() for word in line.split(","))):
-                    explanation_lines.append(line)
-
-            explanation = " ".join(explanation_lines).strip()
-
-            # Fallback if no valid words found
-            if not words or len(words) != 4:
-                words = ["bass", "flounder", "salmon", "trout"]  # Fallback
-                explanation = "Unable to parse LLM response properly (fallback used)"
-
-            # Calculate confidence based on response quality
-            confidence = self._calculate_confidence(response, words, explanation)
-
-            return {"words": words, "explanation": explanation or "No explanation provided", "confidence": confidence}
-
-        except Exception as e:
-            # Fallback response if parsing fails
-            return {
-                "words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],
-                "explanation": f"Failed to parse LLM response: {str(e)}",
-                "confidence": 0.1,
-            }
+    # _parse_llm_response removed: freeform text parsing is no longer supported here.
 
     def _calculate_confidence(self, response: str, words: List[str], explanation: str) -> float:
         """Calculate confidence score based on response quality.

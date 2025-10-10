@@ -100,19 +100,8 @@ class OpenAIService:
                 generation_time_ms=generation_time,
             )
 
-        # Legacy/string response path
-        parsed_response = self._parse_llm_response(llm_response)
-
-        # Calculate generation time
-        generation_time = int((time.time() - start_time) * 1000)
-
-        return RecommendationResponse(
-            recommended_words=parsed_response["words"],
-            connection_explanation=parsed_response["explanation"],
-            confidence_score=parsed_response["confidence"],
-            provider_used=request.llm_provider,
-            generation_time_ms=generation_time,
-        )
+        # Legacy/string response path -- we no longer parse freeform LLM text here
+        raise ValueError("not json object")
 
     def _add_structured_output_request(self, prompt: str) -> str:
         """Add structured output format request to the prompt.
@@ -137,60 +126,7 @@ bass, flounder, salmon, trout"""
 
         return prompt + structured_suffix
 
-    def _parse_llm_response(self, response: str) -> Dict[str, Any]:
-        """Parse OpenAI response with advanced parsing techniques.
-
-        Args:
-            response: Raw response from OpenAI.
-
-        Returns:
-            Dictionary with parsed words, explanation, and confidence.
-        """
-        try:
-            lines = [line.strip() for line in response.strip().split("\n") if line.strip()]
-
-            words = []
-            explanation_lines = []
-
-            # Look for the line with exactly 4 comma-separated words
-            for i, line in enumerate(lines):
-                if "," in line:
-                    potential_words = [word.strip().lower() for word in line.split(",")]
-
-                    # Check if it's exactly 4 valid words
-                    if len(potential_words) == 4 and all(word.isalpha() and len(word) > 1 for word in potential_words):
-                        words = potential_words
-                        # Everything before this line is explanation
-                        explanation_lines = lines[:i]
-                        break
-
-            # If no perfect match, try more flexible parsing
-            if not words:
-                words = self._extract_words_flexible(response)
-
-            # Join explanation lines
-            explanation = " ".join(explanation_lines).strip()
-
-            # If no explanation found, extract from response
-            if not explanation:
-                explanation = self._extract_explanation(response, words)
-
-            # Calculate confidence based on response quality
-            confidence = self._calculate_confidence(response, words, explanation)
-
-            return {
-                "words": words,
-                "explanation": explanation or "High-quality OpenAI recommendation",
-                "confidence": confidence,
-            }
-
-        except Exception as e:
-            # Fallback response (lowercase)
-            return {
-                "words": ["bass", "flounder", "salmon", "trout"],
-                "explanation": f"Failed to parse OpenAI response: {str(e)}",
-                "confidence": 0.2,
-            }
+    # _parse_llm_response removed: freeform text parsing is no longer supported here.
 
     def _extract_words_flexible(self, response: str) -> List[str]:
         """Extract words using flexible parsing methods.
