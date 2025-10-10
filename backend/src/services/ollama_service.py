@@ -39,7 +39,17 @@ class OllamaService:
         enhanced_prompt = self.prompt_service.add_provider_specific_instructions(base_prompt, "ollama")
 
         # Generate response from LLM
-        llm_response = ollama_provider.generate_recommendation(enhanced_prompt)
+        try:
+            llm_response = ollama_provider.generate_recommendation(enhanced_prompt)
+        except ValueError as e:
+            # Provider returned a non-JSON/faulty response; translate to application error
+            from src.exceptions import LLMProviderError
+
+            raise LLMProviderError(
+                f"Ollama provider returned malformed response: {str(e)}",
+                provider_type="ollama",
+                error_code="MALFORMED_PROVIDER_RESPONSE",
+            )
 
         # If provider returned a structured dict (new format), prefer it
         if isinstance(llm_response, dict):
@@ -75,18 +85,20 @@ class OllamaService:
             )
 
         # Legacy/string response path
-        parsed_response = self._parse_llm_response(llm_response)
+        # NOTE: This branch will only be hit if provider returned a non-dict but no ValueError was raised.
+        else:
+            parsed_response = self._parse_llm_response(llm_response)
 
-        # Calculate generation time
-        generation_time = int((time.time() - start_time) * 1000)
+            # Calculate generation time
+            generation_time = int((time.time() - start_time) * 1000)
 
-        return RecommendationResponse(
-            recommended_words=parsed_response["words"],
-            connection_explanation=parsed_response["explanation"],
-            confidence_score=parsed_response["confidence"],
-            provider_used=request.llm_provider,
-            generation_time_ms=generation_time,
-        )
+            return RecommendationResponse(
+                recommended_words=parsed_response["words"],
+                connection_explanation=parsed_response["explanation"],
+                confidence_score=parsed_response["confidence"],
+                provider_used=request.llm_provider,
+                generation_time_ms=generation_time,
+            )
 
     def _parse_llm_response(self, response: str) -> Dict[str, Any]:
         """Parse LLM response to extract words and explanation.

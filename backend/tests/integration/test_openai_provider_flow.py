@@ -16,8 +16,15 @@ class TestOpenAIProviderFlow:
         """Test complete successful recommendation flow with OpenAI provider"""
         # Mock OpenAI response
         mock_client = MagicMock()
+        # Mock a structured JSON-like response returned by the provider shim path
         mock_response = MagicMock()
-        mock_response.choices[0].message.content = "BASS, FLOUNDER, SALMON, TROUT"
+        # Simulate SDK returning a dict (structured output) via the content attribute
+        mock_response.choices[0].message.content = {
+            "recommended_words": ["bass", "flounder", "salmon", "trout"],
+            "explanation": "These are fish",
+            "connection": "Fish",
+            "confidence": 0.9,
+        }
         mock_client.chat.completions.create.return_value = mock_response
         mock_openai.return_value = mock_client
 
@@ -44,7 +51,7 @@ class TestOpenAIProviderFlow:
 
         # Validate complete flow results
         assert len(result.recommended_words) == 4
-        assert "BASS" in result.recommended_words
+        assert "BASS" in [w.upper() for w in result.recommended_words]
         assert result.connection_explanation is not None
         assert result.provider_used.provider_type == "openai"
         assert isinstance(result.generation_time_ms, int)
@@ -62,7 +69,12 @@ class TestOpenAIProviderFlow:
         # Mock OpenAI response
         mock_client = MagicMock()
         mock_response = MagicMock()
-        mock_response.choices[0].message.content = "PIANO, GUITAR, VIOLIN, DRUMS"
+        mock_response.choices[0].message.content = {
+            "recommended_words": ["piano", "guitar", "violin", "drums"],
+            "explanation": "These are instruments",
+            "connection": "Instruments",
+            "confidence": 0.8,
+        }
         mock_client.chat.completions.create.return_value = mock_response
         mock_openai.return_value = mock_client
 
@@ -132,6 +144,7 @@ class TestOpenAIProviderFlow:
         # Mock malformed OpenAI response
         mock_client = MagicMock()
         mock_response = MagicMock()
+        # Provider returns malformed plain text
         mock_response.choices[0].message.content = "This is not a valid word list format"
         mock_client.chat.completions.create.return_value = mock_response
         mock_openai.return_value = mock_client
@@ -147,13 +160,11 @@ class TestOpenAIProviderFlow:
             previous_guesses=[],
         )
 
-        # Service should handle malformed response gracefully
-        # Either by falling back to simple provider or reformatting response
-        result = service.get_recommendations(request)
+        # Service should handle malformed response gracefully by raising an application error
+        from src.exceptions import LLMProviderError
 
-        # Should still return valid recommendation structure
-        assert len(result.recommended_words) == 4
-        assert all(word in request.remaining_words for word in result.recommended_words)
+        with pytest.raises(LLMProviderError):
+            service.get_recommendations(request)
 
     @pytest.mark.integration
     @patch("openai.OpenAI")
@@ -187,7 +198,12 @@ class TestOpenAIProviderFlow:
         # Mock successful OpenAI response
         mock_client = MagicMock()
         mock_response = MagicMock()
-        mock_response.choices[0].message.content = "WORD1, WORD2, WORD3, WORD4"
+        mock_response.choices[0].message.content = {
+            "recommended_words": ["word1", "word2", "word3", "word4"],
+            "explanation": "example",
+            "connection": "Example",
+            "confidence": 0.7,
+        }
         mock_client.chat.completions.create.return_value = mock_response
         mock_openai.return_value = mock_client
 

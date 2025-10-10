@@ -176,7 +176,11 @@ class LLMProviderFactory:
         if llm_provider.model_name is not None:
             if config is None:
                 config = {}
-            config = dict(config.dict() if hasattr(config, "dict") else config)
+            # If config is a pydantic model, call its dict(), otherwise assume it's already a dict-like
+            if hasattr(config, "dict"):
+                config = dict(config.dict())
+            else:
+                config = dict(config)
             config["model_name"] = llm_provider.model_name
 
         # Create provider instance

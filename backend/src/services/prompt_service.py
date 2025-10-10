@@ -17,31 +17,37 @@ class PromptTemplateService:
 
     def _load_base_prompt(self) -> str:
         """Load the base prompt template for connection puzzles."""
-        return """You are an expert at solving New York Times Connections puzzles. \
-Your task is to find groups of 4 words that share a common connection.
-
-RULES:
-- Find exactly 4 words that belong together
-- The connection should be specific and clear
-- Avoid obvious or generic connections
-- Consider wordplay, categories, and subtle relationships
-- Use ONLY words from the AVAILABLE WORDS list below
-- Do NOT invent, modify, or reformat words; return each word exactly as listed in AVAILABLE WORDS
-- Return ONLY the 4 words, separated by commas, on a final line
-
-PUZZLE CONTEXT:
-{context}
-
-AVAILABLE WORDS:
-{remaining_words}
-
-{previous_guesses_section}
-
-IMPORTANT VALIDATION:
-- Your answer is INVALID if any selected word is not present in AVAILABLE WORDS
-
-Please recommend 4 words that form a strong connection. \
-Explain your reasoning briefly, then provide the 4 words on a new line."""
+        return (
+            "You are an expert at solving New York Times Connections puzzles. "
+            "Your task is to find groups of 4 words that share a common connection.\n\n"
+            "RULES:\n"
+            "- Find exactly 4 words that belong together\n"
+            "- The connection should be specific and clear\n"
+            "- Avoid obvious or generic connections\n"
+            "- Consider wordplay, categories, and subtle relationships\n"
+            "- Use ONLY words from the AVAILABLE WORDS list below\n"
+            "- Do NOT invent, modify, or reformat words; return each word exactly as listed in AVAILABLE WORDS\n\n"
+            "PUZZLE CONTEXT:\n"
+            "{context}\n\n"
+            "AVAILABLE WORDS:\n"
+            "{remaining_words}\n\n"
+            "{previous_guesses_section}\n\n"
+            "IMPORTANT VALIDATION:\n"
+            "- Your answer is INVALID if any selected word is not present in AVAILABLE WORDS\n\n"
+            "OUTPUT FORMAT (JSON ONLY):\n"
+            "Return a single JSON object and nothing else with the following keys:\n\n"
+            '- "recommended_words": a JSON array of exactly four words (strings) chosen from AVAILABLE WORDS\n'
+            '- "connection": a short connection phrase (brief — keep it under 6 words)\n'
+            '- "explanation": a short paragraph explaining why the recommended_words belong together\n\n'
+            "Example valid JSON:\n"
+            "{{\n"
+            '  "recommended_words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],\n'
+            '  "connection": "Types of fish",\n'
+            '  "explanation": "All are common fish species found in fresh or salt water."\n'
+            "}}\n\n"
+            "Please provide only the JSON object that matches the schema above. "
+            "Do not include any additional commentary or text"
+        )
 
     def _load_examples(self) -> List[Dict[str, str]]:
         """Load example connections for few-shot learning."""
@@ -81,9 +87,11 @@ Explain your reasoning briefly, then provide the 4 words on a new line."""
         # Add puzzle context if provided
         context = request.puzzle_context or "Standard NYT Connections puzzle with 16 words forming 4 groups of 4."
 
-        # Format the complete prompt
-        prompt = self.base_prompt.format(
-            context=context, remaining_words=words_text, previous_guesses_section=previous_section
+        # Format the complete prompt using simple replace to avoid conflicts with literal braces
+        prompt = (
+            self.base_prompt.replace("{context}", context)
+            .replace("{remaining_words}", words_text)
+            .replace("{previous_guesses_section}", previous_section)
         )
 
         return prompt
@@ -181,6 +189,8 @@ Provide your rating and brief reasoning."""
                 base_prompt
                 + "\n\nThink step by step and provide clear reasoning for your choice."
                 + "\nEnsure all four words come exclusively from the AVAILABLE WORDS list above."
+                + "\nReturn your answer as a single JSON object using the keys: "
+                + "recommended_words, connection, explanation."
             )
 
         elif provider_type == "openai":
@@ -191,6 +201,8 @@ Provide your rating and brief reasoning."""
                 + "subtle connections and provide insightful explanations."
                 + "\nAll four output words must come exclusively from the AVAILABLE WORDS list above."
                 + " If any word is not in that list, revise your selection."
+                + "\nReturn your answer as a single JSON object using the keys: "
+                + "recommended_words, connection, explanation."
             )
 
         return base_prompt

@@ -69,9 +69,13 @@ class TestAPIServiceIntegration:
         from src.services.recommendation_service import RecommendationService
         from src.models import RecommendationRequest, LLMProvider
 
-        # Mock ollama response
+        # Mock ollama response as structured JSON object (dict) per new contract
         mock_llm = MagicMock()
-        mock_llm.invoke.return_value = "BASS, FLOUNDER, SALMON, TROUT"
+        mock_llm.invoke.return_value = {
+            "recommended_words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],
+            "connection": "These are types of fish",
+            "explanation": "Common types of fish found in North America",
+        }
         mock_ollama.return_value = mock_llm
 
         service = RecommendationService()
@@ -98,10 +102,16 @@ class TestAPIServiceIntegration:
         from src.services.recommendation_service import RecommendationService
         from src.models import RecommendationRequest, LLMProvider
 
-        # Mock openai response
+        # Mock openai response as structured JSON object (dict) per new contract
         mock_client = MagicMock()
         mock_response = MagicMock()
-        mock_response.choices[0].message.content = "BASS, FLOUNDER, SALMON, TROUT"
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message = MagicMock()
+        mock_response.choices[0].message.content = {
+            "recommended_words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],
+            "connection": "These are types of fish",
+            "explanation": "Common types of fish found in North America",
+        }
         mock_client.chat.completions.create.return_value = mock_response
         mock_openai.return_value = mock_client
 

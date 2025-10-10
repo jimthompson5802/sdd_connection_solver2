@@ -70,9 +70,13 @@ class TestLLMProviderIntegration:
         """Test that ollama provider can generate recommendations"""
         from src.services.llm_providers.ollama_provider import OllamaProvider
 
-        # Mock ollama response
+        # Mock ollama response as structured JSON object (dict) per new contract
         mock_llm = MagicMock()
-        mock_llm.invoke.return_value = "BASS, FLOUNDER, SALMON, TROUT"
+        mock_llm.invoke.return_value = {
+            "recommended_words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],
+            "connection": "These are types of fish",
+            "explanation": "Common types of fish found in North America",
+        }
         mock_ollama.return_value = mock_llm
 
         provider = OllamaProvider(base_url="http://localhost:11434", model_name="llama2")
@@ -98,10 +102,17 @@ class TestLLMProviderIntegration:
         """Test that openai provider can generate recommendations"""
         from src.services.llm_providers.openai_provider import OpenAIProvider
 
-        # Mock openai response
+        # Mock openai response as structured JSON object (dict) per new contract
         mock_client = MagicMock()
         mock_response = MagicMock()
-        mock_response.choices[0].message.content = "BASS, FLOUNDER, SALMON, TROUT"
+        # The provider code extracts resp.choices[0].message.content and expects a dict
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message = MagicMock()
+        mock_response.choices[0].message.content = {
+            "recommended_words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],
+            "connection": "These are types of fish",
+            "explanation": "Common types of fish found in North America",
+        }
         mock_client.chat.completions.create.return_value = mock_response
         mock_openai.return_value = mock_client
 
