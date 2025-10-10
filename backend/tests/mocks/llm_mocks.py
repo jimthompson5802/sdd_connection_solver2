@@ -9,39 +9,44 @@ from unittest.mock import Mock
 from typing import Dict, Any, Optional
 import json
 from datetime import datetime
-from src.llm_models.recommendation_response import RecommendationResponse
-from src.llm_models.llm_provider import LLMProvider
 
 
-def create_mock_response(response_data: Dict[str, Any]) -> RecommendationResponse:
-    """Create a proper RecommendationResponse object from mock data."""
-    provider_type = response_data["provider_used"]
+def create_mock_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
+    """Return a plain dict representing a recommendation response for tests.
 
-    # Handle model_name validation rules for different providers
-    if provider_type == "simple":
-        model_name = None  # Simple provider must have null model_name
-    else:
-        model_name = "test-model"  # LLM providers can have model_name
+    Tests now expect providers to return structured JSON-like objects (dicts).
+    """
+    # Keep the structure as plain data to mimic a JSON object returned by providers
+    # Normalize to the RecommendationResponse schema used by the codebase/tests
+    provider = response_data.get("provider_used")
+    if isinstance(provider, str):
+        provider = {"provider_type": provider, "model_name": response_data.get("provider_model")}
 
-    provider = LLMProvider(provider_type=provider_type, model_name=model_name)
-
-    return RecommendationResponse(
-        recommended_words=response_data["recommended_words"],
-        connection_explanation=response_data.get("connection_explanation"),
-        confidence_score=response_data["confidence_score"],
-        provider_used=provider,
-        generation_time_ms=response_data.get("generation_time_ms"),
+    connection_explanation = (
+        response_data.get("connection_explanation")
+        or response_data.get("connection")
+        or response_data.get("explanation")
     )
 
+    return {
+        "recommended_words": response_data["recommended_words"],
+        "connection_explanation": connection_explanation,
+        "confidence_score": response_data.get("confidence_score") or response_data.get("confidence"),
+        "provider_used": provider,
+        "generation_time_ms": response_data.get("generation_time_ms"),
+        # Include puzzle_state snapshot for tests that validate provider outputs
+        "puzzle_state": response_data.get("puzzle_state", {}),
+    }
 
-# Create proper response objects for mocking
+
+# Create proper plain-dict responses for mocking providers
 MOCK_RECOMMENDATION_RESPONSES = {
     "simple": create_mock_response(
         {
             "recommended_words": ["BASS", "PIKE", "SOLE", "CARP"],
             "connection_explanation": None,  # Simple provider has no explanation
             "confidence_score": 0.8,
-            "provider_used": "simple",
+            "provider_used": {"provider_type": "simple", "model_name": None},
             "generation_time_ms": None,  # Simple provider has no timing
         }
     ),
@@ -53,7 +58,7 @@ MOCK_RECOMMENDATION_RESPONSES = {
                 "commonly found in lakes and rivers, while sole and carp are also fish species."
             ),
             "confidence_score": 0.92,
-            "provider_used": "ollama",
+            "provider_used": {"provider_type": "ollama", "model_name": "llama2"},
             "generation_time_ms": 2340,
         }
     ),
@@ -65,7 +70,7 @@ MOCK_RECOMMENDATION_RESPONSES = {
                 "and are found in grocery stores and orchards."
             ),
             "confidence_score": 0.95,
-            "provider_used": "openai",
+            "provider_used": {"provider_type": "openai", "model_name": "gpt-3.5-turbo"},
             "generation_time_ms": 1850,
         }
     ),
@@ -146,23 +151,17 @@ class MockLLMProvider:
         self.fail_reason = fail_reason
         self.call_count = 0
 
-    async def generate_recommendation(self, request: Dict[str, Any]) -> Dict[str, Any]:
-        """Mock recommendation generation"""
+    def generate_recommendation(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Mock recommendation generation (synchronous for test compatibility)."""
         self.call_count += 1
 
         if self.should_fail:
             raise Exception(MOCK_ERROR_RESPONSES[self.fail_reason]["detail"])
 
-        # Simulate processing time for non-simple providers
-        if self.provider_type != "simple":
-            import asyncio
-
-            await asyncio.sleep(0.1)  # Short delay for testing
-
         return MOCK_RECOMMENDATION_RESPONSES[self.provider_type]
 
-    async def validate(self) -> Dict[str, Any]:
-        """Mock provider validation"""
+    def validate(self) -> Dict[str, Any]:
+        """Mock provider validation (synchronous)."""
         if self.should_fail:
             return MOCK_PROVIDER_VALIDATION[f"{self.provider_type}_invalid"]
         return MOCK_PROVIDER_VALIDATION.get(f"{self.provider_type}_valid", MOCK_PROVIDER_VALIDATION["simple"])
@@ -174,8 +173,8 @@ class MockSimpleProvider(MockLLMProvider):
     def __init__(self, should_fail: bool = False):
         super().__init__("simple", should_fail)
 
-    async def generate_recommendation(self, request: Dict[str, Any]) -> Dict[str, Any]:
-        """Simple provider always returns first 4 words"""
+    def generate_recommendation(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Simple provider always returns first 4 words (synchronous)."""
         self.call_count += 1
 
         if self.should_fail:
@@ -194,21 +193,12 @@ class MockOllamaProvider(MockLLMProvider):
     def __init__(self, should_fail: bool = False, fail_reason: str = "network_error"):
         super().__init__("ollama", should_fail, fail_reason)
 
-    async def generate_recommendation(self, request: Dict[str, Any]) -> Dict[str, Any]:
-        """Mock Ollama with context-aware responses"""
+    def generate_recommendation(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Mock Ollama with context-aware responses (synchronous)."""
         self.call_count += 1
 
         if self.should_fail:
-            if self.fail_reason == "timeout_error":
-                import asyncio
-
-                await asyncio.sleep(2)  # Simulate timeout
             raise Exception(MOCK_ERROR_RESPONSES[self.fail_reason]["detail"])
-
-        # Simulate longer processing time
-        import asyncio
-
-        await asyncio.sleep(0.2)
 
         # Return contextual response based on previous guesses
         previous_guesses = request.get("previous_guesses", [])
@@ -232,21 +222,12 @@ class MockOpenAIProvider(MockLLMProvider):
     def __init__(self, should_fail: bool = False, fail_reason: str = "api_key_error"):
         super().__init__("openai", should_fail, fail_reason)
 
-    async def generate_recommendation(self, request: Dict[str, Any]) -> Dict[str, Any]:
-        """Mock OpenAI with high-quality responses"""
+    def generate_recommendation(self, request: Dict[str, Any]) -> Dict[str, Any]:
+        """Mock OpenAI with high-quality responses (synchronous)."""
         self.call_count += 1
 
         if self.should_fail:
-            if self.fail_reason == "rate_limit_error":
-                import asyncio
-
-                await asyncio.sleep(0.5)  # Simulate rate limit delay
             raise Exception(MOCK_ERROR_RESPONSES[self.fail_reason]["detail"])
-
-        # Simulate processing time
-        import asyncio
-
-        await asyncio.sleep(0.15)
 
         return MOCK_RECOMMENDATION_RESPONSES["openai"]
 

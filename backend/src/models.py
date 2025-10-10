@@ -202,8 +202,9 @@ class PuzzleSession:
 
         if result == ResponseResult.CORRECT:
             self._mark_group_found(words, color=color)
-        elif result in (ResponseResult.INCORRECT, ResponseResult.ONE_AWAY):
-            # Treat one-away as a mistake for game progression
+        elif result == ResponseResult.INCORRECT:
+            # Only count explicit incorrect attempts as mistakes; one-away is a hint and
+            # should not increment the mistakes counter per the test expectations.
             self.mistakes_made += 1
 
         self._check_game_completion()
