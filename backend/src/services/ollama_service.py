@@ -57,7 +57,7 @@ class OllamaService:
         generation_time = int((time.time() - start_time) * 1000)
 
         return RecommendationResponse(
-            recommended_words=llm_response.recommendations,
+            recommended_words=sorted(llm_response.recommendations),
             connection_explanation=llm_response.connection,
             provider_used=request.llm_provider,
             generation_time_ms=generation_time,

@@ -69,29 +69,14 @@ class OpenAIService:
                 error_code="MALFORMED_PROVIDER_RESPONSE",
             )
 
-        # If provider returned structured dict, prefer it
-        if isinstance(llm_response, dict):
-            words = llm_response.get("recommended_words") or llm_response.get("words") or []
-            explanation = (
-                llm_response.get("explanation")
-                or llm_response.get("connection")
-                or llm_response.get("connection_explanation")
-                or ""
-            )
-            generation_time = llm_response.get("generation_time_ms")
+        generation_time = int((time.time() - start_time) * 1000)
 
-            if generation_time is None:
-                generation_time = int((time.time() - start_time) * 1000)
-
-            return RecommendationResponse(
-                recommended_words=words,
-                connection_explanation=explanation or None,
-                provider_used=request.llm_provider,
-                generation_time_ms=generation_time,
-            )
-
-        # Legacy/string response path -- we no longer parse freeform LLM text here
-        raise ValueError("not json object")
+        return RecommendationResponse(
+            recommended_words=sorted(llm_response.recommendations),
+            connection_explanation=llm_response.connection,
+            provider_used=request.llm_provider,
+            generation_time_ms=generation_time,
+        )
 
     def _add_structured_output_request(self, prompt: str) -> str:
         """Add structured output format request to the prompt.

@@ -223,7 +223,7 @@ class OpenAILLMProvider(BaseLLMProvider):
     def _create_llm(self) -> LLM:
         """Create OpenAI LLM instance."""
         try:
-            from langchain.llms import OpenAI
+            from langchain_openai import ChatOpenAI
 
             api_key = self.config.get("api_key")
             model_name = self.config.get("model_name", "gpt-4o-mini")
@@ -232,7 +232,7 @@ class OpenAILLMProvider(BaseLLMProvider):
             if not api_key:
                 raise ValueError("OpenAI API key is required")
 
-            return OpenAI(openai_api_key=api_key, model_name=model_name, timeout=timeout)
+            return ChatOpenAI(openai_api_key=api_key)
         except ImportError as e:
             raise RuntimeError("OpenAI dependencies not installed") from e
         except Exception as e:
