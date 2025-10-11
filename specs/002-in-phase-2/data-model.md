@@ -47,14 +47,12 @@ The result from any provider (simple algorithm or LLM) containing word recommend
 **Fields**:
 - `recommended_words`: list[string] - Exactly 4 words recommended for grouping
 - `connection_explanation`: string | null - Why these words are connected (null for simple provider)
-- `confidence_score`: float | null - Provider's confidence in recommendation (0.0-1.0, null for simple)
 - `provider_used`: LLMProvider - Which provider generated this response
 - `generation_time_ms`: int | null - Time taken to generate (null for simple)
 
 **Validation Rules**:
 - `recommended_words` must contain exactly 4 unique strings
 - All `recommended_words` must be from the original `remaining_words` in request
-- `confidence_score` must be between 0.0 and 1.0 when not null
 - `connection_explanation` required for LLM providers, null for simple provider
 - `generation_time_ms` must be positive when not null
 

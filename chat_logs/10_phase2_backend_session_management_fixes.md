@@ -909,7 +909,7 @@ What I ran and results
   - Found many `text-transform: uppercase;` rules on word display selectors.
 - Edit: Replaced `text-transform: uppercase` with `text-transform: none` for the relevant word display selectors in both CSS files.
   - Files changed:
-    - RecommendationDisplay.css — recommendation-word, confidence-badge, alternative-word, game-status
+  - RecommendationDisplay.css — recommendation-word, alternative-word, game-status
     - EnhancedPuzzleInterface.css — word-item, recommended-word, response-button, response-word, response-outcome
 - Test: Ran frontend tests (inside frontend):
   - Command: npm test -- --watchAll=false

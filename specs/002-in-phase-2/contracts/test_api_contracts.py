@@ -38,7 +38,6 @@ class TestRecommendationEndpoint:
         assert "recommended_words" in data
         assert len(data["recommended_words"]) == 4
         assert data["connection_explanation"] is None
-        assert data["confidence_score"] is None
         assert data["provider_used"]["provider_type"] == "simple"
         assert data["generation_time_ms"] is None
 
@@ -75,7 +74,6 @@ class TestRecommendationEndpoint:
         assert "recommended_words" in data
         assert len(data["recommended_words"]) == 4
         assert data["connection_explanation"] is not None
-        assert isinstance(data["confidence_score"], (float, type(None)))
         assert data["provider_used"]["provider_type"] == "ollama"
         assert data["provider_used"]["model_name"] == "llama2"
         assert isinstance(data["generation_time_ms"], int)

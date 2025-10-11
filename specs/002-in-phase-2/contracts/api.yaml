@@ -54,7 +54,6 @@ paths:
                   value:
                     recommended_words: ["BASS", "FLOUNDER", "SALMON", "TROUT"]
                     connection_explanation: null
-                    confidence_score: null
                     provider_used:
                       provider_type: "simple"
                       model_name: null
@@ -64,7 +63,6 @@ paths:
                   value:
                     recommended_words: ["BASS", "FLOUNDER", "SALMON", "TROUT"]
                     connection_explanation: "These are all types of fish"
-                    confidence_score: 0.87
                     provider_used:
                       provider_type: "ollama"
                       model_name: "llama2"
@@ -254,13 +252,6 @@ components:
           type: string
           nullable: true
           description: Why these words are connected (null for simple provider)
-        confidence_score:
-          type: number
-          format: float
-          minimum: 0.0
-          maximum: 1.0
-          nullable: true
-          description: Provider's confidence in recommendation (null for simple)
         provider_used:
           $ref: '#/components/schemas/LLMProvider'
         generation_time_ms:

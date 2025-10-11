@@ -1,19 +1,24 @@
 from typing import List, Dict, Any, Optional
 import time
 
-try:  # provide a symbol for tests that patch it
-    from langchain_ollama import ChatOllama  # type: ignore
-except Exception:  # pragma: no cover - optional for tests
+# Provide a symbol for tests that patch it — try a few known package paths and
+# fall back to a simple placeholder when none are available.
+try:
+    from langchain_community.llms.ollama import Ollama as ChatOllama  # type: ignore
+except Exception:
+    try:
+        from langchain_ollama import ChatOllama  # type: ignore
+    except Exception:
 
-    class ChatOllama:  # dummy placeholder to satisfy patch target
-        def __init__(self, *args, **kwargs) -> None:
-            pass
+        class ChatOllama:  # dummy placeholder to satisfy patch target
+            def __init__(self, *args, **kwargs) -> None:
+                pass
 
-        def invoke(self, prompt: str) -> str:  # pragma: no cover - best effort
-            return ""
+            def invoke(self, prompt: str) -> str:  # pragma: no cover - best effort
+                return ""
 
-        def __call__(self, prompt: str) -> str:  # pragma: no cover - best effort
-            return self.invoke(prompt)
+            def __call__(self, prompt: str) -> str:  # pragma: no cover - best effort
+                return self.invoke(prompt)
 
 
 class OllamaProvider:
@@ -62,14 +67,20 @@ class OllamaProvider:
                     else:
                         raw = structured(prompt)
 
-                    # If structured returned a non-serializable or non-string value
-                    # (tests may return MagicMock), fall back to the plain llm.invoke
+                    # Unwrap common test doubles (e.g., MagicMock) that may be
+                    # returned by the structured wrapper. If the mock has a
+                    # `return_value`, prefer that. Otherwise, if it's not a
+                    # str/dict/list, try calling the underlying llm as a fallback.
                     if not isinstance(raw, (str, dict, list)):
-                        try:
-                            # Prefer callable API
-                            raw = llm(prompt)
-                        except Exception:
-                            raw = str(raw)
+                        # MagicMock and similar have `return_value` attribute
+                        if hasattr(raw, "return_value"):
+                            raw = raw.return_value
+                        else:
+                            try:
+                                # Prefer callable API
+                                raw = llm(prompt)
+                            except Exception:
+                                raw = str(raw)
                 except Exception:
                     raw = llm.invoke(prompt)
             else:

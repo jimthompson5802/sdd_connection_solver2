@@ -79,7 +79,6 @@ def test_service_uses_server_authoritative_remaining_words(monkeypatch):
         return RecommendationResponse(
             recommended_words=["bass", "flounder", "salmon", "trout"],
             connection_explanation=None,
-            confidence_score=0.5,
             provider_used=LLMProvider(provider_type="simple", model_name=None),
             generation_time_ms=None,
         )

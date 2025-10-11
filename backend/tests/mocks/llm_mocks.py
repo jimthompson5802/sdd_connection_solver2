@@ -28,16 +28,24 @@ def create_mock_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
         or response_data.get("explanation")
     )
 
+    # Ensure puzzle_state includes expected keys for tests
+    default_puzzle_state = {
+        "remaining_words": response_data.get("puzzle_state", {}).get(
+            "remaining_words", response_data.get("recommended_words", [])
+        ),
+        "completed_groups": response_data.get("puzzle_state", {}).get("completed_groups", []),
+        "total_mistakes": response_data.get("puzzle_state", {}).get("total_mistakes", 0),
+        "max_mistakes": response_data.get("puzzle_state", {}).get("max_mistakes", 4),
+        "game_status": response_data.get("puzzle_state", {}).get("game_status", "active"),
+    }
+
     return {
         "recommended_words": response_data["recommended_words"],
         "connection_explanation": connection_explanation,
         "provider_used": provider,
         "generation_time_ms": response_data.get("generation_time_ms"),
         # Include puzzle_state snapshot for tests that validate provider outputs
-        "puzzle_state": response_data.get(
-            "puzzle_state",
-            {"remaining_words": response_data.get("recommended_words", [])},
-        ),
+        "puzzle_state": response_data.get("puzzle_state", default_puzzle_state),
     }
 
 

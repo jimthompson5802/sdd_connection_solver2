@@ -190,41 +190,7 @@
   transform: translateY(-1px);
 }
 
-/* Confidence Badge */
-.recommendation-confidence {
-  flex-shrink: 0;
-}
-
-.confidence-badge {
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0.5px;
-  border: 2px solid;
-  background-color: white;
-}
-
-.confidence-badge--high {
-  color: #28a745;
-  border-color: #28a745;
-}
-
-.confidence-badge--medium {
-  color: #ffc107;
-  border-color: #ffc107;
-}
-
-.confidence-badge--low {
-  color: #fd7e14;
-  border-color: #fd7e14;
-}
-
-.confidence-badge--very-low {
-  color: #dc3545;
-  border-color: #dc3545;
-}
+/* Confidence UI removed */
 
 /* Explanation */
 .recommendation-explanation {
