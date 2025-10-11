@@ -42,7 +42,7 @@ class OpenAIService:
                     import os
 
                     api_key = os.getenv("OPENAI_API_KEY") or "test_key"
-                    model_name = request.llm_provider.model_name or "gpt-3.5-turbo"
+                    model_name = request.llm_provider.model_name or "gpt-4o-mini"
                     openai_provider = OpenAIProvider(api_key=api_key, model_name=model_name)
                 except Exception:
                     raise
@@ -184,7 +184,7 @@ bass, flounder, salmon, trout"""
         """
         try:
             # Create OpenAI provider
-            llm_provider = LLMProvider(provider_type="openai", model_name="gpt-3.5-turbo")
+            llm_provider = LLMProvider(provider_type="openai", model_name="gpt-4o-mini")
             openai_provider = self.provider_factory.create_provider(llm_provider)
 
             # Generate explanation prompt
@@ -209,7 +209,7 @@ bass, flounder, salmon, trout"""
         """
         try:
             # Create OpenAI provider
-            llm_provider = LLMProvider(provider_type="openai", model_name="gpt-3.5-turbo")
+            llm_provider = LLMProvider(provider_type="openai", model_name="gpt-4o-mini")
             openai_provider = self.provider_factory.create_provider(llm_provider)
 
             # Generate validation prompt

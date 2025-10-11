@@ -56,7 +56,7 @@ global.mockLLMProviderError = (status: number, message: string) => {
 global.testLLMProviders = {
   simple: { provider_type: 'simple', model_name: null },
   ollama: { provider_type: 'ollama', model_name: 'llama2' },
-  openai: { provider_type: 'openai', model_name: 'gpt-3.5-turbo' }
+  openai: { provider_type: 'openai', model_name: 'gpt-4o-mini' },
 };
 
 global.testRecommendationResponse = {

@@ -82,7 +82,7 @@ export const LLMProviderInput: React.FC<LLMProviderInputProps> = ({
       case 'ollama':
         return 'llama2';
       case 'openai':
-        return 'gpt-3.5-turbo';
+        return 'gpt-4o-mini';
       default:
         return null;
     }
@@ -175,7 +175,7 @@ export const LLMProviderInput: React.FC<LLMProviderInputProps> = ({
             {value.provider_type === 'ollama' && 
               'Enter the name of an Ollama model (e.g., llama2, codellama, mistral)'}
             {value.provider_type === 'openai' && 
-              'Enter an OpenAI model name (e.g., gpt-3.5-turbo, gpt-4)'}
+              'Enter an OpenAI model name (e.g., gpt-4o-mini, gpt-4)'}
           </p>
         </div>
       )}

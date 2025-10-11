@@ -7,7 +7,7 @@ import logging
 class OpenAIProvider:
     """Back-compat shim that talks to openai client directly for tests."""
 
-    def __init__(self, api_key: str, model_name: str = "gpt-3.5-turbo") -> None:
+    def __init__(self, api_key: str, model_name: str = "gpt-4o-mini") -> None:
         # api_key kept for signature compatibility; tests patch client
         from src.exceptions import ConfigurationError
 

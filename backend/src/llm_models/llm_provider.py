@@ -62,7 +62,7 @@ class LLMProvider(BaseModel):
             "examples": [
                 {"provider_type": "simple", "model_name": None},
                 {"provider_type": "ollama", "model_name": "llama2"},
-                {"provider_type": "openai", "model_name": "gpt-3.5-turbo"},
+                {"provider_type": "openai", "model_name": "gpt-4o-mini"},
             ]
         }
 

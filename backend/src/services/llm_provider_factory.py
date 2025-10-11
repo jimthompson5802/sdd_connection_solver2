@@ -226,7 +226,7 @@ class OpenAILLMProvider(BaseLLMProvider):
             from langchain.llms import OpenAI
 
             api_key = self.config.get("api_key")
-            model_name = self.config.get("model_name", "gpt-3.5-turbo")
+            model_name = self.config.get("model_name", "gpt-4o-mini")
             timeout = self.config.get("timeout", 30)
 
             if not api_key:
@@ -242,7 +242,7 @@ class OpenAILLMProvider(BaseLLMProvider):
         """Get OpenAI provider information."""
         return {
             "provider_type": "openai",
-            "model_name": self.config.get("model_name", "gpt-3.5-turbo"),
+            "model_name": self.config.get("model_name", "gpt-4o-mini"),
             "capabilities": ["context_aware_recommendations", "explanation_generation", "high_quality_reasoning"],
             "requires_api_key": True,
         }

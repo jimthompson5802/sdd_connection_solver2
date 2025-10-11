@@ -104,7 +104,7 @@ class RecommendationResponse(BaseModel):
                 {
                     "recommended_words": ["PIANO", "GUITAR", "VIOLIN", "DRUMS"],
                     "connection_explanation": "Musical instruments",
-                    "provider_used": {"provider_type": "openai", "model_name": "gpt-3.5-turbo"},
+                    "provider_used": {"provider_type": "openai", "model_name": "gpt-4o-mini"},
                     "generation_time_ms": 1250,
                 },
                 {

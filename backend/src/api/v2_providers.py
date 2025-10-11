@@ -161,7 +161,7 @@ async def _validate_openai_provider(
         try:
             factory = LLMProviderFactory()
             # Create LLMProvider model for testing
-            provider_model = LLMProvider(provider_type="openai", model_name="gpt-3.5-turbo")
+            provider_model = LLMProvider(provider_type="openai", model_name="gpt-4o-mini")
             # Test provider creation without storing reference
             factory.create_provider(provider_model)
 

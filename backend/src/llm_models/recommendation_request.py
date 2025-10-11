@@ -105,7 +105,7 @@ class RecommendationRequest(BaseModel):
                     "puzzle_context": None,
                 },
                 {
-                    "llm_provider": {"provider_type": "openai", "model_name": "gpt-3.5-turbo"},
+                    "llm_provider": {"provider_type": "openai", "model_name": "gpt-4o-mini"},
                     "remaining_words": ["PIANO", "GUITAR", "VIOLIN", "DRUMS"],
                     "previous_guesses": [
                         {

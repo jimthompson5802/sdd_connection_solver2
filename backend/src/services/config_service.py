@@ -13,7 +13,7 @@ class OpenAIConfig(BaseModel):
     """Configuration for OpenAI provider."""
 
     api_key: str
-    model_name: str = "gpt-3.5-turbo"
+    model_name: str = "gpt-4o-mini"
     timeout: int = 30
 
 
@@ -77,7 +77,7 @@ class ConfigurationService:
 
         return OpenAIConfig(
             api_key=api_key,
-            model_name=os.getenv("OPENAI_MODEL_NAME", "gpt-3.5-turbo"),
+            model_name=os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini"),
             timeout=int(os.getenv("OPENAI_TIMEOUT", "30")),
         )
 

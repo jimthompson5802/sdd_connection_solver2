@@ -19,5 +19,5 @@ class ProviderFactory:
         if llm_provider.provider_type == "openai":
             # In tests, openai client is patched; do not enforce env presence here.
             api_key = os.getenv("OPENAI_API_KEY", "")
-            return OpenAIProvider(api_key=api_key or "test_key", model_name=llm_provider.model_name or "gpt-3.5-turbo")
+            return OpenAIProvider(api_key=api_key or "test_key", model_name=llm_provider.model_name or "gpt-4o-mini")
         raise ValueError(f"Unsupported provider: {llm_provider.provider_type}")
