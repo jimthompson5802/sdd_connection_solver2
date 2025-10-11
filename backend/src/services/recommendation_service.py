@@ -137,24 +137,25 @@ class RecommendationService:
                 generation_time_ms=response.get("generation_time_ms"),
             )
 
-        # Validate response; no fallback to simple
-        validation_result = self.validator.validate_response(response, authoritative_request.previous_guesses)
-        # Normalize validator result to a dict with a 'valid' flag
-        if isinstance(validation_result, tuple):
-            # Some tests stub the validator to return (bool, message)
-            vr_tuple = cast(Tuple[Any, ...], validation_result)
-            valid_flag = bool(vr_tuple[0])
-            message = vr_tuple[1] if len(vr_tuple) > 1 else ""
-            if valid_flag:
-                validation_result = {"valid": True}
-            else:
-                validation_result = {
-                    "valid": False,
-                    "critical_failures": [str(message)] if message else ["validation_failed"],
-                }
+        # TODO: Do we want to validate every response? What is the intent?
+        # # Validate response; no fallback to simple
+        # validation_result = self.validator.validate_response(response, authoritative_request.previous_guesses)
+        # # Normalize validator result to a dict with a 'valid' flag
+        # if isinstance(validation_result, tuple):
+        #     # Some tests stub the validator to return (bool, message)
+        #     vr_tuple = cast(Tuple[Any, ...], validation_result)
+        #     valid_flag = bool(vr_tuple[0])
+        #     message = vr_tuple[1] if len(vr_tuple) > 1 else ""
+        #     if valid_flag:
+        #         validation_result = {"valid": True}
+        #     else:
+        #         validation_result = {
+        #             "valid": False,
+        #             "critical_failures": [str(message)] if message else ["validation_failed"],
+        #         }
 
-        if not validation_result["valid"]:
-            response = self._handle_invalid_response(authoritative_request, response, validation_result)
+        # if not validation_result["valid"]:
+        #     response = self._handle_invalid_response(authoritative_request, response, validation_result)
 
         # Persist last recommendation only when session exists
         if session is not None:

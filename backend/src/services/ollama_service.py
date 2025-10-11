@@ -52,33 +52,16 @@ class OllamaService:
             )
 
         # If provider returned a structured dict (new format), prefer it
-        if isinstance(llm_response, dict):
-            words = llm_response.get("recommended_words") or llm_response.get("words") or []
-            explanation = (
-                llm_response.get("explanation")
-                or llm_response.get("connection")
-                or llm_response.get("connection_explanation")
-                or ""
-            )
-            generation_time = llm_response.get("generation_time_ms")
 
-            # If generation_time missing, compute elapsed time
-            if generation_time is None:
-                generation_time = int((time.time() - start_time) * 1000)
+        # compute elapsed time
+        generation_time = int((time.time() - start_time) * 1000)
 
-            return RecommendationResponse(
-                recommended_words=words,
-                connection_explanation=explanation or None,
-                provider_used=request.llm_provider,
-                generation_time_ms=generation_time,
-            )
-
-        # Legacy/string response path -- freeform parsing removed
-        raise ValueError("not json object")
-
-    # _parse_llm_response removed: freeform text parsing is no longer supported here.
-
-    # Confidence scoring removed — not used in this codebase anymore
+        return RecommendationResponse(
+            recommended_words=llm_response.recommendations,
+            connection_explanation=llm_response.connection,
+            provider_used=request.llm_provider,
+            generation_time_ms=generation_time,
+        )
 
     def validate_connection(self, words: List[str]) -> Dict[str, Any]:
         """Validate a potential connection using Ollama.
