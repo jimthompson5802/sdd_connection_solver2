@@ -4,6 +4,7 @@ Integrates with langchain for standardized LLM interactions.
 """
 
 from typing import Dict, Any, Optional, Protocol
+from collections.abc import Mapping
 from abc import ABC, abstractmethod
 from langchain.llms.base import LLM
 from langchain_community.llms import FakeListLLM
@@ -45,7 +46,113 @@ class BaseLLMProvider(ABC):
     def generate_recommendation(self, prompt: str) -> str:
         """Generate recommendation using the LLM."""
         try:
-            return self.llm.invoke(prompt)
+            llm = self.llm
+
+            def _normalize_generate_result(res):
+                """Normalize possible LLM.generate return values into a str/dict/list."""
+                # common fast paths
+                if isinstance(res, (str, dict, list)):
+                    return res
+                # LLMResult-like objects may expose `generations`
+                gens = getattr(res, "generations", None)
+                if gens:
+                    try:
+                        first = gens[0]
+                        if isinstance(first, list) and first:
+                            item = first[0]
+                        else:
+                            item = first
+                        text = getattr(item, "text", None) or getattr(item, "content", None)
+                        if isinstance(text, str):
+                            return text
+                    except Exception:
+                        pass
+                # direct text attributes
+                text = getattr(res, "text", None) or getattr(res, "content", None)
+                if isinstance(text, str):
+                    return text
+                # pydantic-style dict
+                if hasattr(res, "dict"):
+                    try:
+                        return getattr(res, "dict")()
+                    except Exception:
+                        pass
+                # fallback to string coercion
+                return str(res)
+
+            # Prefer structured output when the LLM implementation supports it.
+            if hasattr(llm, "with_structured_output"):
+                try:
+                    wrapper = llm.with_structured_output({"recommendations": str})
+                    # Use the callable LLM/wrapper API instead of the deprecated `invoke` method.
+                    # Most modern LangChain LLM wrappers support being called directly.
+                    # Try calling the wrapper; some wrappers may not expose __call__
+                    try:
+                        result = wrapper(prompt)
+                    except Exception:
+                        # Fallback to older names if callable isn't supported
+                        if hasattr(wrapper, "invoke"):
+                            result = wrapper.invoke(prompt)
+                        elif hasattr(wrapper, "generate"):
+                            result = _normalize_generate_result(wrapper.generate([prompt]))
+                        else:
+                            # Last resort: coerce to string
+                            result = str(wrapper)
+
+                    # result might be a dict, a pydantic model, an object with attribute, or a plain string
+                    if isinstance(result, dict):
+                        if "recommendations" in result:
+                            return result["recommendations"]
+                        # if the dict itself is the recommendations text
+                        return str(result)
+
+                    # pydantic model or similar
+                    # pydantic model or similar; normalize via dict() when available
+                    if not isinstance(result, (str, dict, list)) and hasattr(result, "dict"):
+                        try:
+                            d = getattr(result, "dict")()
+                        except Exception:
+                            d = None
+                        if isinstance(d, dict) and "recommendations" in d:
+                            return d["recommendations"]
+
+                    # object with attribute
+                    if hasattr(result, "recommendations"):
+                        return getattr(result, "recommendations")
+
+                    # fallback if it's already a string
+                    if isinstance(result, str):
+                        return result
+
+                    # if structured attempt didn't produce the field we expected, fall back to plain invoke
+                except Exception:
+                    # fall through to the simple invoke below
+                    pass
+
+            # Default behaviour: call the LLM via the callable API
+            # (preferred over the deprecated `invoke` method)
+            try:
+                raw = llm(prompt)
+            except Exception:
+                # Backwards-compatible fallback to older API names
+                if hasattr(llm, "invoke"):
+                    raw = llm.invoke(prompt)
+                elif hasattr(llm, "generate"):
+                    raw = _normalize_generate_result(llm.generate([prompt]))
+                else:
+                    # If nothing works, raise with context
+                    raise
+
+            # If llm.generate returned a non-serializable object, normalize it
+            raw = _normalize_generate_result(raw)
+            # Default behaviour: if it's a string, return directly
+            if isinstance(raw, str):
+                return raw
+            # If it's a dict-like structured response, try to extract
+            if isinstance(raw, dict) and "recommendations" in raw:
+                return raw.get("recommendations")
+            # Otherwise fall-through to error
+            raise RuntimeError("LLM did not return a usable recommendation")
         except Exception as e:
             raise RuntimeError(f"LLM generation failed: {str(e)}") from e
 
@@ -176,12 +283,37 @@ class LLMProviderFactory:
         if llm_provider.model_name is not None:
             if config is None:
                 config = {}
-            # If config is a pydantic model, call its dict(), otherwise assume it's already a dict-like
-            if hasattr(config, "dict"):
-                config = dict(config.dict())
+            # If config is a pydantic model or object with dict(), prefer that, otherwise coerce to dict
+            # Coerce provider config into a plain Dict[str, Any].
+            # If the config object provides a dict() method (e.g., pydantic model), use it.
+            dict_method = getattr(config, "dict", None)
+            cfg: Dict[str, Any] = {}
+            if callable(dict_method):
+                try:
+                    data = dict_method()
+                    if isinstance(data, dict) or isinstance(data, Mapping):
+                        cfg = {str(k): v for k, v in data.items()}  # type: ignore[arg-type]
+                    else:
+                        cfg = {}
+                except Exception:
+                    try:
+                        if isinstance(config, dict) or isinstance(config, Mapping):
+                            cfg = {str(k): v for k, v in config.items()}
+                        else:
+                            cfg = {}
+                    except Exception:
+                        cfg = {}
             else:
-                config = dict(config)
-            config["model_name"] = llm_provider.model_name
+                try:
+                    if isinstance(config, dict) or isinstance(config, Mapping):
+                        cfg = {str(k): v for k, v in config.items()}
+                    else:
+                        cfg = {}
+                except Exception:
+                    cfg = {}
+
+            cfg["model_name"] = llm_provider.model_name
+            config = cfg
 
         # Create provider instance
         provider_class = self._providers[provider_type]

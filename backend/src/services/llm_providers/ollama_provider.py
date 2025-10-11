@@ -2,15 +2,18 @@ from typing import List, Dict, Any, Optional
 import time
 
 try:  # provide a symbol for tests that patch it
-    from langchain_community.llms.ollama import Ollama  # type: ignore
+    from langchain_ollama import ChatOllama  # type: ignore
 except Exception:  # pragma: no cover - optional for tests
 
-    class Ollama:  # dummy placeholder to satisfy patch target
+    class ChatOllama:  # dummy placeholder to satisfy patch target
         def __init__(self, *args, **kwargs) -> None:
             pass
 
         def invoke(self, prompt: str) -> str:  # pragma: no cover - best effort
             return ""
+
+        def __call__(self, prompt: str) -> str:  # pragma: no cover - best effort
+            return self.invoke(prompt)
 
 
 class OllamaProvider:
@@ -40,8 +43,8 @@ class OllamaProvider:
             # Try to use langchain's Ollama with structured output if available
             import importlib
 
-            ollama_mod = importlib.import_module("langchain_community.llms.ollama")
-            OllamaCls = getattr(ollama_mod, "Ollama")
+            ollama_mod = importlib.import_module("langchain_ollama")
+            OllamaCls = getattr(ollama_mod, "ChatOllama")
             llm = OllamaCls(model=self._model_name)
 
             if hasattr(llm, "with_structured_output"):
@@ -49,6 +52,9 @@ class OllamaProvider:
                     structured = llm.with_structured_output(
                         {"recommended_words": list, "connection": str, "explanation": str}, method="json_mode"
                     )
+                    # Prefer calling the structured wrapper directly. Some older wrappers
+                    # exposed `invoke` or `generate`; try them for compatibility, then
+                    # fall back to calling the wrapper as a callable.
                     if hasattr(structured, "invoke"):
                         raw = structured.invoke(prompt)
                     elif hasattr(structured, "generate"):
@@ -60,13 +66,18 @@ class OllamaProvider:
                     # (tests may return MagicMock), fall back to the plain llm.invoke
                     if not isinstance(raw, (str, dict, list)):
                         try:
-                            raw = llm.invoke(prompt)
+                            # Prefer callable API
+                            raw = llm(prompt)
                         except Exception:
                             raw = str(raw)
                 except Exception:
                     raw = llm.invoke(prompt)
             else:
-                raw = llm.invoke(prompt)
+                try:
+                    raw = llm(prompt)
+                except Exception:
+                    # Backwards compatible fallback for test doubles
+                    raw = llm.invoke(prompt)
         except Exception:
             raw = ""
 

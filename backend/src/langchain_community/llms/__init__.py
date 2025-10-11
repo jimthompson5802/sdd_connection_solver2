@@ -18,6 +18,10 @@ class FakeListLLM:
         self._idx += 1
         return resp
 
+    # Support callable API (preferred) while keeping invoke for compatibility
+    def __call__(self, prompt: str) -> str:
+        return self.invoke(prompt)
+
 
 class Ollama:
     def __init__(self, *args, **kwargs):
@@ -25,3 +29,6 @@ class Ollama:
 
     def invoke(self, prompt: str) -> str:
         return ""
+
+    def __call__(self, prompt: str) -> str:
+        return self.invoke(prompt)

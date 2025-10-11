@@ -47,6 +47,9 @@ class OpenAIProvider:
                         {"recommended_words": list, "connection": str, "explanation": str}, method="json_mode"
                     )
                     # Some wrappers expose invoke/generate — try common names
+                    # Prefer calling the structured wrapper directly. Try common
+                    # compatibility methods (`invoke`, `generate`) then fall back
+                    # to calling the wrapper as a callable.
                     if hasattr(structured, "invoke"):
                         raw = structured.invoke(prompt)
                     elif hasattr(structured, "generate"):
