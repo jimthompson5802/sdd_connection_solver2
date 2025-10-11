@@ -36,12 +36,12 @@ class PromptTemplateService:
             "- Your answer is INVALID if any selected word is not present in AVAILABLE WORDS\n\n"
             "OUTPUT FORMAT (JSON ONLY):\n"
             "Return a single JSON object and nothing else with the following keys:\n\n"
-            '- "recommended_words": a JSON array of exactly four words (strings) chosen from AVAILABLE WORDS\n'
+            '- "recommendations": a JSON array of exactly four words (strings) chosen from AVAILABLE WORDS\n'
             '- "connection": a short connection phrase (brief — keep it under 6 words)\n'
             '- "explanation": a short paragraph explaining why the recommended_words belong together\n\n'
             "Example valid JSON:\n"
             "{{\n"
-            '  "recommended_words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],\n'
+            '  "recommendations": ["BASS", "FLOUNDER", "SALMON", "TROUT"],\n'
             '  "connection": "Types of fish",\n'
             '  "explanation": "All are common fish species found in fresh or salt water."\n'
             "}}\n\n"

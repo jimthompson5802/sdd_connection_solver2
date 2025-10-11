@@ -8,7 +8,7 @@ from collections.abc import Mapping
 from abc import ABC, abstractmethod
 from langchain.llms.base import LLM
 from langchain_community.llms import FakeListLLM
-from src.llm_models.llm_provider import LLMProvider
+from src.llm_models.llm_provider import LLMProvider, LLMRecommendationResponse
 from src.services.config_service import get_config_service
 
 
@@ -83,12 +83,12 @@ class BaseLLMProvider(ABC):
             # Prefer structured output when the LLM implementation supports it.
             if hasattr(llm, "with_structured_output"):
                 try:
-                    wrapper = llm.with_structured_output({"recommendations": str})
+                    wrapper = llm.with_structured_output(LLMRecommendationResponse)
                     # Use the callable LLM/wrapper API instead of the deprecated `invoke` method.
                     # Most modern LangChain LLM wrappers support being called directly.
                     # Try calling the wrapper; some wrappers may not expose __call__
                     try:
-                        result = wrapper(prompt)
+                        result = wrapper.invoke(prompt)
                     except Exception:
                         # Fallback to older names if callable isn't supported
                         if hasattr(wrapper, "invoke"):
@@ -191,13 +191,13 @@ class OllamaLLMProvider(BaseLLMProvider):
     def _create_llm(self) -> LLM:
         """Create Ollama LLM instance."""
         try:
-            from langchain.llms import Ollama
+            from langchain_ollama import ChatOllama
 
             base_url = self.config.get("base_url", "http://localhost:11434")
             model_name = self.config.get("model_name", "llama2")
             timeout = self.config.get("timeout", 60)
 
-            return Ollama(base_url=base_url, model=model_name, timeout=timeout)
+            return ChatOllama(base_url=base_url, model=model_name)
         except ImportError as e:
             raise RuntimeError("Ollama dependencies not installed") from e
         except Exception as e:
