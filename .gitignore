@@ -84,6 +84,7 @@ venv/
 
 # environment variables
 .env
+.env_old
 
 
 # data files
