@@ -43,7 +43,7 @@ class BaseLLMProvider(ABC):
             self._llm = self._create_llm()
         return self._llm
 
-    def generate_recommendation(self, prompt: str) -> str:
+    def generate_recommendation(self, prompt: str) -> LLMRecommendationResponse:
         """Generate recommendation using the LLM."""
         try:
             llm = self.llm
@@ -89,6 +89,8 @@ class BaseLLMProvider(ABC):
                     # Try calling the wrapper; some wrappers may not expose __call__
                     try:
                         result = wrapper.invoke(prompt)
+                        return result
+                    # TODO: clean up exception handling here
                     except Exception:
                         # Fallback to older names if callable isn't supported
                         if hasattr(wrapper, "invoke"):
@@ -99,32 +101,33 @@ class BaseLLMProvider(ABC):
                             # Last resort: coerce to string
                             result = str(wrapper)
 
-                    # result might be a dict, a pydantic model, an object with attribute, or a plain string
-                    if isinstance(result, dict):
-                        if "recommendations" in result:
-                            return result["recommendations"]
-                        # if the dict itself is the recommendations text
-                        return str(result)
+                # TODO: clean up exception handling here
+                #     # result might be a dict, a pydantic model, an object with attribute, or a plain string
+                #     if isinstance(result, dict):
+                #         if "recommendations" in result:
+                #             return result["recommendations"]
+                #         # if the dict itself is the recommendations text
+                #         return str(result)
 
-                    # pydantic model or similar
-                    # pydantic model or similar; normalize via dict() when available
-                    if not isinstance(result, (str, dict, list)) and hasattr(result, "dict"):
-                        try:
-                            d = getattr(result, "dict")()
-                        except Exception:
-                            d = None
-                        if isinstance(d, dict) and "recommendations" in d:
-                            return d["recommendations"]
+                #     # pydantic model or similar
+                #     # pydantic model or similar; normalize via dict() when available
+                #     if not isinstance(result, (str, dict, list)) and hasattr(result, "dict"):
+                #         try:
+                #             d = getattr(result, "dict")()
+                #         except Exception:
+                #             d = None
+                #         if isinstance(d, dict) and "recommendations" in d:
+                #             return d["recommendations"]
 
-                    # object with attribute
-                    if hasattr(result, "recommendations"):
-                        return getattr(result, "recommendations")
+                #     # object with attribute
+                #     if hasattr(result, "recommendations"):
+                #         return getattr(result, "recommendations")
 
-                    # fallback if it's already a string
-                    if isinstance(result, str):
-                        return result
+                #     # fallback if it's already a string
+                #     if isinstance(result, str):
+                #         return result
 
-                    # if structured attempt didn't produce the field we expected, fall back to plain invoke
+                #     # if structured attempt didn't produce the field we expected, fall back to plain invoke
                 except Exception:
                     # fall through to the simple invoke below
                     pass
