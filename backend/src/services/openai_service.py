@@ -78,24 +78,14 @@ class OpenAIService:
                 or llm_response.get("connection_explanation")
                 or ""
             )
-            confidence = llm_response.get("confidence") or llm_response.get("confidence_score")
             generation_time = llm_response.get("generation_time_ms")
 
             if generation_time is None:
                 generation_time = int((time.time() - start_time) * 1000)
 
-            if confidence is None:
-                try:
-                    import json
-
-                    confidence = self._calculate_confidence(json.dumps(llm_response), words or [], explanation or "")
-                except Exception:
-                    confidence = None
-
             return RecommendationResponse(
                 recommended_words=words,
                 connection_explanation=explanation or None,
-                confidence_score=confidence,
                 provider_used=request.llm_provider,
                 generation_time_ms=generation_time,
             )
@@ -180,37 +170,7 @@ bass, flounder, salmon, trout"""
 
         return " ".join(cleaned_lines[:3])  # Take first 3 meaningful lines
 
-    def _calculate_confidence(self, response: str, words: List[str], explanation: str) -> float:
-        """Calculate confidence score for OpenAI response.
-
-        Args:
-            response: Raw response text.
-            words: Extracted words.
-            explanation: Extracted explanation.
-
-        Returns:
-            Confidence score between 0.0 and 1.0.
-        """
-        confidence = 0.7  # Higher base confidence for OpenAI
-
-        # Increase confidence for detailed explanation
-        if explanation and len(explanation) > 20:
-            confidence += 0.15
-
-        # Increase confidence for well-structured response
-        if len(response.split("\n")) > 2:
-            confidence += 0.1
-
-        # Increase confidence for reasoning keywords
-        reasoning_keywords = ["because", "since", "all", "share", "common", "category"]
-        if any(keyword in explanation.lower() for keyword in reasoning_keywords):
-            confidence += 0.05
-
-        # Decrease confidence for fallback words
-        if words == ["bass", "flounder", "salmon", "trout"]:
-            confidence = min(confidence, 0.4)
-
-        return min(confidence, 1.0)
+    # Confidence calculation removed — not used anymore
 
     def generate_detailed_explanation(self, words: List[str], connection: str) -> str:
         """Generate detailed explanation for a connection using OpenAI.

@@ -17,7 +17,6 @@ describe('EnhancedPuzzleInterface LLM flow', () => {
     const llmRecommendation = {
       recommended_words: ['alpha','bravo','charlie','delta'],
       connection_explanation: 'test',
-      confidence_score: 0.9,
       provider_used: 'simple',
     } as any;
 

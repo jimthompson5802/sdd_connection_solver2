@@ -51,14 +51,12 @@ class TestAPIServiceIntegration:
         # Validate result structure
         assert hasattr(result, "recommended_words")
         assert hasattr(result, "connection_explanation")
-        assert hasattr(result, "confidence_score")
         assert hasattr(result, "provider_used")
         assert hasattr(result, "generation_time_ms")
 
         # Validate simple provider behavior
         assert len(result.recommended_words) == 4
         assert result.connection_explanation is None
-        assert result.confidence_score is None
         assert result.provider_used.provider_type == "simple"
         assert result.generation_time_ms is None
 

@@ -8,8 +8,8 @@ ensuring the LLM provider integration works correctly from frontend to backend.
 import pytest
 from unittest.mock import patch, Mock
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
-from datetime import datetime
+
+# httpx.AsyncClient not used in these tests; synchronous TestClient is sufficient
 from src.main import app
 from src.services.ollama_service import OllamaService
 from src.services.openai_service import OpenAIService
@@ -23,11 +23,8 @@ def client():
     return TestClient(app)
 
 
-@pytest.fixture
-async def async_client():
-    """Async test client for FastAPI app"""
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        yield ac
+# Async test client fixture removed because it's not used in these tests and
+# was causing static-check warnings about parameters. Use synchronous TestClient instead.
 
 
 @pytest.fixture
@@ -143,7 +140,7 @@ class TestQuickstartJourney2_OllamaIntegration:
         assert data["provider_used"]["provider_type"] == "ollama"
         assert data["generation_time_ms"] == 2340
         assert data["connection_explanation"] is not None  # Ollama provider should have explanation
-        assert data["confidence_score"] == 0.92
+        # confidence_score removed from response shape
 
     @patch.object(LLMProviderFactory, "get_available_providers")
     @patch.object(OllamaService, "generate_recommendation")
@@ -225,7 +222,7 @@ class TestQuickstartJourney3_OpenAIIntegration:
         assert data["provider_used"]["provider_type"] == "openai"
         assert data["generation_time_ms"] == 1850
         assert "fruits" in data["connection_explanation"].lower()
-        assert data["confidence_score"] == 0.95
+        # confidence_score removed from response shape
 
     @patch.object(LLMProviderFactory, "create_provider")
     def test_openai_invalid_api_key(self, mock_create_provider, client):
@@ -268,9 +265,7 @@ class TestQuickstartJourney3_OpenAIIntegration:
         # Test should validate API response format and basic functionality
         assert response.status_code == 200
         assert "connection_explanation" in data
-        assert "confidence_score" in data
-        assert isinstance(data["confidence_score"], (int, float))
-        assert 0 <= data["confidence_score"] <= 1  # Valid confidence range
+        # confidence_score removed from response shape
         assert "recommended_words" in data
         assert len(data["recommended_words"]) == 4
 
@@ -298,13 +293,6 @@ class TestQuickstartJourney4_ErrorScenarios:
 
     def test_invalid_model_format(self, client, sample_puzzle_words):
         """Test error handling for invalid model name"""
-        request_data = {
-            "llm_provider": {"provider_type": "ollama", "model_name": "nonexistent_model"},
-            "remaining_words": sample_puzzle_words,
-            "previous_guesses": [],
-            "puzzle_context": None,
-        }
-
         # This will fail at validation stage
         validate_request = {"provider_type": "ollama", "model_name": "nonexistent_model"}
 
@@ -493,7 +481,6 @@ class TestAPIContractCompliance:
         required_fields = [
             "recommended_words",
             "connection_explanation",
-            "confidence_score",
             "provider_used",
             "generation_time_ms",
         ]
@@ -505,7 +492,7 @@ class TestAPIContractCompliance:
         assert isinstance(data["recommended_words"], list)
         assert len(data["recommended_words"]) == 4
         assert data["connection_explanation"] is None or isinstance(data["connection_explanation"], str)
-        assert isinstance(data["confidence_score"], (int, float))
+        # confidence_score removed from response shape
         assert isinstance(data["provider_used"], dict)
         assert data["generation_time_ms"] is None or isinstance(data["generation_time_ms"], (int, float))
 

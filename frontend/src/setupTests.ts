@@ -39,7 +39,6 @@ declare global {
   var testRecommendationResponse: {
     recommended_words: string[];
     connection_explanation: string;
-    confidence_score: number;
     provider_used: any;
     generation_time_ms: number;
   };
@@ -63,7 +62,6 @@ global.testLLMProviders = {
 global.testRecommendationResponse = {
   recommended_words: ['BASS', 'FLOUNDER', 'SALMON', 'TROUT'],
   connection_explanation: 'These are all types of fish',
-  confidence_score: 0.87,
   provider_used: global.testLLMProviders.ollama,
   generation_time_ms: 2340
 };

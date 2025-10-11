@@ -57,7 +57,6 @@ class TestLLMProviderIntegration:
         assert "recommended_words" in result
         assert len(result["recommended_words"]) == 4
         assert result.get("connection_explanation") is None
-        assert result.get("confidence_score") is None
         assert result.get("generation_time_ms") is None
 
         # All recommended words should be from remaining words

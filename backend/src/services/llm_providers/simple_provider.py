@@ -40,6 +40,5 @@ class SimpleProvider:
         return {
             "recommended_words": _map_to_original(resp.recommended_words),
             "connection_explanation": resp.connection_explanation,
-            "confidence_score": resp.confidence_score,
             "generation_time_ms": resp.generation_time_ms,
         }

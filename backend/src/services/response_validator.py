@@ -65,11 +65,6 @@ class ResponseValidatorService:
                 "description": "Should have meaningful explanation",
                 "critical": False,
             },
-            "confidence_range": {
-                "weight": 0.4,
-                "description": "Confidence score should be reasonable",
-                "critical": False,
-            },
             "no_repetition": {"weight": 0.7, "description": "Should not repeat previous guesses", "critical": False},
         }
 
@@ -142,8 +137,6 @@ class ResponseValidatorService:
             return self._validate_word_format(response.recommended_words)
         elif rule_name == "explanation_quality":
             return self._validate_explanation_quality(response.connection_explanation)
-        elif rule_name == "confidence_range":
-            return self._validate_confidence_range(response.confidence_score)
         elif rule_name == "no_repetition":
             return self._validate_no_repetition(response.recommended_words, previous_guesses)
         else:
@@ -232,30 +225,6 @@ class ResponseValidatorService:
             "score": min(quality_score, 1.0),
             "feedback": f"Explanation quality: {len(quality_indicators)} quality indicators found",
             "details": {"length": len(explanation), "quality_indicators": quality_indicators},
-        }
-
-    def _validate_confidence_range(self, confidence: Optional[float]) -> Dict[str, Any]:
-        """Validate that confidence score is in reasonable range."""
-        if confidence is None:
-            return {
-                "score": 0.5,
-                "feedback": "No confidence score provided",
-                "details": {"confidence": None, "in_range": False},
-            }
-
-        in_range = 0.0 <= confidence <= 1.0
-        reasonable = 0.1 <= confidence <= 0.9  # Not too extreme
-
-        score = 1.0 if in_range else 0.0
-        if in_range and reasonable:
-            score = 1.0
-        elif in_range:
-            score = 0.7  # In range but extreme
-
-        return {
-            "score": score,
-            "feedback": f"Confidence {confidence:.2f} is {'reasonable' if reasonable else 'extreme'}",
-            "details": {"confidence": confidence, "in_range": in_range, "reasonable": reasonable},
         }
 
     def _validate_no_repetition(self, words: List[str], previous_guesses: List[GuessAttempt]) -> Dict[str, Any]:

@@ -116,6 +116,5 @@ class OllamaProvider:
             "explanation": explanation_text,
             # Legacy compatibility
             "connection_explanation": explanation_text or connection_expl,
-            "confidence_score": None,
             "generation_time_ms": generation_time_ms,
         }

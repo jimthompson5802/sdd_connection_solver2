@@ -6,7 +6,6 @@ export const mockRecommendationResponses = {
   simple: {
     recommended_words: ["BASS", "PIKE", "SOLE", "CARP"],
     connection_explanation: "These are all types of fish.",
-    confidence_score: 0.8,
     provider_used: "simple",
     generation_time_ms: null,
     puzzle_state: {
@@ -28,7 +27,6 @@ export const mockRecommendationResponses = {
   ollama: {
     recommended_words: ["BASS", "PIKE", "SOLE", "CARP"],
     connection_explanation: "These words are all types of fish. Bass and pike are freshwater fish commonly found in lakes and rivers, while sole and carp are also fish species.",
-    confidence_score: 0.92,
     provider_used: "ollama",
     generation_time_ms: 2340,
     puzzle_state: {
@@ -50,7 +48,6 @@ export const mockRecommendationResponses = {
   openai: {
     recommended_words: ["APPLE", "BANANA", "CHERRY", "GRAPE"],
     connection_explanation: "These are all fruits. They are common fruits that people eat and are found in grocery stores and orchards.",
-    confidence_score: 0.95,
     provider_used: "openai",
     generation_time_ms: 1850,
     puzzle_state: {

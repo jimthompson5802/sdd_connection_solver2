@@ -60,26 +60,15 @@ class OllamaService:
                 or llm_response.get("connection_explanation")
                 or ""
             )
-            confidence = llm_response.get("confidence") or llm_response.get("confidence_score")
             generation_time = llm_response.get("generation_time_ms")
 
             # If generation_time missing, compute elapsed time
             if generation_time is None:
                 generation_time = int((time.time() - start_time) * 1000)
 
-            # If confidence missing, compute using available textual data
-            if confidence is None:
-                try:
-                    import json
-
-                    confidence = self._calculate_confidence(json.dumps(llm_response), words or [], explanation or "")
-                except Exception:
-                    confidence = None
-
             return RecommendationResponse(
                 recommended_words=words,
                 connection_explanation=explanation or None,
-                confidence_score=confidence,
                 provider_used=request.llm_provider,
                 generation_time_ms=generation_time,
             )
@@ -89,36 +78,7 @@ class OllamaService:
 
     # _parse_llm_response removed: freeform text parsing is no longer supported here.
 
-    def _calculate_confidence(self, response: str, words: List[str], explanation: str) -> float:
-        """Calculate confidence score based on response quality.
-
-        Args:
-            response: Raw LLM response.
-            words: Extracted words.
-            explanation: Extracted explanation.
-
-        Returns:
-            Confidence score between 0.0 and 1.0.
-        """
-        confidence = 0.5  # Base confidence
-
-        # Increase confidence if explanation is provided
-        if explanation and len(explanation) > 10:
-            confidence += 0.2
-
-        # Increase confidence if response is well-structured
-        if len(response.split("\n")) > 2:
-            confidence += 0.1
-
-        # Increase confidence if words are actual words (not random strings)
-        if all(len(word) > 2 and word.isalpha() for word in words):
-            confidence += 0.1
-
-        # Decrease confidence if fallback was used
-        if words == ["BASS", "FLOUNDER", "SALMON", "TROUT"]:
-            confidence = min(confidence, 0.3)
-
-        return min(confidence, 1.0)
+    # Confidence scoring removed — not used in this codebase anymore
 
     def validate_connection(self, words: List[str]) -> Dict[str, Any]:
         """Validate a potential connection using Ollama.

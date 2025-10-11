@@ -43,7 +43,7 @@ export interface RecommendationRequest {
 export interface RecommendationResponse {
   recommended_words: string[];
   connection_explanation: string;
-  confidence_score: number; // 0.0 to 1.0
+  // confidence_score removed
   // Backend returns an LLMProvider object; some tests/mocks may still use a string.
   // Support both to be resilient during transition.
   provider_used: string | LLMProvider;
@@ -110,7 +110,6 @@ export interface RecommendationHistory {
 export interface RecommendationSettings {
   preferred_provider: string;
   enable_explanations: boolean;
-  show_confidence_scores: boolean;
   enable_alternative_suggestions: boolean;
   timeout_seconds: number;
 }

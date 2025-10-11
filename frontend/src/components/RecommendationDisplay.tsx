@@ -44,28 +44,7 @@ export const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({
   showMetadata = true,
   className = ''
 }) => {
-  const getConfidenceLevel = (confidence: number) => {
-    if (confidence >= 0.8) return 'high';
-    if (confidence >= 0.6) return 'medium';
-    if (confidence >= 0.4) return 'low';
-    return 'very-low';
-  };
-
-  const getConfidenceLabel = (confidence: number) => {
-    const level = getConfidenceLevel(confidence);
-    switch (level) {
-      case 'high':
-        return 'High Confidence';
-      case 'medium':
-        return 'Medium Confidence';
-      case 'low':
-        return 'Low Confidence';
-      case 'very-low':
-        return 'Very Low Confidence';
-      default:
-        return 'Unknown Confidence';
-    }
-  };
+  // Confidence removed — UI no longer shows or computes confidence levels.
 
   const formatDuration = (milliseconds: number) => {
     const seconds = milliseconds / 1000;
@@ -187,14 +166,7 @@ export const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({
               ))}
             </div>
             
-            <div className="recommendation-confidence">
-              <span 
-                className={`confidence-badge confidence-badge--${getConfidenceLevel(recommendation.confidence_score)}`}
-                title={`Confidence: ${(recommendation.confidence_score * 100).toFixed(1)}%`}
-              >
-                {getConfidenceLabel(recommendation.confidence_score)}
-              </span>
-            </div>
+            {/* Confidence display removed */}
           </div>
 
           <div className="recommendation-explanation">

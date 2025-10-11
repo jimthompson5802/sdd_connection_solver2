@@ -111,6 +111,32 @@ class RecommendationService:
                 details={"cause": type(e).__name__},
             )
 
+        # Some tests and provider shims return plain dicts (structured JSON).
+        # Accept both RecommendationResponse instances and dicts for flexibility.
+        if isinstance(response, dict):
+            # Normalize provider_used into LLMProvider model if present as dict
+            provider_used = response.get("provider_used")
+            if isinstance(provider_used, dict):
+                try:
+                    from src.llm_models.llm_provider import LLMProvider as _LLMProvider
+
+                    provider_used = _LLMProvider(**provider_used)
+                except Exception:
+                    # Fallback to authoritative request's provider when construction fails
+                    provider_used = authoritative_request.llm_provider
+
+            response = RecommendationResponse(
+                recommended_words=response.get("recommended_words", []),
+                connection_explanation=(
+                    response.get("connection_explanation")
+                    or response.get("connection")
+                    or response.get("explanation")
+                    or None
+                ),
+                provider_used=provider_used or authoritative_request.llm_provider,
+                generation_time_ms=response.get("generation_time_ms"),
+            )
+
         # Validate response; no fallback to simple
         validation_result = self.validator.validate_response(response, authoritative_request.previous_guesses)
         # Normalize validator result to a dict with a 'valid' flag
@@ -269,7 +295,6 @@ class RecommendationService:
                 response_data={"unique_words": unique_words},
             )
 
-        base_conf = response.confidence_score if response.confidence_score is not None else 0.5
         fixed_expl = (
             (response.connection_explanation + " (auto-corrected)")
             if response.connection_explanation
@@ -278,7 +303,6 @@ class RecommendationService:
         return RecommendationResponse(
             recommended_words=unique_words[:4],
             connection_explanation=fixed_expl,
-            confidence_score=max(0.1, base_conf - 0.3),
             provider_used=response.provider_used,
             generation_time_ms=response.generation_time_ms,
         )

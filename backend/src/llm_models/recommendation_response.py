@@ -13,7 +13,6 @@ class RecommendationResponse(BaseModel):
 
     recommended_words: List[str]
     connection_explanation: Optional[str] = None
-    confidence_score: Optional[float] = None
     provider_used: LLMProvider
     generation_time_ms: Optional[int] = None
 
@@ -37,18 +36,6 @@ class RecommendationResponse(BaseModel):
             cleaned_words.append(cleaned_word)
 
         return cleaned_words
-
-    @field_validator("confidence_score")
-    @classmethod
-    def validate_confidence_score(cls, v: Optional[float]) -> Optional[float]:
-        """Validate confidence score is between 0.0 and 1.0."""
-        if v is not None:
-            if not isinstance(v, (int, float)):
-                raise ValueError("confidence_score must be a number")
-            if v < 0.0 or v > 1.0:
-                raise ValueError("confidence_score must be between 0.0 and 1.0")
-            return float(v)
-        return v
 
     @field_validator("connection_explanation")
     @classmethod
@@ -99,10 +86,6 @@ class RecommendationResponse(BaseModel):
         """Check if this response includes a connection explanation."""
         return self.connection_explanation is not None and self.connection_explanation.strip() != ""
 
-    def has_confidence_score(self) -> bool:
-        """Check if this response includes a confidence score."""
-        return self.confidence_score is not None
-
     def get_provider_identifier(self) -> str:
         """Get identifier for the provider that generated this response."""
         return self.provider_used.get_provider_identifier()
@@ -115,21 +98,18 @@ class RecommendationResponse(BaseModel):
                 {
                     "recommended_words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],
                     "connection_explanation": None,
-                    "confidence_score": None,
                     "provider_used": {"provider_type": "simple", "model_name": None},
                     "generation_time_ms": None,
                 },
                 {
                     "recommended_words": ["PIANO", "GUITAR", "VIOLIN", "DRUMS"],
                     "connection_explanation": "Musical instruments",
-                    "confidence_score": 0.85,
                     "provider_used": {"provider_type": "openai", "model_name": "gpt-3.5-turbo"},
                     "generation_time_ms": 1250,
                 },
                 {
                     "recommended_words": ["RED", "BLUE", "GREEN", "YELLOW"],
                     "connection_explanation": "Primary and secondary colors",
-                    "confidence_score": 0.72,
                     "provider_used": {"provider_type": "ollama", "model_name": "llama2"},
                     "generation_time_ms": 3200,
                 },

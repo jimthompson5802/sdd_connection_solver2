@@ -31,11 +31,13 @@ def create_mock_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "recommended_words": response_data["recommended_words"],
         "connection_explanation": connection_explanation,
-        "confidence_score": response_data.get("confidence_score") or response_data.get("confidence"),
         "provider_used": provider,
         "generation_time_ms": response_data.get("generation_time_ms"),
         # Include puzzle_state snapshot for tests that validate provider outputs
-        "puzzle_state": response_data.get("puzzle_state", {}),
+        "puzzle_state": response_data.get(
+            "puzzle_state",
+            {"remaining_words": response_data.get("recommended_words", [])},
+        ),
     }
 
 
@@ -45,7 +47,6 @@ MOCK_RECOMMENDATION_RESPONSES = {
         {
             "recommended_words": ["BASS", "PIKE", "SOLE", "CARP"],
             "connection_explanation": None,  # Simple provider has no explanation
-            "confidence_score": 0.8,
             "provider_used": {"provider_type": "simple", "model_name": None},
             "generation_time_ms": None,  # Simple provider has no timing
         }
@@ -57,7 +58,6 @@ MOCK_RECOMMENDATION_RESPONSES = {
                 "These words are all types of fish. Bass and pike are freshwater fish "
                 "commonly found in lakes and rivers, while sole and carp are also fish species."
             ),
-            "confidence_score": 0.92,
             "provider_used": {"provider_type": "ollama", "model_name": "llama2"},
             "generation_time_ms": 2340,
         }
@@ -69,7 +69,6 @@ MOCK_RECOMMENDATION_RESPONSES = {
                 "These are all fruits. They are common fruits that people eat "
                 "and are found in grocery stores and orchards."
             ),
-            "confidence_score": 0.95,
             "provider_used": {"provider_type": "openai", "model_name": "gpt-3.5-turbo"},
             "generation_time_ms": 1850,
         }
@@ -209,7 +208,7 @@ class MockOllamaProvider(MockLLMProvider):
             response["connection_explanation"] = (
                 "These are all primary and secondary colors commonly used in art and design."
             )
-            response["confidence_score"] = 0.88
+            # legacy confidence_score removed
         else:
             response = MOCK_RECOMMENDATION_RESPONSES["ollama"].copy()
 

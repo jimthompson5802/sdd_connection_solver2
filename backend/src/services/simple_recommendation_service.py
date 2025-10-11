@@ -72,7 +72,6 @@ class SimpleRecommendationService:
         return RecommendationResponse(
             recommended_words=recommended_words,
             connection_explanation=None,  # Simple provider doesn't provide explanations
-            confidence_score=None,  # For legacy behavior expectations, omit confidence for simple provider
             provider_used=provider,
             generation_time_ms=None,  # Simple provider doesn't track timing
         )

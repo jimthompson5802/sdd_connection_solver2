@@ -118,7 +118,6 @@ class OpenAIProvider:
             "explanation": explanation_out,
             # Legacy compatibility
             "connection_explanation": explanation_out or connection_out,
-            "confidence_score": None,
             "generation_time_ms": generation_time_ms,
         }
 
@@ -180,7 +179,6 @@ class OpenAIProvider:
             "connection": str(parsed.get("connection", "")),
             "explanation": str(parsed.get("explanation", "")),
             "connection_explanation": parsed.get("explanation", "") or parsed.get("connection", ""),
-            "confidence_score": parsed.get("confidence") or parsed.get("confidence_score"),
             "generation_time_ms": generation_time_ms,
         }
 

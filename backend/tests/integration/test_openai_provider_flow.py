@@ -23,7 +23,6 @@ class TestOpenAIProviderFlow:
             "recommended_words": ["bass", "flounder", "salmon", "trout"],
             "explanation": "These are fish",
             "connection": "Fish",
-            "confidence": 0.9,
         }
         mock_client.chat.completions.create.return_value = mock_response
         mock_openai.return_value = mock_client
@@ -73,7 +72,6 @@ class TestOpenAIProviderFlow:
             "recommended_words": ["piano", "guitar", "violin", "drums"],
             "explanation": "These are instruments",
             "connection": "Instruments",
-            "confidence": 0.8,
         }
         mock_client.chat.completions.create.return_value = mock_response
         mock_openai.return_value = mock_client
@@ -202,7 +200,6 @@ class TestOpenAIProviderFlow:
             "recommended_words": ["word1", "word2", "word3", "word4"],
             "explanation": "example",
             "connection": "Example",
-            "confidence": 0.7,
         }
         mock_client.chat.completions.create.return_value = mock_response
         mock_openai.return_value = mock_client

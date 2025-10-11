@@ -53,7 +53,6 @@ def create_mock_response(response_data: Dict[str, Any]) -> RecommendationRespons
     return RecommendationResponse(
         recommended_words=response_data["recommended_words"],
         connection_explanation=response_data.get("connection_explanation"),
-        confidence_score=response_data["confidence_score"],
         provider_used=provider,
         generation_time_ms=response_data.get("generation_time_ms"),
     )'''
@@ -72,7 +71,6 @@ MOCK_RECOMMENDATION_RESPONSES = {
     "simple": create_mock_response({
         "recommended_words": ["BASS", "PIKE", "SOLE", "CARP"],
         "connection_explanation": None,  # Simple provider has no explanation
-        "confidence_score": 0.8,
         "provider_used": "simple",
         "generation_time_ms": None,  # Simple provider has no timing
     }),
@@ -82,7 +80,7 @@ MOCK_RECOMMENDATION_RESPONSES = {
             "These words are all types of fish. Bass and pike are freshwater fish "
             "commonly found in lakes and rivers, while sole and carp are also fish species."
         ),
-        "confidence_score": 0.92,
+        
         "provider_used": "ollama",
         "generation_time_ms": 2340,
     }),
@@ -92,7 +90,7 @@ MOCK_RECOMMENDATION_RESPONSES = {
             "These are all fruits. They are common fruits that people eat "
             "and are found in grocery stores and orchards."
         ),
-        "confidence_score": 0.95,
+        
         "provider_used": "openai",
         "generation_time_ms": 1850,
     })
