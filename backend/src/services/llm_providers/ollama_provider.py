@@ -24,7 +24,7 @@ except Exception:
 class OllamaProvider:
     """Back-compat shim that talks to langchain Ollama directly for tests."""
 
-    def __init__(self, base_url: Optional[str] = None, model_name: str = "llama2") -> None:
+    def __init__(self, base_url: Optional[str] = None, model_name: str = "qwen2.5:32b") -> None:
         # Store for potential constructor compatibility; not required by tests due to patching
         self._base_url = base_url
         self._model_name = model_name

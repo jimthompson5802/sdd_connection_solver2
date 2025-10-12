@@ -15,7 +15,7 @@ class ProviderFactory:
         if llm_provider.provider_type == "ollama":
             # In tests, langchain Ollama is patched; do not enforce env presence here.
             base_url = os.getenv("OLLAMA_BASE_URL")
-            return OllamaProvider(base_url=base_url, model_name=llm_provider.model_name or "llama2")
+            return OllamaProvider(base_url=base_url, model_name=llm_provider.model_name or "qwen2.5:32b")
         if llm_provider.provider_type == "openai":
             # In tests, openai client is patched; do not enforce env presence here.
             api_key = os.getenv("OPENAI_API_KEY", "")

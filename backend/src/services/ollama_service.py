@@ -74,7 +74,7 @@ class OllamaService:
         """
         try:
             # Create a basic LLM provider for validation
-            llm_provider = LLMProvider(provider_type="ollama", model_name="llama2")
+            llm_provider = LLMProvider(provider_type="ollama", model_name="qwen2.5:32b")
             ollama_provider = self.provider_factory.create_provider(llm_provider)
 
             # Generate validation prompt

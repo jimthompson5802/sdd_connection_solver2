@@ -52,7 +52,7 @@ class EnvironmentLoader:
         base_url = os.getenv("OLLAMA_BASE_URL")
         if base_url:
             config["base_url"] = base_url
-            config["model_name"] = os.getenv("OLLAMA_MODEL_NAME", "llama2")
+            config["model_name"] = os.getenv("OLLAMA_MODEL_NAME", "qwen2.5:32b")
             config["timeout"] = int(os.getenv("OLLAMA_TIMEOUT", "300"))
         return config
 

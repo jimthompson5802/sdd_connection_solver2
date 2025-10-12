@@ -234,7 +234,7 @@ async def _validate_ollama_provider(
         try:
             factory = LLMProviderFactory()
             # Create LLMProvider model for testing
-            provider_model = LLMProvider(provider_type="ollama", model_name="llama2")
+            provider_model = LLMProvider(provider_type="ollama", model_name="qwen2.5:32b")
             # Test provider creation without storing reference
             factory.create_provider(provider_model)
 

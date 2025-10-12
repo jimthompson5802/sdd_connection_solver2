@@ -110,7 +110,7 @@ class RecommendationResponse(BaseModel):
                 {
                     "recommended_words": ["RED", "BLUE", "GREEN", "YELLOW"],
                     "connection_explanation": "Primary and secondary colors",
-                    "provider_used": {"provider_type": "ollama", "model_name": "llama2"},
+                    "provider_used": {"provider_type": "ollama", "model_name": "qwen2.5:32b"},
                     "generation_time_ms": 3200,
                 },
             ]

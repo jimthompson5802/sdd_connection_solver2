@@ -197,7 +197,7 @@ class OllamaLLMProvider(BaseLLMProvider):
             from langchain_ollama import ChatOllama
 
             base_url = self.config.get("base_url", "http://localhost:11434")
-            model_name = self.config.get("model_name", "llama2")
+            model_name = self.config.get("model_name", "qwen2.5:32b")
             timeout = self.config.get("timeout", 300)
 
             return ChatOllama(base_url=base_url, model=model_name)
@@ -210,7 +210,7 @@ class OllamaLLMProvider(BaseLLMProvider):
         """Get Ollama provider information."""
         return {
             "provider_type": "ollama",
-            "model_name": self.config.get("model_name", "llama2"),
+            "model_name": self.config.get("model_name", "qwen2.5:32b"),
             "base_url": self.config.get("base_url", "http://localhost:11434"),
             "capabilities": ["context_aware_recommendations", "explanation_generation"],
             "requires_api_key": False,

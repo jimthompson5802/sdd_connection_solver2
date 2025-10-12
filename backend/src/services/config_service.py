@@ -21,7 +21,7 @@ class OllamaConfig(BaseModel):
     """Configuration for Ollama provider."""
 
     base_url: str = "http://localhost:11434"
-    model_name: str = "llama2"
+    model_name: str = "qwen2.5:32b"
     timeout: int = 300
 
 
@@ -89,7 +89,7 @@ class ConfigurationService:
 
         return OllamaConfig(
             base_url=base_url,
-            model_name=os.getenv("OLLAMA_MODEL_NAME", "llama2"),
+            model_name=os.getenv("OLLAMA_MODEL_NAME", "qwen2.5:32b"),
             timeout=int(os.getenv("OLLAMA_TIMEOUT", "300")),
         )
 
