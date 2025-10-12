@@ -75,6 +75,7 @@ cython_debug/
 
 # VS Code
 .vscode/
+.VSCodeCounter/
 
 # MacOS
 .DS_Store
@@ -89,3 +90,4 @@ venv/
 
 # data files
 data/
+
