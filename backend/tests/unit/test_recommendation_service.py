@@ -86,11 +86,25 @@ class TestRecommendationEngine:
 
     def test_get_recommendation_insufficient_remaining_words(self):
         """Test recommendation generation with insufficient remaining words."""
-        # Create a session and mark some groups as found
+        # Create a session and simulate found groups by recording correct attempts
         session = PuzzleSession(self.sample_words)
-        # Mark 3 groups as found, leaving only 4 words
-        for i in range(3):
-            session.groups[i].found = True
+
+        # Mark 3 groups as found by recording correct attempts (4 words each = 12 words total)
+        # This leaves 4 words remaining
+        from src.models import ResponseResult
+
+        # First group: fruits
+        session.record_attempt(["apple", "banana", "cherry", "date"], ResponseResult.CORRECT, color="Yellow")
+
+        # Second group: animals
+        session.record_attempt(["elephant", "fox", "giraffe", "hippo"], ResponseResult.CORRECT, color="Green")
+
+        # Third group: colors
+        session.record_attempt(["red", "blue", "green", "yellow"], ResponseResult.CORRECT, color="Blue")
+
+        # Now only 4 words should remain: "one", "two", "three", "four"
+        remaining = session.get_remaining_words()
+        assert len(remaining) == 4
 
         recommendation = self.engine.get_recommendation(session)
         words, connection = recommendation
@@ -100,11 +114,28 @@ class TestRecommendationEngine:
         assert connection == "this is the connection reason"
 
     def test_get_recommendation_no_remaining_words(self):
-        """Test recommendation generation with no remaining words."""
-        # Create a session and mark all groups as found
+        """Test recommendation generation when all groups are found."""
+        # Create a session and mark all groups as found by recording correct attempts
         session = PuzzleSession(self.sample_words)
-        for group in session.groups:
-            group.found = True
+
+        # Mark all 4 groups as found by recording correct attempts
+        from src.models import ResponseResult
+
+        # First group: fruits
+        session.record_attempt(["apple", "banana", "cherry", "date"], ResponseResult.CORRECT, color="Yellow")
+
+        # Second group: animals
+        session.record_attempt(["elephant", "fox", "giraffe", "hippo"], ResponseResult.CORRECT, color="Green")
+
+        # Third group: colors
+        session.record_attempt(["red", "blue", "green", "yellow"], ResponseResult.CORRECT, color="Blue")
+
+        # Fourth group: numbers
+        session.record_attempt(["one", "two", "three", "four"], ResponseResult.CORRECT, color="Purple")
+
+        # Now no words should remain
+        remaining = session.get_remaining_words()
+        assert len(remaining) == 0
 
         recommendation = self.engine.get_recommendation(session)
         words, connection = recommendation

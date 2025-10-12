@@ -25,6 +25,27 @@ def _make_session(words: List[str]):
 def test_prompt_contains_available_words_and_constraints():
     service = PromptTemplateService()
 
+    # Create a session first to provide the context the service needs (requires 16 words)
+    session_words = [
+        "BASS",
+        "FLOUNDER",
+        "SALMON",
+        "TROUT",
+        "PIANO",
+        "GUITAR",
+        "VIOLIN",
+        "DRUMS",
+        "RED",
+        "BLUE",
+        "GREEN",
+        "YELLOW",
+        "APPLE",
+        "BANANA",
+        "ORANGE",
+        "GRAPE",
+    ]
+    session = session_manager.create_session(session_words)
+
     req = RecommendationRequest(
         llm_provider=LLMProvider(provider_type="openai", model_name="gpt-4o-mini"),
         remaining_words=["BASS", "FLOUNDER", "SALMON", "TROUT"],
@@ -39,8 +60,8 @@ def test_prompt_contains_available_words_and_constraints():
     assert "Do NOT invent, modify, or reformat words" in prompt
     assert "AVAILABLE WORDS:" in prompt
 
-    # The actual words must appear exactly as provided by the request
-    for w in req.remaining_words:
+    # The actual words must appear exactly as provided by the session
+    for w in session.get_remaining_words():
         # Service lowercases remaining words when building prompts; tests should account for that.
         assert w.lower() in prompt
 

@@ -63,14 +63,13 @@ class TestAPIServiceIntegration:
     @pytest.mark.integration
     @patch("src.services.llm_provider_factory.LLMProviderFactory.create_provider")
     def test_get_recommendations_with_ollama_provider(self, mock_create_provider):
-        """Test that service can process ollama provider requests"""
+        """Test recommendations with ollama provider integration."""
         from src.services.recommendation_service import RecommendationService
         from src.models import RecommendationRequest, LLMProvider
 
-        # Mock provider returned by the factory to avoid real langchain/ollama deps
+        # Mock provider returned by the factory to avoid real Ollama deps
         class _FakeProvider:
             def generate_recommendation(self, prompt: str):
-                # Simulate the BaseLLMProvider structured object expected by service
                 class _Resp:
                     recommendations = ["BASS", "FLOUNDER", "SALMON", "TROUT"]
                     connection = "These are types of fish"
@@ -78,6 +77,30 @@ class TestAPIServiceIntegration:
                 return _Resp()
 
         mock_create_provider.return_value = _FakeProvider()
+
+        # Create session context for the test
+        from src.models import session_manager
+
+        session_manager._sessions.clear()
+        session_words = [
+            "BASS",
+            "FLOUNDER",
+            "SALMON",
+            "TROUT",
+            "PIANO",
+            "GUITAR",
+            "VIOLIN",
+            "DRUMS",
+            "RED",
+            "BLUE",
+            "GREEN",
+            "YELLOW",
+            "CHAIR",
+            "TABLE",
+            "LAMP",
+            "DESK",
+        ]
+        session_manager.create_session(session_words)
 
         service = RecommendationService()
 
@@ -113,6 +136,30 @@ class TestAPIServiceIntegration:
                 return _Resp()
 
         mock_create_provider.return_value = _FakeProvider()
+
+        # Create session context for the test
+        from src.models import session_manager
+
+        session_manager._sessions.clear()
+        session_words = [
+            "BASS",
+            "FLOUNDER",
+            "SALMON",
+            "TROUT",
+            "PIANO",
+            "GUITAR",
+            "VIOLIN",
+            "DRUMS",
+            "RED",
+            "BLUE",
+            "GREEN",
+            "YELLOW",
+            "CHAIR",
+            "TABLE",
+            "LAMP",
+            "DESK",
+        ]
+        session_manager.create_session(session_words)
 
         service = RecommendationService()
 
@@ -164,11 +211,36 @@ class TestAPIServiceIntegration:
         from src.llm_models.guess_attempt import GuessOutcome
         from datetime import datetime
 
+        # Create session context for the test that doesn't conflict with previous guesses
+        from src.models import session_manager
+
+        session_manager._sessions.clear()
+        session_words = [
+            "BASS",
+            "FLOUNDER",
+            "SALMON",
+            "TROUT",
+            "PIANO",
+            "GUITAR",
+            "VIOLIN",
+            "DRUMS",
+            "CAR",
+            "TRUCK",
+            "BUS",
+            "BIKE",
+            "DOG",
+            "CAT",
+            "BIRD",
+            "FISH",
+        ]
+        session_manager.create_session(session_words)
+
         service = RecommendationService()
 
+        # Previous guesses with words NOT in remaining words (words that were previously correct or tried)
         previous_guesses = [
             PreviousGuess(
-                words=["RED", "BLUE", "GREEN", "YELLOW"],
+                words=["RED", "BLUE", "GREEN", "YELLOW"],  # These are not in session_words, so valid
                 outcome=GuessOutcome.INCORRECT,
                 actual_connection=None,
                 timestamp=datetime.now(),
@@ -177,16 +249,16 @@ class TestAPIServiceIntegration:
 
         request = RecommendationRequest(
             llm_provider=LLMProvider(provider_type="simple", model_name=None),
-            remaining_words=["BASS", "FLOUNDER", "SALMON", "TROUT"],
+            remaining_words=["BASS", "FLOUNDER", "SALMON", "TROUT"],  # These are in session_words
             previous_guesses=previous_guesses,
         )
 
         result = service.get_recommendations(request)
 
         # Should not include any words from previous guesses
-        previous_words = [word for guess in previous_guesses for word in guess.words]
+        previous_words = [word.lower() for guess in previous_guesses for word in guess.words]
         for word in result.recommended_words:
-            assert word not in previous_words
+            assert word.lower() not in previous_words
 
     @pytest.mark.integration
     def test_health_service_exists(self):

@@ -448,6 +448,11 @@ class TestBackwardCompatibility:
 
     def test_simple_provider_identical_behavior(self, client, sample_puzzle_words):
         """Test that simple provider behaves consistently"""
+        # Clear any existing sessions to ensure clean test
+        from src.models import session_manager
+
+        session_manager._sessions.clear()
+
         request_data = {
             "llm_provider": {"provider_type": "simple", "model_name": None},
             "remaining_words": sample_puzzle_words,
@@ -463,7 +468,11 @@ class TestBackwardCompatibility:
         # Should return 4 words consistently
         assert len(data["recommended_words"]) == 4
         assert data["provider_used"]["provider_type"] == "simple"
-        assert all(word in sample_puzzle_words for word in data["recommended_words"])
+
+        # Convert to lowercase for case-insensitive comparison
+        sample_words_lower = [word.lower() for word in sample_puzzle_words]
+        recommended_words_lower = [word.lower() for word in data["recommended_words"]]
+        assert all(word in sample_words_lower for word in recommended_words_lower)
 
 
 class TestAPIContractCompliance:
