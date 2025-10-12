@@ -24,7 +24,7 @@ export class LLMApiService {
   private baseUrl: string;
   private timeout: number;
 
-  constructor(baseUrl?: string, timeout: number = 30000) {
+  constructor(baseUrl?: string, timeout: number = 300000) {
     this.baseUrl = baseUrl || process.env.REACT_APP_API_URL || 'http://localhost:8000';
     this.timeout = timeout;
   }
@@ -145,7 +145,7 @@ export class LLMApiService {
           method: 'POST',
           body: JSON.stringify(request),
         },
-        60000 // 60 second timeout for LLM requests
+        this.timeout // configured timeout for LLM requests (ms)
       );
       return this.handleResponse<GenerateRecommendationResponse>(response);
     } catch (error) {

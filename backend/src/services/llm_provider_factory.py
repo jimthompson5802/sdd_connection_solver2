@@ -198,7 +198,7 @@ class OllamaLLMProvider(BaseLLMProvider):
 
             base_url = self.config.get("base_url", "http://localhost:11434")
             model_name = self.config.get("model_name", "llama2")
-            timeout = self.config.get("timeout", 60)
+            timeout = self.config.get("timeout", 300)
 
             return ChatOllama(base_url=base_url, model=model_name)
         except ImportError as e:
@@ -227,7 +227,7 @@ class OpenAILLMProvider(BaseLLMProvider):
 
             api_key = self.config.get("api_key")
             model_name = self.config.get("model_name", "gpt-4o-mini")
-            timeout = self.config.get("timeout", 30)
+            timeout = self.config.get("timeout", 300)
 
             if not api_key:
                 raise ValueError("OpenAI API key is required")

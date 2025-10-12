@@ -166,18 +166,19 @@ class PuzzleSession:
         # Tracks the last recommendation issued to the user (list of 4 words)
         self.last_recommendation: Optional[List[str]] = None
 
-        # Initialize placeholder groups (will be populated by ML analysis)
-        self._initialize_placeholder_groups()
+    # TODO: cleanup
+    #     # Initialize placeholder groups (will be populated by ML analysis)
+    #     self._initialize_placeholder_groups()
 
-    def _initialize_placeholder_groups(self) -> None:
-        """Initialize placeholder groups until ML analysis is implemented."""
-        # This is a simplified placeholder - in real implementation,
-        # this would use ML/NLP to analyze word relationships
-        words_copy = self.words.copy()
+    # def _initialize_placeholder_groups(self) -> None:
+    #     """Initialize placeholder groups until ML analysis is implemented."""
+    #     # This is a simplified placeholder - in real implementation,
+    #     # this would use ML/NLP to analyze word relationships
+    #     words_copy = self.words.copy()
 
-        for i in range(4):
-            group_words = words_copy[i * 4 : (i + 1) * 4]
-            self.groups.append(WordGroup(category=f"Category {i+1}", words=group_words, difficulty=i + 1))
+    #     for i in range(4):
+    #         group_words = words_copy[i * 4 : (i + 1) * 4]
+    #         self.groups.append(WordGroup(category=f"Category {i+1}", words=group_words, difficulty=i + 1))
 
     def record_attempt(
         self, words: List[str], result: ResponseResult, was_recommendation: bool = False, color: Optional[str] = None
@@ -266,13 +267,42 @@ class PuzzleSession:
         """Get data needed for generating recommendations."""
         return {
             "remaining_words": self.get_remaining_words(),
-            "attempts": [
-                {"words": attempt.words, "result": attempt.result.value, "timestamp": attempt.timestamp.isoformat()}
-                for attempt in self.attempts
-            ],
+            "attempts": self.get_invalid_word_groups(),
             "mistakes_made": self.mistakes_made,
             "groups_found": sum(1 for group in self.groups if group.found),
         }
+
+    def get_invalid_word_groups(self) -> List[List[str]]:
+        """Return up to four unique non-correct attempted groups from `self.attempts`.
+
+        Collects attempted groups from newest to oldest whose `result` is not
+        `ResponseResult.CORRECT`. Duplicate attempts (same set of words,
+        order-insensitive) are collapsed, and the most recent up to four
+        unique attempts are returned as lists of words in the normalized form
+        stored on the attempts.
+
+        Note: the current implementation does not filter out attempts that
+        include words already present in found groups and does not perform any
+        fallback chunking of remaining words.
+        """
+        invalid_groups: List[List[str]] = []
+        seen: set = set()
+
+        # Prefer the most recent non-correct attempts first
+        for attempt in reversed(self.attempts):
+            if attempt.result == ResponseResult.CORRECT:
+                continue
+
+            key = tuple(sorted(attempt.words))
+            if key in seen:
+                continue
+            seen.add(key)
+            invalid_groups.append(list(attempt.words))
+
+            if len(invalid_groups) >= 4:
+                break
+
+        return invalid_groups
 
 
 # Session storage (in-memory for now)
@@ -306,6 +336,20 @@ class SessionManager:
     def get_session_count(self) -> int:
         """Get total number of active sessions."""
         return len(self._sessions)
+
+    def get_last_session(self) -> Optional["PuzzleSession"]:
+        """Return the most recently created session, or None if no sessions exist.
+
+        Uses dict insertion order to locate the most recently added session.
+        """
+        if not self._sessions:
+            return None
+        return list(self._sessions.values())[-1]
+
+    def get_last_session_id(self) -> Optional[str]:
+        """Return the session_id for the most recently created session, or None."""
+        last = self.get_last_session()
+        return last.session_id if last else None
 
 
 # Global session manager instance

@@ -14,7 +14,7 @@ class OpenAIConfig(BaseModel):
 
     api_key: str
     model_name: str = "gpt-4o-mini"
-    timeout: int = 30
+    timeout: int = 300
 
 
 class OllamaConfig(BaseModel):
@@ -22,7 +22,7 @@ class OllamaConfig(BaseModel):
 
     base_url: str = "http://localhost:11434"
     model_name: str = "llama2"
-    timeout: int = 60
+    timeout: int = 300
 
 
 class ApplicationConfig(BaseModel):
@@ -78,7 +78,7 @@ class ConfigurationService:
         return OpenAIConfig(
             api_key=api_key,
             model_name=os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini"),
-            timeout=int(os.getenv("OPENAI_TIMEOUT", "30")),
+            timeout=int(os.getenv("OPENAI_TIMEOUT", "300")),
         )
 
     def _load_ollama_config(self) -> Optional[OllamaConfig]:
@@ -90,7 +90,7 @@ class ConfigurationService:
         return OllamaConfig(
             base_url=base_url,
             model_name=os.getenv("OLLAMA_MODEL_NAME", "llama2"),
-            timeout=int(os.getenv("OLLAMA_TIMEOUT", "60")),
+            timeout=int(os.getenv("OLLAMA_TIMEOUT", "300")),
         )
 
     def _load_application_config(self) -> ApplicationConfig:

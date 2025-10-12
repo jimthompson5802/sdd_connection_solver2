@@ -37,7 +37,7 @@ class EnvironmentLoader:
         if api_key:
             config["api_key"] = api_key
             config["model_name"] = os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini")
-            config["timeout"] = int(os.getenv("OPENAI_TIMEOUT", "30"))
+            config["timeout"] = int(os.getenv("OPENAI_TIMEOUT", "300"))
 
         return config
 
@@ -53,8 +53,7 @@ class EnvironmentLoader:
         if base_url:
             config["base_url"] = base_url
             config["model_name"] = os.getenv("OLLAMA_MODEL_NAME", "llama2")
-            config["timeout"] = int(os.getenv("OLLAMA_TIMEOUT", "60"))
-
+            config["timeout"] = int(os.getenv("OLLAMA_TIMEOUT", "300"))
         return config
 
     def load_application_config(self) -> Dict[str, Any]:
@@ -69,7 +68,7 @@ class EnvironmentLoader:
             "cors_origins": os.getenv("CORS_ORIGINS", "http://localhost:3000").split(","),
         }
 
-    def get_env_var(self, key: str, default: str = None) -> str:
+    def get_env_var(self, key: str, default: Optional[str] = None) -> Optional[str]:
         """Get environment variable value.
 
         Args:

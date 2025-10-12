@@ -6,6 +6,7 @@ Creates specialized prompts for connection puzzle recommendations.
 from typing import List, Dict, Any
 from src.llm_models.guess_attempt import GuessAttempt
 from src.llm_models.recommendation_request import RecommendationRequest
+from src.models import session_manager
 
 
 class PromptTemplateService:
@@ -26,13 +27,19 @@ class PromptTemplateService:
             "- Avoid obvious or generic connections\n"
             "- Consider wordplay, categories, and subtle relationships\n"
             "- Use ONLY words from the AVAILABLE WORDS list below\n"
+            "- When comparing two word groups, the order of words does NOT matter, "
+            "  for example, [CAT, DOG, MOUSE, HORSE] is the same as [DOG, CAT, HORSE, MOUSE]\n"
+            "- Do NOT include any word groups from PREVIOUS INCORRECT GROUP GUESSES\n"
             "- Do NOT invent, modify, or reformat words; return each word exactly as listed in AVAILABLE WORDS\n\n"
             "PUZZLE CONTEXT:\n"
             "{context}\n\n"
             "AVAILABLE WORDS:\n"
             "{remaining_words}\n\n"
-            "{previous_guesses_section}\n\n"
+            "PREVIOUS INCORRECT GROUP GUESSES:\n"
+            "{previous_incorrect_guesses_section}\n\n"
             "IMPORTANT VALIDATION:\n"
+            "- Your answer is INVALID if the four selected words match a group in PREVIOUS INCORRECT GROUP GUESSES, "
+            "in this case you must try again.\n"
             "- Your answer is INVALID if any selected word is not present in AVAILABLE WORDS\n\n"
             "OUTPUT FORMAT (JSON ONLY):\n"
             "Return a single JSON object and nothing else with the following keys:\n\n"
@@ -78,20 +85,28 @@ class PromptTemplateService:
         Returns:
             Formatted prompt string for the LLM.
         """
-        # Format remaining words
-        words_text = ", ".join(request.remaining_words)
+        session = session_manager.get_last_session()
 
-        # Add previous guesses section if any exist
-        previous_section = self._format_previous_guesses(request.previous_guesses)
+        # TODO: clean up
+        # # Format remaining words
+        # words_text = ", ".join(request.remaining_words)
+
+        # # Add previous guesses section if any exist
+        # previous_section = self._format_previous_guesses(request.previous_guesses)
 
         # Add puzzle context if provided
         context = request.puzzle_context or "Standard NYT Connections puzzle with 16 words forming 4 groups of 4."
 
         # Format the complete prompt using simple replace to avoid conflicts with literal braces
         prompt = (
-            self.base_prompt.replace("{context}", context)
-            .replace("{remaining_words}", words_text)
-            .replace("{previous_guesses_section}", previous_section)
+            self.base_prompt.replace("{context}", context).replace(
+                "{remaining_words}", ", ".join(session.get_remaining_words())
+            )
+            # .replace("{previous_incorrect_guesses_section}", str(session.get_invalid_word_groups()))
+            .replace(
+                "{previous_incorrect_guesses_section}",
+                "\n".join(f"[{', '.join(g)}]" for g in session.get_invalid_word_groups()),
+            )
         )
 
         return prompt
