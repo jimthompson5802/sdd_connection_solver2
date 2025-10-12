@@ -141,7 +141,7 @@ describe('Full Application Flow E2E Tests', () => {
         const providerInput = inputs[0];
         
         // Test switching between different provider values
-  const providers = ['simple', 'ollama:llama2', 'openai:gpt-4o-mini'];
+  const providers = ['simple', 'ollama:qwen2.5:32b', 'openai:gpt-4o-mini'];
         
         for (const provider of providers) {
           expect(() => {

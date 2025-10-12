@@ -43,13 +43,13 @@ class TestEnvironmentConfigurationContract:
 
         with patch.dict(
             os.environ,
-            {"OLLAMA_BASE_URL": "http://localhost:11434", "OLLAMA_MODEL_NAME": "llama2", "OLLAMA_TIMEOUT": "60"},
+            {"OLLAMA_BASE_URL": "http://localhost:11434", "OLLAMA_MODEL_NAME": "qwen2.5:32b", "OLLAMA_TIMEOUT": "60"},
         ):
             loader = EnvironmentLoader()
             config = loader.load_ollama_config()
 
             assert config["base_url"] == "http://localhost:11434"
-            assert config["model_name"] == "llama2"
+            assert config["model_name"] == "qwen2.5:32b"
             assert config["timeout"] == 60
 
     @pytest.mark.contract
@@ -123,13 +123,13 @@ class TestEnvironmentConfigurationContract:
         loader = EnvironmentLoader()
 
         # Valid configuration
-        valid_config = {"base_url": "http://localhost:11434", "model_name": "llama2", "timeout": 60}
+    valid_config = {"base_url": "http://localhost:11434", "model_name": "qwen2.5:32b", "timeout": 60}
 
         result = loader.validate_ollama_config(valid_config)
         assert result["is_valid"] is True
 
         # Invalid configuration (invalid URL)
-        invalid_config = {"base_url": "not-a-url", "model_name": "llama2", "timeout": 60}
+    invalid_config = {"base_url": "not-a-url", "model_name": "qwen2.5:32b", "timeout": 60}
 
         result = loader.validate_ollama_config(invalid_config)
         assert result["is_valid"] is False

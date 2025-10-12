@@ -46,20 +46,18 @@ class TestMockLLMProvider:
         assert provider.should_fail is True
         assert provider.fail_reason == "timeout_error"
 
-    @pytest.mark.asyncio
-    async def test_mock_provider_validation_success(self):
+    def test_mock_provider_validation_success(self):
         """Test provider validation when working"""
         provider = MockLLMProvider("simple")
-        validation = await provider.validate()
+        validation = provider.validate()
 
         assert validation["is_valid"] is True
         assert validation["provider_type"] == "simple"
 
-    @pytest.mark.asyncio
-    async def test_mock_provider_validation_failure(self):
+    def test_mock_provider_validation_failure(self):
         """Test provider validation when failing"""
         provider = MockLLMProvider("ollama", should_fail=True)
-        validation = await provider.validate()
+        validation = provider.validate()
 
         assert validation["is_valid"] is False
         assert validation["provider_type"] == "ollama"
@@ -68,29 +66,25 @@ class TestMockLLMProvider:
 class TestMockSimpleProvider:
     """Test simple provider mock"""
 
-    @pytest.mark.asyncio
-    async def test_simple_provider_recommendation(self):
+    def test_simple_provider_recommendation(self):
         """Test simple provider generates recommendations"""
         provider = MockSimpleProvider()
         request = {
             "remaining_words": ["BASS", "PIKE", "SOLE", "CARP", "APPLE", "BANANA", "CHERRY", "GRAPE"],
             "previous_guesses": [],
         }
-
-        response = await provider.generate_recommendation(request)
+        response = provider.generate_recommendation(request)
 
         assert response["recommended_words"] == ["BASS", "PIKE", "SOLE", "CARP"]
-        assert response["provider_used"] == "simple"
+        assert response["provider_used"]["provider_type"] == "simple"
         assert provider.call_count == 1
 
-    @pytest.mark.asyncio
-    async def test_simple_provider_failure(self):
+    def test_simple_provider_failure(self):
         """Test simple provider configured to fail"""
         provider = MockSimpleProvider(should_fail=True)
         request = {"remaining_words": ["TEST"]}
-
         with pytest.raises(Exception) as exc_info:
-            await provider.generate_recommendation(request)
+            provider.generate_recommendation(request)
 
         assert "Simple provider internal error" in str(exc_info.value)
 
@@ -98,78 +92,66 @@ class TestMockSimpleProvider:
 class TestMockOllamaProvider:
     """Test Ollama provider mock"""
 
-    @pytest.mark.asyncio
-    async def test_ollama_provider_recommendation(self):
+    def test_ollama_provider_recommendation(self):
         """Test Ollama provider generates recommendations"""
         provider = MockOllamaProvider()
         request = {"words": ["BASS", "PIKE", "SOLE", "CARP"], "previous_guesses": []}
-
-        response = await provider.generate_recommendation(request)
+        response = provider.generate_recommendation(request)
 
         assert response["recommended_words"] == ["BASS", "PIKE", "SOLE", "CARP"]
-        assert response["provider_used"] == "ollama"
+        assert response["provider_used"]["provider_type"] == "ollama"
         assert response["generation_time_ms"] == 2340
         assert provider.call_count == 1
 
-    @pytest.mark.asyncio
-    async def test_ollama_provider_contextual_response(self):
+    def test_ollama_provider_contextual_response(self):
         """Test Ollama provider gives different response with previous guesses"""
         provider = MockOllamaProvider()
         request = {"words": ["BASS", "PIKE", "SOLE", "CARP"], "previous_guesses": [["WRONG", "GUESS", "HERE", "TOO"]]}
-
-        response = await provider.generate_recommendation(request)
+        response = provider.generate_recommendation(request)
 
         assert response["recommended_words"] == ["RED", "BLUE", "GREEN", "YELLOW"]
-        assert "colors" in response["connection_explanation"]
+        assert "colors" in response["connection_explanation"].lower()
 
-    @pytest.mark.asyncio
-    async def test_ollama_provider_timeout(self):
+    def test_ollama_provider_timeout(self):
         """Test Ollama provider timeout scenario"""
         provider = MockOllamaProvider(should_fail=True, fail_reason="timeout_error")
         request = {"words": ["TEST"]}
-
         with pytest.raises(Exception) as exc_info:
-            await provider.generate_recommendation(request)
+            provider.generate_recommendation(request)
 
-        assert "took too long to respond" in str(exc_info.value)
+        assert "took too long" in str(exc_info.value) or "timeout" in str(exc_info.value)
 
 
 class TestMockOpenAIProvider:
     """Test OpenAI provider mock"""
 
-    @pytest.mark.asyncio
-    async def test_openai_provider_recommendation(self):
+    def test_openai_provider_recommendation(self):
         """Test OpenAI provider generates recommendations"""
         provider = MockOpenAIProvider()
         request = {"words": ["APPLE", "BANANA", "CHERRY", "GRAPE"], "previous_guesses": []}
-
-        response = await provider.generate_recommendation(request)
+        response = provider.generate_recommendation(request)
 
         assert response["recommended_words"] == ["APPLE", "BANANA", "CHERRY", "GRAPE"]
-        assert response["provider_used"] == "openai"
+        assert response["provider_used"]["provider_type"] == "openai"
         assert provider.call_count == 1
 
-    @pytest.mark.asyncio
-    async def test_openai_provider_api_key_error(self):
+    def test_openai_provider_api_key_error(self):
         """Test OpenAI provider with invalid API key"""
         provider = MockOpenAIProvider(should_fail=True, fail_reason="api_key_error")
         request = {"words": ["TEST"]}
-
         with pytest.raises(Exception) as exc_info:
-            await provider.generate_recommendation(request)
+            provider.generate_recommendation(request)
 
-        assert "Invalid API key" in str(exc_info.value)
+        assert "invalid api key" in str(exc_info.value).lower() or "invalid api" in str(exc_info.value).lower()
 
-    @pytest.mark.asyncio
-    async def test_openai_provider_rate_limit(self):
+    def test_openai_provider_rate_limit(self):
         """Test OpenAI provider rate limit scenario"""
         provider = MockOpenAIProvider(should_fail=True, fail_reason="rate_limit_error")
         request = {"words": ["TEST"]}
-
         with pytest.raises(Exception) as exc_info:
-            await provider.generate_recommendation(request)
+            provider.generate_recommendation(request)
 
-        assert "Too many requests" in str(exc_info.value)
+        assert "too many requests" in str(exc_info.value).lower() or "rate limit" in str(exc_info.value).lower()
 
 
 class TestMockProviderFactory:

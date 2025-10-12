@@ -49,7 +49,7 @@ class TestRecommendationsContract:
     def test_ollama_provider_request_contract(self, client):
         """Test that ollama provider requests follow expected contract"""
         request_data = {
-            "llm_provider": {"provider_type": "ollama", "model_name": "llama2"},
+            "llm_provider": {"provider_type": "ollama", "model_name": "qwen2.5:32b"},
             "remaining_words": ["BASS", "FLOUNDER", "SALMON", "TROUT", "PIANO", "GUITAR"],
             "previous_guesses": [
                 {

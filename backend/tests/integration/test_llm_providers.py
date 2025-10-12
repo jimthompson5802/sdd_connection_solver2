@@ -24,7 +24,7 @@ class TestLLMProviderIntegration:
         """Test that ollama provider service can be imported and instantiated"""
         from src.services.llm_providers.ollama_provider import OllamaProvider
 
-        provider = OllamaProvider(base_url="http://localhost:11434", model_name="llama2")
+        provider = OllamaProvider(base_url="http://localhost:11434", model_name="qwen2.5:32b")
         assert provider is not None
 
     @pytest.mark.integration
@@ -80,7 +80,7 @@ class TestLLMProviderIntegration:
         mock_llm.with_structured_output.return_value = wrapper
         mock_ollama.return_value = mock_llm
 
-        provider = OllamaProvider(base_url="http://localhost:11434", model_name="llama2")
+        provider = OllamaProvider(base_url="http://localhost:11434", model_name="qwen2.5:32b")
 
         remaining_words = ["BASS", "FLOUNDER", "SALMON", "TROUT", "PIANO", "GUITAR"]
         previous_guesses = []
@@ -167,7 +167,7 @@ class TestLLMProviderIntegration:
 
         factory = ProviderFactory()
 
-        llm_provider = LLMProvider(provider_type="ollama", model_name="llama2")
+        llm_provider = LLMProvider(provider_type="ollama", model_name="qwen2.5:32b")
         provider = factory.create_provider(llm_provider)
 
         assert provider is not None

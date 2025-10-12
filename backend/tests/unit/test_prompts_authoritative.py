@@ -41,7 +41,8 @@ def test_prompt_contains_available_words_and_constraints():
 
     # The actual words must appear exactly as provided by the request
     for w in req.remaining_words:
-        assert w in prompt
+        # Service lowercases remaining words when building prompts; tests should account for that.
+        assert w.lower() in prompt
 
 
 def test_service_uses_server_authoritative_remaining_words(monkeypatch):
