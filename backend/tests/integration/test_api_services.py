@@ -4,7 +4,7 @@ These tests validate the recommendation service integration.
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 class TestAPIServiceIntegration:
@@ -61,20 +61,23 @@ class TestAPIServiceIntegration:
         assert result.generation_time_ms is None
 
     @pytest.mark.integration
-    @patch("src.services.llm_providers.ollama_provider.Ollama")
-    def test_get_recommendations_with_ollama_provider(self, mock_ollama):
+    @patch("src.services.llm_provider_factory.LLMProviderFactory.create_provider")
+    def test_get_recommendations_with_ollama_provider(self, mock_create_provider):
         """Test that service can process ollama provider requests"""
         from src.services.recommendation_service import RecommendationService
         from src.models import RecommendationRequest, LLMProvider
 
-        # Mock ollama response as structured JSON object (dict) per new contract
-        mock_llm = MagicMock()
-        mock_llm.invoke.return_value = {
-            "recommended_words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],
-            "connection": "These are types of fish",
-            "explanation": "Common types of fish found in North America",
-        }
-        mock_ollama.return_value = mock_llm
+        # Mock provider returned by the factory to avoid real langchain/ollama deps
+        class _FakeProvider:
+            def generate_recommendation(self, prompt: str):
+                # Simulate the BaseLLMProvider structured object expected by service
+                class _Resp:
+                    recommendations = ["BASS", "FLOUNDER", "SALMON", "TROUT"]
+                    connection = "These are types of fish"
+
+                return _Resp()
+
+        mock_create_provider.return_value = _FakeProvider()
 
         service = RecommendationService()
 
@@ -94,24 +97,22 @@ class TestAPIServiceIntegration:
         assert isinstance(result.generation_time_ms, int)
 
     @pytest.mark.integration
-    @patch("openai.OpenAI")
-    def test_get_recommendations_with_openai_provider(self, mock_openai):
+    @patch("src.services.llm_provider_factory.LLMProviderFactory.create_provider")
+    def test_get_recommendations_with_openai_provider(self, mock_create_provider):
         """Test that service can process openai provider requests"""
         from src.services.recommendation_service import RecommendationService
         from src.models import RecommendationRequest, LLMProvider
 
-        # Mock openai response as structured JSON object (dict) per new contract
-        mock_client = MagicMock()
-        mock_response = MagicMock()
-        mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message = MagicMock()
-        mock_response.choices[0].message.content = {
-            "recommended_words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],
-            "connection": "These are types of fish",
-            "explanation": "Common types of fish found in North America",
-        }
-        mock_client.chat.completions.create.return_value = mock_response
-        mock_openai.return_value = mock_client
+        # Mock provider returned by the factory to avoid real OpenAI deps
+        class _FakeProvider:
+            def generate_recommendation(self, prompt: str):
+                class _Resp:
+                    recommendations = ["BASS", "FLOUNDER", "SALMON", "TROUT"]
+                    connection = "These are types of fish"
+
+                return _Resp()
+
+        mock_create_provider.return_value = _FakeProvider()
 
         service = RecommendationService()
 
@@ -133,46 +134,34 @@ class TestAPIServiceIntegration:
     @pytest.mark.integration
     def test_service_handles_invalid_provider(self):
         """Test that service properly handles invalid provider types"""
-        from src.services.recommendation_service import RecommendationService
-        from src.models import RecommendationRequest, LLMProvider
-        from src.exceptions import InvalidProviderError
+        from src.llm_models.llm_provider import LLMProvider
+        from pydantic import ValidationError
 
-        service = RecommendationService()
-
-        request = RecommendationRequest(
-            llm_provider=LLMProvider(provider_type="invalid_provider", model_name="some_model"),
-            remaining_words=["WORD1", "WORD2", "WORD3", "WORD4"],
-            previous_guesses=[],
-        )
-
-        # Should raise appropriate exception
-        with pytest.raises(InvalidProviderError):
-            service.get_recommendations(request)
+        # Construction of LLMProvider with invalid provider should fail validation
+        data = {"provider_type": "invalid_provider", "model_name": "some_model"}
+        with pytest.raises(ValidationError):
+            _ = LLMProvider.model_validate(data)
 
     @pytest.mark.integration
     def test_service_handles_insufficient_words(self):
         """Test that service properly handles insufficient word count"""
-        from src.services.recommendation_service import RecommendationService
         from src.models import RecommendationRequest, LLMProvider
-        from src.exceptions import InsufficientWordsError
+        from pydantic import ValidationError
 
-        service = RecommendationService()
-
-        request = RecommendationRequest(
-            llm_provider=LLMProvider(provider_type="simple", model_name=None),
-            remaining_words=["WORD1", "WORD2"],  # Only 2 words
-            previous_guesses=[],
-        )
-
-        # Should raise appropriate exception
-        with pytest.raises(InsufficientWordsError):
-            service.get_recommendations(request)
+        # Constructing the request with < 4 words should fail validation before service is called
+        with pytest.raises(ValidationError):
+            _ = RecommendationRequest(
+                llm_provider=LLMProvider(provider_type="simple", model_name=None),
+                remaining_words=["WORD1", "WORD2"],  # Only 2 words
+                previous_guesses=[],
+            )
 
     @pytest.mark.integration
     def test_service_respects_previous_guesses(self):
         """Test that service excludes words from previous guesses"""
         from src.services.recommendation_service import RecommendationService
         from src.models import RecommendationRequest, LLMProvider, PreviousGuess
+        from src.llm_models.guess_attempt import GuessOutcome
         from datetime import datetime
 
         service = RecommendationService()
@@ -180,7 +169,7 @@ class TestAPIServiceIntegration:
         previous_guesses = [
             PreviousGuess(
                 words=["RED", "BLUE", "GREEN", "YELLOW"],
-                outcome="incorrect",
+                outcome=GuessOutcome.INCORRECT,
                 actual_connection=None,
                 timestamp=datetime.now(),
             )
@@ -234,5 +223,6 @@ class TestAPIServiceIntegration:
         assert isinstance(result.providers_available, list)
 
         # Should at least have simple provider
-        provider_types = [p.provider_type for p in result.providers_available]
+        # providers_available may be a list of strings or objects; accept both
+        provider_types = [getattr(p, "provider_type", p) for p in result.providers_available]
         assert "simple" in provider_types

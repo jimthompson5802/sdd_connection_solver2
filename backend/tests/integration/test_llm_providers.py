@@ -64,18 +64,20 @@ class TestLLMProviderIntegration:
             assert word in remaining_words
 
     @pytest.mark.integration
-    @patch("langchain_community.llms.ollama.Ollama")
+    @patch("langchain_ollama.ChatOllama")
     def test_ollama_provider_generate_recommendations(self, mock_ollama):
         """Test that ollama provider can generate recommendations"""
         from src.services.llm_providers.ollama_provider import OllamaProvider
 
-        # Mock ollama response as structured JSON object (dict) per new contract
+        # Mock ollama response via structured output wrapper
         mock_llm = MagicMock()
-        mock_llm.invoke.return_value = {
+        wrapper = MagicMock()
+        wrapper.invoke.return_value = {
             "recommended_words": ["BASS", "FLOUNDER", "SALMON", "TROUT"],
             "connection": "These are types of fish",
             "explanation": "Common types of fish found in North America",
         }
+        mock_llm.with_structured_output.return_value = wrapper
         mock_ollama.return_value = mock_llm
 
         provider = OllamaProvider(base_url="http://localhost:11434", model_name="llama2")
@@ -104,7 +106,7 @@ class TestLLMProviderIntegration:
         # Mock openai response as structured JSON object (dict) per new contract
         mock_client = MagicMock()
         mock_response = MagicMock()
-        # The provider code extracts resp.choices[0].message.content and expects a dict
+        # The provider shim ultimately requires a dict; simulate SDK returning such via content
         mock_response.choices = [MagicMock()]
         mock_response.choices[0].message = MagicMock()
         mock_response.choices[0].message.content = {
