@@ -99,6 +99,19 @@ class EnvironmentLoader:
         """
         return dict(os.environ)
 
+    def get_safe_env_vars(self) -> Dict[str, str]:
+        """Get environment variables excluding sensitive ones for safe logging.
+
+        Returns:
+            Dictionary of environment variables with sensitive ones excluded.
+        """
+        all_vars = dict(os.environ)
+        sensitive_keywords = ["key", "secret", "password", "token", "api", "auth", "credential"]
+
+        return {
+            k: v for k, v in all_vars.items() if not any(sensitive in k.lower() for sensitive in sensitive_keywords)
+        }
+
     def mask_sensitive_vars(self, env_vars: Dict[str, str]) -> Dict[str, str]:
         """Mask sensitive environment variables for safe logging.
 
@@ -108,16 +121,20 @@ class EnvironmentLoader:
         Returns:
             Dictionary with sensitive values masked.
         """
-        sensitive_keywords = ["key", "secret", "password", "token", "api"]
+        sensitive_keywords = ["key", "secret", "password", "token", "api", "auth", "credential"]
         masked_vars = {}
 
         for key, value in env_vars.items():
             key_lower = key.lower()
             if any(keyword in key_lower for keyword in sensitive_keywords):
                 if value:
-                    masked_vars[key] = value[:4] + "*" * (len(value) - 4) if len(value) > 4 else "****"
+                    # Show only first 2 chars for values > 8 chars, otherwise mask completely
+                    if len(value) > 8:
+                        masked_vars[key] = value[:2] + "*" * 6 + "..."
+                    else:
+                        masked_vars[key] = "****"
                 else:
-                    masked_vars[key] = ""
+                    masked_vars[key] = "[EMPTY]"
             else:
                 masked_vars[key] = value
 
