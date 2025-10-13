@@ -231,8 +231,8 @@ class OpenAILLMProvider(BaseLLMProvider):
 
             if not api_key:
                 raise ValueError("OpenAI API key is required")
-
-            return ChatOpenAI(openai_api_key=api_key)
+            print(f"Creating OpenAI LLM with model {model_name}")
+            return ChatOpenAI(model_name=model_name, openai_api_key=api_key)
         except ImportError as e:
             raise RuntimeError("OpenAI dependencies not installed") from e
         except Exception as e:

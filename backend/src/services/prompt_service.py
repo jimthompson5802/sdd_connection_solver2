@@ -220,6 +220,7 @@ Provide your rating and brief reasoning."""
                 + "subtle connections and provide insightful explanations."
                 + "\nAll four output words must come exclusively from the AVAILABLE WORDS list above."
                 + " If any word is not in that list, revise your selection."
+                + " If your SELECTION MATCHES ANY GROUP IN PREVIOUS INCORRECT GROUP GUESSES, provide an alternative group."
                 + "\nReturn your answer as a single JSON object using the keys: "
                 + "recommended_words, connection, explanation."
             )
