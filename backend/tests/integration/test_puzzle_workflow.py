@@ -105,14 +105,17 @@ class TestPuzzleWorkflowIntegration:
         setup_response = self.client.post("/api/puzzle/setup_puzzle", json=setup_payload)
         assert setup_response.status_code == 200
 
-        # Make 4 incorrect responses to trigger failure
-        for i in range(4):
-            # Get recommendation
-            rec_response = self.client.get("/api/puzzle/next_recommendation")
-            assert rec_response.status_code == 200
+        # Parse words from CSV for making different attempts
+        words = [word.strip() for word in self.sample_csv.split(",")]
 
-            # Mark as incorrect
-            incorrect_payload = {"response_type": "incorrect"}
+        # Make 4 incorrect responses to trigger failure using different word combinations
+        for i in range(4):
+            # Use different sets of 4 words for each attempt to avoid idempotency check
+            start_idx = i * 4
+            attempt_words = words[start_idx : start_idx + 4]
+
+            # Mark as incorrect with explicit attempt words
+            incorrect_payload = {"response_type": "incorrect", "attempt_words": attempt_words}
             resp_response = self.client.post("/api/puzzle/record_response", json=incorrect_payload)
             assert resp_response.status_code == 200
             resp_data = resp_response.json()

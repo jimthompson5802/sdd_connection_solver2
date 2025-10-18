@@ -10,6 +10,14 @@ from enum import Enum
 import uuid
 from datetime import datetime
 
+# LLM Provider Integration Models (Phase 2)
+from .llm_models.llm_provider import LLMProvider
+from .llm_models.guess_attempt import GuessAttempt as PreviousGuess, GuessAttempt
+from .llm_models.recommendation_request import RecommendationRequest
+from .llm_models.recommendation_response import RecommendationResponse
+from .llm_models.puzzle_state import PuzzleState
+from .llm_models.completed_group import CompletedGroup
+
 
 class ResponseResult(str, Enum):
     """Valid response results from user attempts."""
@@ -61,6 +69,10 @@ class RecordResponseRequest(BaseModel):
 
     response_type: str = Field(..., description="Type of response: correct, incorrect, one-away")
     color: Optional[str] = Field(None, description="Color for correct responses")
+    session_id: Optional[str] = Field(None, description="Optional session id to target")
+    attempt_words: Optional[List[str]] = Field(
+        None, description="Optional explicit list of 4 words for the attempt (overrides last_recommendation)"
+    )
 
     @validator("response_type")
     def validate_response_type(cls, v: str) -> str:
@@ -112,6 +124,7 @@ class WordGroup:
     words: List[str]
     difficulty: int  # 1-4, where 4 is hardest
     found: bool = False
+    color: Optional[str] = None
 
     def __post_init__(self) -> None:
         if len(self.words) != 4:
@@ -153,23 +166,35 @@ class PuzzleSession:
         # Tracks the last recommendation issued to the user (list of 4 words)
         self.last_recommendation: Optional[List[str]] = None
 
-        # Initialize placeholder groups (will be populated by ML analysis)
-        self._initialize_placeholder_groups()
+    # TODO: cleanup
+    #     # Initialize placeholder groups (will be populated by ML analysis)
+    #     self._initialize_placeholder_groups()
 
-    def _initialize_placeholder_groups(self) -> None:
-        """Initialize placeholder groups until ML analysis is implemented."""
-        # This is a simplified placeholder - in real implementation,
-        # this would use ML/NLP to analyze word relationships
-        words_copy = self.words.copy()
+    # def _initialize_placeholder_groups(self) -> None:
+    #     """Initialize placeholder groups until ML analysis is implemented."""
+    #     # This is a simplified placeholder - in real implementation,
+    #     # this would use ML/NLP to analyze word relationships
+    #     words_copy = self.words.copy()
 
-        for i in range(4):
-            group_words = words_copy[i * 4 : (i + 1) * 4]
-            self.groups.append(WordGroup(category=f"Category {i+1}", words=group_words, difficulty=i + 1))
+    #     for i in range(4):
+    #         group_words = words_copy[i * 4 : (i + 1) * 4]
+    #         self.groups.append(WordGroup(category=f"Category {i+1}", words=group_words, difficulty=i + 1))
 
-    def record_attempt(self, words: List[str], result: ResponseResult, was_recommendation: bool = False) -> None:
+    def record_attempt(
+        self, words: List[str], result: ResponseResult, was_recommendation: bool = False, color: Optional[str] = None
+    ) -> None:
         """Record a user attempt."""
+        # Normalize words for comparison
+        normalized_words = [word.strip().lower() for word in words]
+
+        # Idempotency: if an identical attempt (same word set and same result) was already recorded, ignore it
+        for prev in self.attempts:
+            if set(prev.words) == set(normalized_words) and prev.result == result:
+                # Do not record duplicate attempts or change game state
+                return
+
         attempt = UserAttempt(
-            words=[word.strip().lower() for word in words],
+            words=normalized_words,
             result=result,
             timestamp=datetime.now(),
             was_recommendation=was_recommendation,
@@ -177,21 +202,38 @@ class PuzzleSession:
         self.attempts.append(attempt)
 
         if result == ResponseResult.CORRECT:
-            self._mark_group_found(words)
+            self._mark_group_found(words, color=color)
         elif result in (ResponseResult.INCORRECT, ResponseResult.ONE_AWAY):
-            # Treat one-away as a mistake for game progression
+            # Count both incorrect and one-away as mistakes for game progression.
             self.mistakes_made += 1
 
         self._check_game_completion()
 
-    def _mark_group_found(self, words: List[str]) -> None:
-        """Mark a group as found based on the words."""
+    def _mark_group_found(self, words: List[str], color: Optional[str] = None) -> None:
+        """Mark a group as found based on the words and optionally record a color."""
         normalized_words = [word.strip().lower() for word in words]
 
+        # First, try to match an existing group (placeholder or previously created)
         for group in self.groups:
             if set(group.words) == set(normalized_words):
                 group.found = True
-                break
+                # Persist UI color if provided
+                if color:
+                    group.color = color
+                return
+
+        # If we reach here, the attempt doesn't match any existing predefined group.
+        # Treat this as a user-confirmed correct group and create it dynamically,
+        # as long as none of these words have been found already (validated earlier in API layer).
+        user_group_index = sum(1 for g in self.groups if g.category.startswith("User Group")) + 1
+        new_group = WordGroup(
+            category=f"User Group {user_group_index}",
+            words=normalized_words,
+            difficulty=1,  # default difficulty for user-confirmed groups
+            found=True,
+            color=color,
+        )
+        self.groups.append(new_group)
 
     def _check_game_completion(self) -> None:
         """Check if the game is complete (won or lost)."""
@@ -225,13 +267,42 @@ class PuzzleSession:
         """Get data needed for generating recommendations."""
         return {
             "remaining_words": self.get_remaining_words(),
-            "attempts": [
-                {"words": attempt.words, "result": attempt.result.value, "timestamp": attempt.timestamp.isoformat()}
-                for attempt in self.attempts
-            ],
+            "attempts": self.get_invalid_word_groups(),
             "mistakes_made": self.mistakes_made,
             "groups_found": sum(1 for group in self.groups if group.found),
         }
+
+    def get_invalid_word_groups(self) -> List[List[str]]:
+        """Return up to four unique non-correct attempted groups from `self.attempts`.
+
+        Collects attempted groups from newest to oldest whose `result` is not
+        `ResponseResult.CORRECT`. Duplicate attempts (same set of words,
+        order-insensitive) are collapsed, and the most recent up to four
+        unique attempts are returned as lists of words in the normalized form
+        stored on the attempts.
+
+        Note: the current implementation does not filter out attempts that
+        include words already present in found groups and does not perform any
+        fallback chunking of remaining words.
+        """
+        invalid_groups: List[List[str]] = []
+        seen: set = set()
+
+        # Prefer the most recent non-correct attempts first
+        for attempt in reversed(self.attempts):
+            if attempt.result == ResponseResult.CORRECT:
+                continue
+
+            key = tuple(sorted(attempt.words))
+            if key in seen:
+                continue
+            seen.add(key)
+            invalid_groups.append(list(attempt.words))
+
+            if len(invalid_groups) >= 4:
+                break
+
+        return invalid_groups
 
 
 # Session storage (in-memory for now)
@@ -266,6 +337,45 @@ class SessionManager:
         """Get total number of active sessions."""
         return len(self._sessions)
 
+    def get_last_session(self) -> Optional["PuzzleSession"]:
+        """Return the most recently created session, or None if no sessions exist.
+
+        Uses dict insertion order to locate the most recently added session.
+        """
+        if not self._sessions:
+            return None
+        return list(self._sessions.values())[-1]
+
+    def get_last_session_id(self) -> Optional[str]:
+        """Return the session_id for the most recently created session, or None."""
+        last = self.get_last_session()
+        return last.session_id if last else None
+
 
 # Global session manager instance
 session_manager = SessionManager()
+
+
+# Export all models for backward compatibility and new functionality
+__all__ = [
+    # Original Phase 1 models
+    "ResponseResult",
+    "SetupPuzzleRequest",
+    "NextRecommendationRequest",
+    "RecordResponseRequest",
+    "SetupPuzzleResponse",
+    "NextRecommendationResponse",
+    "RecordResponseResponse",
+    "PuzzleSession",
+    "SessionManager",
+    "session_manager",
+    # Back-compat alias for tests
+    "PreviousGuess",
+    # New Phase 2 LLM models
+    "LLMProvider",
+    "GuessAttempt",
+    "RecommendationRequest",
+    "RecommendationResponse",
+    "PuzzleState",
+    "CompletedGroup",
+]

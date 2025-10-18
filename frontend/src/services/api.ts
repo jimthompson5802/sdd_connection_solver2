@@ -25,8 +25,14 @@ class ApiService {
   async setupPuzzle(fileContent: string): Promise<SetupPuzzleResponse> {
     this.validateInput(fileContent, 'File content cannot be empty');
 
+    // Normalize CSV content words to lowercase before sending so backend sees canonical form
+    const normalized = fileContent
+      .split(',')
+      .map(w => w.trim().toLowerCase())
+      .join(',');
+
     const request: SetupPuzzleRequest = {
-      file_content: fileContent,
+      file_content: normalized,
     };
 
     try {
@@ -87,7 +93,9 @@ class ApiService {
    */
   async recordResponse(
     responseType: 'correct' | 'incorrect' | 'one-away',
-    color?: string
+    color?: string,
+    attemptWords?: string[],
+    sessionId?: string
   ): Promise<RecordResponseResponse> {
     this.validateResponseType(responseType);
     
@@ -99,9 +107,14 @@ class ApiService {
       throw new PuzzleError('Color must be one of: Yellow, Green, Blue, Purple');
     }
 
+    // Ensure attemptWords are lowercased when provided
+    const normalizedAttempt = attemptWords ? attemptWords.map(w => w.trim().toLowerCase()) : undefined;
+
     const request: RecordResponseRequest = {
       response_type: responseType,
       ...(color && { color: color as 'Yellow' | 'Green' | 'Blue' | 'Purple' }),
+      ...(normalizedAttempt && { attempt_words: normalizedAttempt }),
+      ...(sessionId && { session_id: sessionId }),
     };
 
     try {

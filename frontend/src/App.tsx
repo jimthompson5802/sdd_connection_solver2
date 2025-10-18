@@ -6,7 +6,7 @@
 import React, { useState, useCallback } from 'react';
 import './App.css';
 import FileUpload from './components/FileUpload';
-import PuzzleInterface from './components/PuzzleInterface';
+import EnhancedPuzzleInterface from './components/EnhancedPuzzleInterface';
 import { PuzzleState } from './types/puzzle';
 import { apiService } from './services/api';
 
@@ -22,6 +22,9 @@ const App: React.FC = () => {
     error: null,
     previousResponses: [],
   });
+
+  // LLM provider selection stored at app-level so it can be persisted or shared
+  const [llmProvider, setLlmProvider] = useState<import('./types/llm-provider').LLMProvider | null>(null);
 
   const handleFileUpload = useCallback(async (content: string) => {
     setPuzzleState(prev => ({ ...prev, isLoading: true, error: null }));
@@ -49,39 +52,20 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleGetRecommendation = useCallback(async () => {
-    setPuzzleState(prev => ({ ...prev, isLoading: true, error: null }));
-
-    try {
-      const response = await apiService.getNextRecommendation();
-      
-      setPuzzleState(prev => ({
-        ...prev,
-        currentRecommendation: response.words,
-        recommendationConnection: response.connection,
-        isLoading: false,
-        error: null,
-      }));
-    } catch (error) {
-      setPuzzleState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to get recommendation',
-      }));
-    }
-  }, []);
-
   const handleRecordResponse = useCallback(async (
     type: 'correct' | 'incorrect' | 'one-away',
-    color?: string
+    color?: string,
+    attemptWords?: string[]
   ) => {
     setPuzzleState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // include the current recommendation words so backend can record; if empty, backend will ignore
-      const response = await apiService.recordResponse(type, color);
-      
-      // Append to previousResponses locally for UI history. Use the previous recommendation words
+      // include the provided attemptWords so backend can record; if undefined, backend will fallback
+      const response = await apiService.recordResponse(type, color, attemptWords);
+
+      // Append to previousResponses locally for UI history.
+      // Prefer the explicit attemptWords when provided (LLM or traditional),
+      // otherwise fall back to the previous recommendation words.
       setPuzzleState(prev => ({
         ...prev,
         words: response.remaining_words,
@@ -97,7 +81,7 @@ const App: React.FC = () => {
           {
             type,
             color,
-            words: prev.currentRecommendation,
+            words: attemptWords ?? prev.currentRecommendation,
             timestamp: new Date(),
           },
         ],
@@ -146,7 +130,7 @@ const App: React.FC = () => {
               </button>
             </div>
             
-            <PuzzleInterface
+            <EnhancedPuzzleInterface
               words={puzzleState.words}
               recommendation={puzzleState.currentRecommendation}
               recommendationConnection={puzzleState.recommendationConnection}
@@ -155,9 +139,14 @@ const App: React.FC = () => {
               gameStatus={puzzleState.gameStatus}
               isLoading={puzzleState.isLoading}
               error={puzzleState.error}
-              onGetRecommendation={handleGetRecommendation}
               onRecordResponse={handleRecordResponse}
               previousResponses={puzzleState.previousResponses}
+              // LLM-related props (start with no provider configured)
+              llmProvider={llmProvider}
+              onProviderChange={(p) => setLlmProvider(p)}
+              showProviderControls={true}
+              puzzleContext={''}
+              previousGuesses={[]}
             />
           </div>
         )}

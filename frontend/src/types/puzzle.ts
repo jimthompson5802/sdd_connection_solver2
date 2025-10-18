@@ -22,6 +22,8 @@ export interface NextRecommendationResponse {
 export interface RecordResponseRequest {
   response_type: 'correct' | 'incorrect' | 'one-away';
   color?: 'Yellow' | 'Green' | 'Blue' | 'Purple';
+  session_id?: string;
+  attempt_words?: string[];
 }
 
 export interface RecordResponseResponse {
@@ -67,15 +69,13 @@ export interface PuzzleInterfaceProps {
   gameStatus: 'waiting' | 'active' | 'won' | 'lost';
   isLoading: boolean;
   error: string | null;
-  onGetRecommendation: () => void;
-  onRecordResponse: (type: 'correct' | 'incorrect' | 'one-away', color?: string, words?: string[]) => void;
+  onRecordResponse: (type: 'correct' | 'incorrect' | 'one-away', color?: string, words?: string[] ) => void;
   previousResponses: UserResponse[];
 }
 
 export interface RecommendationDisplayProps {
   words: string[];
   connection: string;
-  onGetRecommendation: () => void;
   isLoading?: boolean;
 }
 

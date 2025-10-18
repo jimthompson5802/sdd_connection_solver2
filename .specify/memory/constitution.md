@@ -42,7 +42,7 @@ Application MUST function as a standalone desktop application without external s
 
 ## Technology Standards
 
-**Backend Stack**: FastAPI + Pydantic + pytest + uvicorn + uv (package management)
+**Backend Stack**: FastAPI + Pydantic + pytest + uvicorn + uv (package management) + langchain (with other dependencies for openai and ollama integrations)
 **Frontend Stack**: React + TypeScript + Jest + React Testing Library
 **Data Layer**: In-memory/session-based data handling, Pydantic models for validation
 **Development Tools**: uv for Python dependency management, npm/yarn for Node.js dependencies
