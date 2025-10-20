@@ -9,3 +9,4 @@ Demonstration of the virtual assistant can be found in this [YouTube video](http
 The SDD process is based on Github's [spec-kit framework](https://github.com/github/spec-kit).
 
 This work is based on an earlier [Virtual Assistant](https://github.com/jimthompson5802/connection_solver).
+
