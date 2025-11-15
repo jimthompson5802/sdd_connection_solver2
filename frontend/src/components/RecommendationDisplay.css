@@ -237,31 +237,7 @@
   cursor: not-allowed;
 }
 
-.recommendation-action--accept {
-  background-color: #28a745;
-  color: white;
-  border-color: #28a745;
-}
 
-.recommendation-action--accept:hover:not(:disabled) {
-  background-color: #218838;
-  border-color: #218838;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-}
-
-.recommendation-action--reject {
-  background-color: transparent;
-  color: #6c757d;
-  border-color: #6c757d;
-}
-
-.recommendation-action--reject:hover:not(:disabled) {
-  background-color: #6c757d;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-}
 
 /* Alternatives Section */
 .recommendation-display__alternatives {

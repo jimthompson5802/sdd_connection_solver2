@@ -16,9 +16,8 @@ export interface RecommendationDisplayProps {
   /** Current LLM provider information */
   provider?: LLMProvider | null;
   /** Callback when user accepts a recommendation */
-  onAcceptRecommendation?: (words: string[]) => void;
-  /** Callback when user rejects a recommendation */
-  onRejectRecommendation?: (words: string[]) => void;
+  /** Callback when user applies an alternative suggestion */
+  onApplyAlternative?: (words: string[]) => void;
   /** Whether to show provider information */
   showProviderInfo?: boolean;
   /** Whether to show recommendation metadata */
@@ -38,8 +37,7 @@ export const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({
   isLoading = false,
   error,
   provider,
-  onAcceptRecommendation,
-  onRejectRecommendation,
+  onApplyAlternative,
   showProviderInfo = true,
   showMetadata = true,
   className = ''
@@ -77,17 +75,7 @@ export const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({
     return prov.model_name ? `${name} (${prov.model_name})` : name;
   };
 
-  const handleAccept = () => {
-    if (onAcceptRecommendation && recommendation) {
-      onAcceptRecommendation(recommendation.recommended_words);
-    }
-  };
-
-  const handleReject = () => {
-    if (onRejectRecommendation && recommendation) {
-      onRejectRecommendation(recommendation.recommended_words);
-    }
-  };
+  // Primary accept/reject actions removed from this component.
 
   const componentClasses = [
     'recommendation-display',
@@ -174,24 +162,9 @@ export const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({
             <p className="explanation-text">{recommendation.connection_explanation}</p>
           </div>
 
-          <div className="recommendation-actions">
-            <button
-              className="recommendation-action recommendation-action--accept"
-              onClick={handleAccept}
-              disabled={!onAcceptRecommendation}
-              title="Accept this recommendation"
-            >
-              ✓ Use This Guess
-            </button>
-            <button
-              className="recommendation-action recommendation-action--reject"
-              onClick={handleReject}
-              disabled={!onRejectRecommendation}
-              title="Reject this recommendation"
-            >
-              ✗ Try Different Words
-            </button>
-          </div>
+          {/* Primary actions removed: these buttons were intentionally removed
+              to simplify the UI. Alternatives can still be applied via the
+              alternative suggestions below. */}
         </div>
 
         {recommendation.alternative_suggestions && recommendation.alternative_suggestions.length > 0 && (
@@ -209,8 +182,8 @@ export const RecommendationDisplay: React.FC<RecommendationDisplayProps> = ({
                   </div>
                   <button
                     className="alternative-action"
-                    onClick={() => onAcceptRecommendation && onAcceptRecommendation(alternative)}
-                    disabled={!onAcceptRecommendation}
+                    onClick={() => onApplyAlternative && onApplyAlternative(alternative)}
+                    disabled={!onApplyAlternative}
                     title="Use this alternative"
                   >
                     Try This
