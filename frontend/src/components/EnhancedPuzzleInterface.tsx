@@ -174,13 +174,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     // You could trigger the traditional recommendation system with these words
     // or implement direct guess submission here
   }, []);
-
-  // Handle LLM recommendation rejection
-  const handleRejectLlmRecommendation = useCallback((words: string[]) => {
-    console.log('Rejecting LLM recommendation:', words);
-    // Clear the current recommendation to allow getting a new one
-    setLlmRecommendation(null);
-  }, []);
+  
 
   // Retry LLM recommendation on error
   const handleRetryLlmRecommendation = useCallback(() => {
@@ -411,8 +405,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
                   recommendation={llmRecommendation}
                   isLoading={false}
                   provider={currentProvider}
-                  onAcceptRecommendation={handleAcceptLlmRecommendation}
-                  onRejectRecommendation={handleRejectLlmRecommendation}
+                  onApplyAlternative={handleAcceptLlmRecommendation}
                   showProviderInfo={true}
                   showMetadata={true}
                 />
