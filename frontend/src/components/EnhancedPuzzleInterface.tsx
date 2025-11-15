@@ -148,6 +148,12 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
 
     if (isLoading || gameStatus !== 'active' || recordingResponse) return;
 
+    // Capture and immediately hide the LLM recommendation so the UI clears
+    const prevLlmRecommendation = llmRecommendation;
+    if (prevLlmRecommendation) {
+      setLlmRecommendation(null);
+    }
+
     setRecordingResponse(true);
     try {
       // Await the parent's record response so we can only disable UI on success
@@ -159,12 +165,15 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
         setDisabledColors(prev => new Set(prev).add(color));
       }
     } catch (err) {
+      // If recording failed, restore the previous recommendation so the user can retry
+      if (prevLlmRecommendation) {
+        setLlmRecommendation(prevLlmRecommendation);
+      }
       // Parent will typically surface the error via props; no local change to disabledColors
-      // Optionally, we could set a local error state here if desired
     } finally {
       setRecordingResponse(false);
     }
-  }, [isLoading, gameStatus, onRecordResponse, recordingResponse, isGettingRecommendation]);
+  }, [isLoading, gameStatus, onRecordResponse, recordingResponse, isGettingRecommendation, llmRecommendation]);
 
   // Handle LLM recommendation acceptance
   const handleAcceptLlmRecommendation = useCallback((words: string[]) => {

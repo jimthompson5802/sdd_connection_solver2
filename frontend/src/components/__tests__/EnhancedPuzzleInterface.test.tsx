@@ -51,12 +51,18 @@ describe('EnhancedPuzzleInterface - Get Recommendation button behavior', () => {
     // Wait for the recommendation display and response buttons to render
     await waitFor(() => expect(screen.getByText(/How was this recommendation\?/i)).toBeInTheDocument());
 
+    // Recommendation display should be visible (header)
+    expect(screen.getByRole('heading', { name: /AI Recommendation/i })).toBeInTheDocument();
+
     const incorrectBtn = screen.getByText(/Incorrect/i) as HTMLButtonElement;
     expect(incorrectBtn).toBeInTheDocument();
 
-    // Click a response button - the Get button should be re-enabled
+    // Click a response button - the recommendation should be hidden and Get button re-enabled
     fireEvent.click(incorrectBtn);
 
     await waitFor(() => expect(getBtn).not.toBeDisabled());
+
+    // Recommendation display should no longer be present (header)
+    expect(screen.queryByRole('heading', { name: /AI Recommendation/i })).not.toBeInTheDocument();
   });
 });
