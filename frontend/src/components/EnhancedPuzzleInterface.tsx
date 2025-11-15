@@ -345,6 +345,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
           mistakeCount={mistakeCount}
           wordsRemaining={words.length}
           previousResponses={previousResponses}
+          gameStatus={gameStatus}
         />
       )}
 

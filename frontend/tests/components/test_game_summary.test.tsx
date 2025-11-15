@@ -6,7 +6,7 @@ import EnhancedPuzzleInterface from '../../../frontend/src/components/EnhancedPu
 import PuzzleInterface from '../../../frontend/src/components/PuzzleInterface';
 
 // Mock minimal props used by the components
-const baseProps = {
+const baseProps: any = {
   words: ['ONE', 'TWO', 'THREE'],
   recommendation: [],
   recommendationConnection: '',
@@ -34,8 +34,13 @@ describe('GameSummary integration', () => {
     expect(screen.getByText(/Mistakes:/i)).toBeInTheDocument();
 
     // Previous Responses heading and at least one response word
-    expect(screen.getByText(/Previous Responses/i)).toBeInTheDocument();
+    const heading = screen.getByText(/Previous Responses/i);
+    expect(heading).toBeInTheDocument();
     expect(screen.getByText('ONE')).toBeInTheDocument();
+    // The list should be expanded when the game is won
+    const container = heading.closest('.previous-responses');
+    expect(container).toBeTruthy();
+    expect(container?.classList.contains('expanded')).toBe(true);
   });
 
   test('PuzzleInterface shows summary on lost', () => {
@@ -49,8 +54,12 @@ describe('GameSummary integration', () => {
     expect(screen.getByText(/Correct Groups:/i)).toBeInTheDocument();
     expect(screen.getByText(/Mistakes:/i)).toBeInTheDocument();
 
-    // Previous responses visible
-    expect(screen.getByText(/Previous Responses/i)).toBeInTheDocument();
+    // Previous responses visible and expanded
+    const heading = screen.getByText(/Previous Responses/i);
+    expect(heading).toBeInTheDocument();
     expect(screen.getByText('ALPHA')).toBeInTheDocument();
+    const container = heading.closest('.previous-responses');
+    expect(container).toBeTruthy();
+    expect(container?.classList.contains('expanded')).toBe(true);
   });
 });

@@ -216,6 +216,7 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
           mistakeCount={mistakeCount}
           wordsRemaining={words.length}
           previousResponses={previousResponses}
+          gameStatus={gameStatus}
         />
       )}
 
