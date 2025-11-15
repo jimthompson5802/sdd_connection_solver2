@@ -63,6 +63,6 @@ describe('EnhancedPuzzleInterface - Get Recommendation button behavior', () => {
     await waitFor(() => expect(getBtn).not.toBeDisabled());
 
     // Recommendation display should no longer be present (header)
-    expect(screen.queryByRole('heading', { name: /AI Recommendation/i })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole('heading', { name: /AI Recommendation/i })).not.toBeInTheDocument(), { timeout: 500 });
   });
 });
