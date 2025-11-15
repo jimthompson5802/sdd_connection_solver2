@@ -60,6 +60,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
   const [llmRecommendation, setLlmRecommendation] = useState<RecommendationResponse | null>(null);
   const [llmLoading, setLlmLoading] = useState(false);
   const [llmError, setLlmError] = useState<string | null>(null);
+  const [isGettingRecommendation, setIsGettingRecommendation] = useState(false);
   const [currentProvider, setCurrentProvider] = useState<LLMProvider | null>(
     llmProvider || { provider_type: 'simple', model_name: null }
   );
@@ -96,7 +97,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
 
   // Get LLM recommendation
   const handleGetLlmRecommendation = useCallback(async () => {
-    if (llmLoading || gameStatus !== 'active') {
+    if (isGettingRecommendation || llmLoading || gameStatus !== 'active') {
       return;
     }
 
@@ -106,6 +107,8 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
       return;
     }
 
+    // mark that we've requested a recommendation and disable the Get button
+    setIsGettingRecommendation(true);
     setLlmLoading(true);
     setLlmError(null);
 
@@ -123,10 +126,12 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
       const errorMessage = error instanceof Error ? error.message : 'Failed to get LLM recommendation';
       setLlmError(errorMessage);
       setLlmRecommendation(null);
+      // If the request fails, allow the user to try again
+      setIsGettingRecommendation(false);
     } finally {
       setLlmLoading(false);
     }
-  }, [currentProvider, words, previousGuesses, puzzleContext, llmLoading, gameStatus]);
+  }, [currentProvider, words, previousGuesses, puzzleContext, llmLoading, gameStatus, isGettingRecommendation]);
 
   // traditional recommendation removed
 
@@ -136,6 +141,11 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     color?: string,
     attemptWords?: string[]
   ) => {
+    // Re-enable the Get Recommendation button immediately when the user responds
+    if (isGettingRecommendation) {
+      setIsGettingRecommendation(false);
+    }
+
     if (isLoading || gameStatus !== 'active' || recordingResponse) return;
 
     setRecordingResponse(true);
@@ -154,7 +164,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     } finally {
       setRecordingResponse(false);
     }
-  }, [isLoading, gameStatus, onRecordResponse, recordingResponse]);
+  }, [isLoading, gameStatus, onRecordResponse, recordingResponse, isGettingRecommendation]);
 
   // Handle LLM recommendation acceptance
   const handleAcceptLlmRecommendation = useCallback((words: string[]) => {
@@ -365,7 +375,9 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
               <div className="llm-controls">
                 <button
                   onClick={handleGetLlmRecommendation}
-                  disabled={llmLoading}
+                  disabled={llmLoading || isGettingRecommendation}
+                  aria-busy={isGettingRecommendation}
+                  aria-disabled={llmLoading || isGettingRecommendation}
                   className="primary-button get-llm-recommendation"
                 >
                   Get AI Recommendation
