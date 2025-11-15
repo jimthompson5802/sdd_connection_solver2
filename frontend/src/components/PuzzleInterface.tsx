@@ -5,6 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { PuzzleInterfaceProps } from '../types/puzzle';
+import GameSummary from './GameSummary';
 
 const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
   words,
@@ -208,16 +209,24 @@ const PuzzleInterface: React.FC<PuzzleInterfaceProps> = ({
 
       {renderGameStatus()}
 
+      {/* Summary (stats + previous responses) for any non-waiting state */}
+      {gameStatus !== 'waiting' && (
+        <GameSummary
+          correctCount={correctCount}
+          mistakeCount={mistakeCount}
+          wordsRemaining={words.length}
+          previousResponses={previousResponses}
+        />
+      )}
+
       {gameStatus === 'active' && (
         <>
-          {renderStats()}
           {renderWordGrid()}
           
           {/* traditional recommendation controls removed */}
 
           {renderRecommendation()}
           {renderResponseButtons()}
-          {renderPreviousResponses()}
         </>
       )}
 

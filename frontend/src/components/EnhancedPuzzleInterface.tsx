@@ -14,6 +14,7 @@ import ErrorMessage from './ErrorMessage';
 import RecommendationDisplay from './RecommendationDisplay';
 import { llmApiService } from '../services/llm-api';
 import './EnhancedPuzzleInterface.css';
+import GameSummary from './GameSummary';
 
 /**
  * Enhanced PuzzleInterface Props that extend the base interface
@@ -337,9 +338,18 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
 
       {renderGameStatus()}
 
+      {/* Show summary (counters + previous responses) for any non-waiting game state */}
+      {gameStatus !== 'waiting' && (
+        <GameSummary
+          correctCount={correctCount}
+          mistakeCount={mistakeCount}
+          wordsRemaining={words.length}
+          previousResponses={previousResponses}
+        />
+      )}
+
       {gameStatus === 'active' && (
         <>
-          {renderStats()}
           {renderWordGrid()}
 
           {showProviderControls && (
@@ -401,7 +411,6 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
 
           {/* traditional recommendation section removed per branch remove-traditional-recommendation-section */}
 
-          {renderPreviousResponses()}
         </>
       )}
 

@@ -598,3 +598,63 @@
     transition: none !important;
   }
 }
+
+/* GameSummary specific styles (reusable summary component) */
+.game-summary {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.game-summary .summary-stats {
+  padding: 0.75rem;
+  background-color: transparent;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1rem;
+}
+
+.game-summary .summary-stats .stat-item {
+  align-items: center;
+}
+
+.game-summary .previous-responses {
+  margin-top: 0;
+  padding: 0.75rem;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.game-summary .responses-list {
+  max-height: 220px;
+  overflow: auto;
+}
+
+.game-summary .response-item:focus,
+.game-summary .response-item:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  transform: translateY(-2px);
+}
+
+/* Make summary stack on small screens */
+@media (max-width: 768px) {
+  .game-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .game-summary .summary-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .game-summary .previous-responses {
+    max-height: 180px;
+  }
+}
