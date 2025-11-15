@@ -11,6 +11,14 @@
   border: 1px solid #e9ecef;
   font-family: system-ui, -apple-system, sans-serif;
   max-width: 100%;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+/* Fade-out state used when recommendation is being hidden */
+.recommendation-display--fading {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
 }
 
 /* Loading State */

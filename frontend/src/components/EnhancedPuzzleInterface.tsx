@@ -3,7 +3,7 @@
  * Provides comprehensive puzzle interaction with AI-powered recommendations.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LLMProvider } from '../types/llm-provider';
 import { RecommendationResponse, GenerateRecommendationRequest } from '../types/recommendation';
 import { PuzzleInterfaceProps } from '../types/puzzle';
@@ -66,6 +66,8 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
   );
   const [disabledColors, setDisabledColors] = useState<Set<string>>(new Set());
   const [recordingResponse, setRecordingResponse] = useState(false);
+  const [llmHiding, setLlmHiding] = useState(false);
+  const hideTimerRef = useRef<number | null>(null);
 
   // Reset state when game status changes
   useEffect(() => {
@@ -148,6 +150,22 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
 
     if (isLoading || gameStatus !== 'active' || recordingResponse) return;
 
+    // Capture and start a short fade-before-unmount of the LLM recommendation so the UI clears
+    const prevLlmRecommendation = llmRecommendation;
+    if (prevLlmRecommendation) {
+      // start fade
+      setLlmHiding(true);
+      // schedule actual removal after animation completes
+      if (hideTimerRef.current) {
+        window.clearTimeout(hideTimerRef.current);
+      }
+      hideTimerRef.current = window.setTimeout(() => {
+        setLlmRecommendation(null);
+        setLlmHiding(false);
+        hideTimerRef.current = null;
+      }, 180) as unknown as number;
+    }
+
     setRecordingResponse(true);
     try {
       // Await the parent's record response so we can only disable UI on success
@@ -159,12 +177,29 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
         setDisabledColors(prev => new Set(prev).add(color));
       }
     } catch (err) {
+      // If recording failed, cancel the pending hide and restore the previous recommendation so the user can retry
+      if (hideTimerRef.current) {
+        window.clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = null;
+      }
+      setLlmHiding(false);
+      if (prevLlmRecommendation) {
+        setLlmRecommendation(prevLlmRecommendation);
+      }
       // Parent will typically surface the error via props; no local change to disabledColors
-      // Optionally, we could set a local error state here if desired
     } finally {
       setRecordingResponse(false);
     }
-  }, [isLoading, gameStatus, onRecordResponse, recordingResponse, isGettingRecommendation]);
+  }, [isLoading, gameStatus, onRecordResponse, recordingResponse, isGettingRecommendation, llmRecommendation]);
+
+  // Cleanup any pending timers on unmount
+  useEffect(() => {
+    return () => {
+      if (hideTimerRef.current) {
+        window.clearTimeout(hideTimerRef.current);
+      }
+    };
+  }, []);
 
   // Handle LLM recommendation acceptance
   const handleAcceptLlmRecommendation = useCallback((words: string[]) => {
@@ -408,6 +443,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
                   onApplyAlternative={handleAcceptLlmRecommendation}
                   showProviderInfo={true}
                   showMetadata={true}
+                  className={llmHiding ? 'recommendation-display--fading' : ''}
                 />
               )}
               {/* Render response buttons for LLM recommendation below the LLM display */}
