@@ -1,0 +1,52 @@
+{
+  "ui": {
+    "required_patterns": {
+      "component-structure": "React functional components in `frontend/src/components/`, using TypeScript",
+      "tests": "React Testing Library tests colocated under `frontend/src` with `*.test.tsx`"
+    },
+    "architectural_constraints": {
+      "state-management": "Prefer local component state or Context; no evidence of Redux/Zustand usage",
+      "styling": "CSS modules or component-scoped CSS files under `components/*.css`"
+    }
+  },
+  "api": {
+    "required_patterns": {
+      "framework": "FastAPI endpoints located under `backend/src/api/` and top-level `backend/src/api_v1.py`",
+      "pydantic-models": "Request and response shapes are defined via pydantic classes (e.g., `backend/src/pydantic.py`)"
+    },
+    "architectural_constraints": {
+      "async": "Endpoints are async and intended to run under `uvicorn`",
+      "routing": "v2 endpoints exist (`v2_recommendations.py`, `v2_providers.py`); new APIs should follow the `api/v2` pattern"
+    }
+  },
+  "llm-integration": {
+    "required_patterns": {
+      "provider-factory": "All LLM calls should be routed through `llm_provider_factory` and provider service abstractions",
+      "prompt-service": "Prompt construction and response validation live in `services/prompt_service.py` and `services/response_validator.py`"
+    },
+    "architectural_constraints": {
+      "provider-agnostic": "Do not hardcode a single LLM; support the provider factory pattern (OpenAI, Ollama, simple provider)",
+      "response-validation": "Responses should be validated/parsed via `response_validator` before use"
+    }
+  },
+  "data-layer": {
+    "required_patterns": {
+      "file-based-data": "Puzzle and word data are stored as CSV files under `/data`",
+      "no-db": "No database configuration present; features should default to file-based or ephemeral storage unless new persistence is intentionally added"
+    },
+    "architectural_constraints": {
+      "persistence": "Avoid introducing DBs unless aligned with team decisions; migrate data access behind service layer abstractions",
+      "access-patterns": "Data reads should be encapsulated and not scattered across services"
+    }
+  },
+  "config-and-ops": {
+    "required_patterns": {
+      "env-config": "Environment configuration via `.env` + `python-dotenv`",
+      "pyproject-managed": "Backend build/test tooling configured in `pyproject.toml`"
+    },
+    "architectural_constraints": {
+      "typing-and-quality": "Code must conform to `mypy`/`black` configurations (see `pyproject.toml`)",
+      "ci": "Tests must include coverage and follow existing pytest config markers"
+    }
+  }
+}

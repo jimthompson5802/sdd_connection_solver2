@@ -1,0 +1,65 @@
+{
+  "backend-api": [
+    "backend/src/api_v1.py",
+    "backend/src/api/v2_recommendations.py",
+    "backend/src/api/v2_providers.py",
+    "backend/src/main.py"
+  ],
+  "backend-services": [
+    "backend/src/services/recommendation_service.py",
+    "backend/src/services/llm_provider_factory.py",
+    "backend/src/services/prompt_service.py",
+    "backend/src/services/ollama_service.py",
+    "backend/src/services/configuration_service.py"
+  ],
+  "backend-models": [
+    "backend/src/pydantic.py",
+    "backend/src/llm_models.py",
+    "backend/src/recommendation_engine.py"
+  ],
+  "llm-adapters": [
+    "backend/src/langchain_community/llms/ollama.py",
+    "backend/src/langchain_community/llms/*.py"
+  ],
+  "frontend-components": [
+    "frontend/src/components/PuzzleInterface.tsx",
+    "frontend/src/components/RecommendationDisplay.tsx",
+    "frontend/src/components/EnhancedPuzzleInterface.tsx",
+    "frontend/src/components/GameSummary.tsx",
+    "frontend/src/components/ErrorMessage.tsx"
+  ],
+  "frontend-services": [
+    "frontend/src/services/llm-api.ts",
+    "frontend/src/services/*.ts"
+  ],
+  "frontend-tests": [
+    "frontend/src/App.test.tsx",
+    "frontend/src/FullApplicationFlow.test.tsx",
+    "frontend/src/components/*.test.tsx"
+  ],
+  "data-files": [
+    "data/puzzle_*.csv",
+    "data/word_list*.csv"
+  ],
+  "docs-and-chatlogs": [
+    "docs/architecture.md",
+    "chat_logs/*.md",
+    "README.md"
+  ],
+  "config-and-scripts": [
+    "backend/pyproject.toml",
+    "frontend/package.json",
+    "frontend/tsconfig.json",
+    ".specify/scripts/*",
+    "./.env.example"
+  ],
+  "tests-backend": [
+    "backend/tests/unit/*",
+    "backend/tests/integration/*",
+    "backend/tests/e2e/*"
+  ],
+  "utilities-and-helpers": [
+    "src/__init__.py",
+    "src/*"
+  ]
+}
