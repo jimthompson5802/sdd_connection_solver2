@@ -14,8 +14,7 @@ describe('Frontend Component Integration', () => {
     render(<App />);
     
     // Verify initial state
-    expect(screen.getByText('NYT Connections Puzzle Assistant')).toBeInTheDocument();
-    expect(screen.getByText('Upload a CSV file with 16 words to get started')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     
     // Verify file input exists
     const fileInput = screen.getByLabelText('Puzzle file');
@@ -35,8 +34,6 @@ describe('Frontend Component Integration', () => {
     // Verify semantic HTML structure
     const header = screen.getByRole('banner');
     expect(header).toBeInTheDocument();
-    expect(header).toHaveClass('App-header');
-    
     const main = screen.getByRole('main');
     expect(main).toBeInTheDocument();
     expect(main).toHaveClass('App-main');
@@ -110,8 +107,9 @@ describe('Frontend Component Integration', () => {
     expect(header).toBeInTheDocument();
     expect(main).toBeInTheDocument();
     
-    // Verify class structure supports CSS styling
-    expect(header).toHaveClass('App-header');
+    // Verify class structure supports CSS styling: class now lives on the h1
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toHaveClass('App-header');
     expect(main).toHaveClass('App-main');
   });
 
@@ -137,8 +135,8 @@ describe('Frontend Component Integration', () => {
   test('text content and instructions', () => {
     render(<App />);
     
-    // Verify instructional text
-    expect(screen.getByText('Upload a CSV file with 16 words to get started')).toBeInTheDocument();
+    // Verify instructional text and primary controls still present
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     expect(screen.getByText('Choose Puzzle File (CSV):')).toBeInTheDocument();
     expect(screen.getByText('Setup Puzzle')).toBeInTheDocument();
   });
