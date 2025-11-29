@@ -41,9 +41,10 @@ describe('App Component', () => {
     render(<App />);
     
     // Verify key layout classes are present on header/main
-    const header = document.querySelector('.App-header');
+    const title = screen.getByRole('heading', { level: 1 });
     const main = document.querySelector('.App-main');
-    expect(header).toBeInTheDocument();
+    expect(title).toBeInTheDocument();
+    expect(title).toHaveClass('App-header');
     expect(main).toBeInTheDocument();
     // Check that the setup button exists and is initially disabled
     const setupButton = screen.getByRole('button', { name: /setup puzzle/i });

@@ -97,9 +97,8 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>NYT Connections Puzzle Assistant</h1>
-        <p>Upload a CSV file with 16 words to get started</p>
+      <header>
+        <h1 className="App-header">NYT Connections Puzzle Assistant</h1>
       </header>
 
       <main className="App-main">
