@@ -29,27 +29,28 @@ describe('App Component', () => {
     expect(main).toHaveClass('App-main');
   });
 
-  test('renders main puzzle interface component', () => {
+  test('renders navigation sidebar component', () => {
     render(<App />);
     
-    // Verify PuzzleInterface-like inputs are rendered (file input with accessible label)
-    const fileInput = screen.getByLabelText(/puzzle file/i);
-    expect(fileInput).toBeInTheDocument();
+    // Verify sidebar navigation is present
+    const sidebar = screen.getByRole('navigation');
+    expect(sidebar).toBeInTheDocument();
+    expect(screen.getByText('Start New Game')).toBeInTheDocument();
   });
 
-  test('applies correct CSS styling for centered layout', () => {
+  test('applies correct CSS styling for grid layout', () => {
     render(<App />);
     
-    // Verify key layout classes are present on header/main
+    // Verify key layout classes are present on header/main/sidebar
     const title = screen.getByRole('heading', { level: 1 });
     const main = document.querySelector('.App-main');
+    const sidebar = document.querySelector('.sidebar');
+    
     expect(title).toBeInTheDocument();
-    expect(title).toHaveClass('App-header');
     expect(main).toBeInTheDocument();
-    // Check that the setup button exists and is initially disabled
-    const setupButton = screen.getByRole('button', { name: /setup puzzle/i });
-    expect(setupButton).toBeInTheDocument();
-    expect(setupButton).toBeDisabled();
+    expect(main).toHaveClass('App-main');
+    expect(sidebar).toBeInTheDocument();
+    expect(sidebar).toHaveClass('sidebar');
   });
 
   test('renders without crashing', () => {
@@ -69,13 +70,15 @@ describe('App Component', () => {
     expect(headingElement).toHaveTextContent(/NYT Connections Puzzle Assistant/i);
   });
 
-  test('contains all required UI components', () => {
+  test('contains all required UI components in initial state', () => {
     render(<App />);
     
     // Verify all major components are present per functional requirements
-    // Check the file input and setup button are present
-    expect(screen.getByLabelText(/puzzle file/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /setup puzzle/i })).toBeInTheDocument();
+    // In initial state, should show sidebar navigation and welcome message
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+    expect(screen.getByText('Start New Game')).toBeInTheDocument();
+    expect(screen.getByText('From File')).toBeInTheDocument();
+    expect(screen.getByText('Select action in Left Side Bar')).toBeInTheDocument();
   });
 
   test('maintains consistent theme and styling', () => {

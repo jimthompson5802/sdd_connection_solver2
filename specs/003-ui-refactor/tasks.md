@@ -24,10 +24,10 @@ description: "Implementation tasks for UI Refactor - Persistent Navigation Layou
 
 **Purpose**: Project initialization and verification
 
-- [ ] T001 Verify current frontend tests pass with `cd frontend && npm test`
-- [ ] T002 Start development server with `cd frontend && npm start` to baseline current behavior
-- [ ] T003 [P] Create TypeScript types file in frontend/src/types/navigation.ts from contracts/components.ts
-- [ ] T004 [P] Take screenshots of current UI states (waiting, active, won, lost) for regression testing
+- [X] T001 Verify current frontend tests pass with `cd frontend && npm test`
+- [X] T002 Start development server with `cd frontend && npm start` to baseline current behavior
+- [X] T003 [P] Create TypeScript types file in frontend/src/types/navigation.ts from contracts/components.ts
+- [X] T004 [P] Take screenshots of current UI states (waiting, active, won, lost) for regression testing
 
 **Checkpoint**: Baseline established - all existing tests pass, current behavior documented
 
@@ -41,23 +41,23 @@ description: "Implementation tasks for UI Refactor - Persistent Navigation Layou
 
 ### NavigationItem Component (Foundation)
 
-- [ ] T005 [P] Create test file frontend/src/components/NavigationItem.test.tsx
-- [ ] T006 Write failing tests for NavigationItem: renders label, shows chevron when expandable, handles click events, aria-expanded attribute
-- [ ] T007 Run tests with `npm test -- NavigationItem.test.tsx` to verify they FAIL
-- [ ] T008 Create component file frontend/src/components/NavigationItem.tsx implementing NavigationItemProps interface
-- [ ] T009 [P] Create styles file frontend/src/components/NavigationItem.css with indentation, hover states, chevron rotation
-- [ ] T010 Implement NavigationItem component to pass all tests
-- [ ] T011 Run tests with `npm test -- NavigationItem.test.tsx` to verify they PASS
+- [X] T005 [P] Create test file frontend/src/components/NavigationItem.test.tsx
+- [X] T006 Write failing tests for NavigationItem: renders label, shows chevron when expandable, handles click events, aria-expanded attribute
+- [X] T007 Run tests with `npm test -- NavigationItem.test.tsx` to verify they FAIL
+- [X] T008 Create component file frontend/src/components/NavigationItem.tsx implementing NavigationItemProps interface
+- [X] T009 [P] Create styles file frontend/src/components/NavigationItem.css with indentation, hover states, chevron rotation
+- [X] T010 Implement NavigationItem component to pass all tests
+- [X] T011 Run tests with `npm test -- NavigationItem.test.tsx` to verify they PASS
 
 ### Sidebar Component (Foundation)
 
-- [ ] T012 [P] Create test file frontend/src/components/Sidebar.test.tsx
-- [ ] T013 Write failing tests for Sidebar: renders navigation hierarchy, "Start New Game" expanded by default, handles "From File" click, sidebar width constraints (min 180px, max 20%)
-- [ ] T014 Run tests with `npm test -- Sidebar.test.tsx` to verify they FAIL
-- [ ] T015 Create component file frontend/src/components/Sidebar.tsx implementing SidebarProps interface
-- [ ] T016 [P] Create styles file frontend/src/components/Sidebar.css with width constraints, CSS Grid area placement
-- [ ] T017 Implement Sidebar component using NavigationItem, pass all tests
-- [ ] T018 Run tests with `npm test -- Sidebar.test.tsx` to verify they PASS
+- [X] T012 [P] Create test file frontend/src/components/Sidebar.test.tsx
+- [X] T013 Write failing tests for Sidebar: renders navigation hierarchy, "Start New Game" expanded by default, handles "From File" click, sidebar width constraints (min 180px, max 20%)
+- [X] T014 Run tests with `npm test -- Sidebar.test.tsx` to verify they FAIL
+- [X] T015 Create component file frontend/src/components/Sidebar.tsx implementing SidebarProps interface
+- [X] T016 [P] Create styles file frontend/src/components/Sidebar.css with width constraints, CSS Grid area placement
+- [X] T017 Implement Sidebar component using NavigationItem, pass all tests
+- [X] T018 Run tests with `npm test -- Sidebar.test.tsx` to verify they PASS
 
 **Checkpoint**: Foundation ready - NavigationItem and Sidebar components complete and tested
 
@@ -71,24 +71,24 @@ description: "Implementation tasks for UI Refactor - Persistent Navigation Layou
 
 ### Tests for User Story 1 (TDD - REQUIRED)
 
-- [ ] T019 [P] [US1] Update frontend/src/App.test.tsx with test: renders title "NYT Connections Puzzle Assistant" at top
-- [ ] T020 [P] [US1] Add test to App.test.tsx: renders Sidebar component in initial state
-- [ ] T021 [P] [US1] Add test to App.test.tsx: renders "Select action in Left Side Bar" message when currentView='initial'
-- [ ] T022 [P] [US1] Add test to App.test.tsx: layout uses CSS Grid with three regions (header, sidebar, main)
-- [ ] T023 [US1] Run tests with `npm test -- App.test.tsx` to verify they FAIL
+- [X] T019 [P] [US1] Update frontend/src/App.test.tsx with test: renders title "NYT Connections Puzzle Assistant" at top
+- [X] T020 [P] [US1] Add test to App.test.tsx: renders Sidebar component in initial state
+- [X] T021 [P] [US1] Add test to App.test.tsx: renders "Select action in Left Side Bar" message when currentView='initial'
+- [X] T022 [P] [US1] Add test to App.test.tsx: layout uses CSS Grid with three regions (header, sidebar, main)
+- [X] T023 [US1] Run tests with `npm test -- App.test.tsx` to verify they FAIL
 
 ### Implementation for User Story 1
 
-- [ ] T024 [US1] Update frontend/src/App.tsx: add currentView state (initial as default) and sidebarExpanded state (true as default)
-- [ ] T025 [US1] Update frontend/src/App.tsx: import Sidebar component and add to render tree
-- [ ] T026 [US1] Update frontend/src/App.tsx: implement onNavigationAction handler for sidebar actions
-- [ ] T027 [US1] Update frontend/src/App.tsx: add conditional rendering for main area based on currentView
-- [ ] T028 [US1] Update frontend/src/App.tsx: render "Select action in Left Side Bar" when currentView='initial'
-- [ ] T029 [US1] Update frontend/src/App.css: replace flexbox layout with CSS Grid using named template areas (header, sidebar, main)
-- [ ] T030 [US1] Update frontend/src/App.css: add grid-template-rows and grid-template-columns for layout
-- [ ] T031 [US1] Update frontend/src/App.css: style .App-header for title positioning
-- [ ] T032 [US1] Run tests with `npm test -- App.test.tsx` to verify they PASS
-- [ ] T033 [US1] Visual verification: npm start and check initial layout matches spec
+- [X] T024 [US1] Update frontend/src/App.tsx: add currentView state (initial as default) and sidebarExpanded state (true as default)
+- [X] T025 [US1] Update frontend/src/App.tsx: import Sidebar component and add to render tree
+- [X] T026 [US1] Update frontend/src/App.tsx: implement onNavigationAction handler for sidebar actions
+- [X] T027 [US1] Update frontend/src/App.tsx: add conditional rendering for main area based on currentView
+- [X] T028 [US1] Update frontend/src/App.tsx: render "Select action in Left Side Bar" when currentView='initial'
+- [X] T029 [US1] Update frontend/src/App.css: replace flexbox layout with CSS Grid using named template areas (header, sidebar, main)
+- [X] T030 [US1] Update frontend/src/App.css: add grid-template-rows and grid-template-columns for layout
+- [X] T031 [US1] Update frontend/src/App.css: style .App-header for title positioning
+- [X] T032 [US1] Run tests with `npm test -- App.test.tsx` to verify they PASS
+- [X] T033 [US1] Visual verification: npm start and check initial layout matches spec
 
 **Checkpoint**: User Story 1 complete - initial application launch shows correct layout with title, sidebar, and welcome message
 

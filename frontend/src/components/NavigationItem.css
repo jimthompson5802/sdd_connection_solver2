@@ -1,0 +1,80 @@
+.navigation-item {
+  width: 100%;
+}
+
+.navigation-item-button {
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #333;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.navigation-item-button:hover {
+  background-color: #f5f5f5;
+}
+
+.navigation-item-button:focus {
+  outline: 2px solid #007acc;
+  outline-offset: -2px;
+}
+
+.navigation-item.level-0 .navigation-item-button {
+  font-weight: 600;
+  padding-left: 16px;
+}
+
+.navigation-item.level-1 .navigation-item-button {
+  font-weight: 400;
+  padding-left: 32px;
+  font-size: 13px;
+}
+
+.navigation-item-label {
+  flex: 1;
+}
+
+.navigation-item-chevron {
+  margin-left: 8px;
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+  font-size: 10px;
+  color: #666;
+}
+
+.navigation-item-chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.navigation-item-children {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  display: none;
+}
+
+.navigation-item-children.expanded {
+  max-height: 500px;
+  display: block;
+}
+
+.navigation-item.action-item .navigation-item-button:hover {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .navigation-item-chevron,
+  .navigation-item-children {
+    transition: none;
+  }
+}
