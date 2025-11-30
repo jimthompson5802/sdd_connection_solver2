@@ -1,0 +1,7 @@
+# ESLint ignore patterns for frontend
+node_modules/
+build/
+dist/
+coverage/
+*.min.js
+public/

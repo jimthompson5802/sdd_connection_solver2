@@ -3,6 +3,16 @@ import { SidebarProps, NAVIGATION_MENUS, NAVIGATION_ACTIONS } from '../types/nav
 import NavigationItem from './NavigationItem';
 import './Sidebar.css';
 
+/**
+ * Sidebar navigation component for the persistent layout.
+ * 
+ * Provides a hierarchical navigation structure with expandable/collapsible menus.
+ * Supports "Start New Game" → "From File" navigation pattern as specified in the UI refactor.
+ * 
+ * @param currentView - Current application view state (for potential conditional styling)
+ * @param onNavigationAction - Callback function for navigation actions (from-file, toggle-menu)
+ * @returns JSX element representing the sidebar navigation
+ */
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigationAction }) => {
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(
     new Set([NAVIGATION_MENUS.START_NEW_GAME])

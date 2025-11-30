@@ -102,24 +102,24 @@ description: "Implementation tasks for UI Refactor - Persistent Navigation Layou
 
 ### Tests for User Story 2 (TDD - REQUIRED)
 
-- [ ] T034 [P] [US2] Add test to App.test.tsx: clicking "From File" changes currentView to 'file-upload'
-- [ ] T035 [P] [US2] Add test to App.test.tsx: currentView='file-upload' renders FileUpload component in main area
-- [ ] T036 [P] [US2] Add test to App.test.tsx: successful file upload changes currentView to 'puzzle-active'
-- [ ] T037 [P] [US2] Add test to App.test.tsx: currentView='puzzle-active' renders EnhancedPuzzleInterface in main area
-- [ ] T038 [P] [US2] Add test to App.test.tsx: title and sidebar remain visible when currentView='file-upload'
-- [ ] T039 [P] [US2] Add test to App.test.tsx: title and sidebar remain visible when currentView='puzzle-active'
-- [ ] T040 [US2] Run tests with `npm test -- App.test.tsx` to verify they FAIL
+- [X] T034 [P] [US2] Add test to App.test.tsx: clicking "From File" changes currentView to 'file-upload'
+- [X] T035 [P] [US2] Add test to App.test.tsx: currentView='file-upload' renders FileUpload component in main area
+- [X] T036 [P] [US2] Add test to App.test.tsx: successful file upload changes currentView to 'puzzle-active'
+- [X] T037 [P] [US2] Add test to App.test.tsx: currentView='puzzle-active' renders EnhancedPuzzleInterface in main area
+- [X] T038 [P] [US2] Add test to App.test.tsx: title and sidebar remain visible when currentView='file-upload'
+- [X] T039 [P] [US2] Add test to App.test.tsx: title and sidebar remain visible when currentView='puzzle-active'
+- [X] T040 [US2] Run tests with `npm test -- App.test.tsx` to verify they FAIL
 
 ### Implementation for User Story 2
 
-- [ ] T041 [US2] Update frontend/src/App.tsx: implement 'from-file' action in onNavigationAction to set currentView='file-upload'
-- [ ] T042 [US2] Update frontend/src/App.tsx: render FileUpload component when currentView='file-upload'
-- [ ] T043 [US2] Update frontend/src/App.tsx: update handleFileUpload callback to set currentView='puzzle-active' after successful upload
-- [ ] T044 [US2] Update frontend/src/App.tsx: render EnhancedPuzzleInterface when currentView='puzzle-active'
-- [ ] T045 [P] [US2] Update frontend/src/components/FileUpload.tsx: remove internal header/title (now in App header)
-- [ ] T046 [P] [US2] Update frontend/src/components/FileUpload.css: adjust styles for main area context (remove header padding)
-- [ ] T047 [US2] Run tests with `npm test -- App.test.tsx` and `npm test -- FileUpload.test.tsx` to verify they PASS
-- [ ] T048 [US2] Visual verification: click "From File", upload puzzle, verify layout integrity
+- [X] T041 [US2] Update frontend/src/App.tsx: implement 'from-file' action in onNavigationAction to set currentView='file-upload'
+- [X] T042 [US2] Update frontend/src/App.tsx: render FileUpload component when currentView='file-upload'
+- [X] T043 [US2] Update frontend/src/App.tsx: update handleFileUpload callback to set currentView='puzzle-active' after successful upload
+- [X] T044 [US2] Update frontend/src/App.tsx: render EnhancedPuzzleInterface when currentView='puzzle-active'
+- [X] T045 [P] [US2] Update frontend/src/components/FileUpload.tsx: remove internal header/title (now in App header)
+- [X] T046 [P] [US2] Update frontend/src/components/FileUpload.css: adjust styles for main area context (remove header padding)
+- [X] T047 [US2] Run tests with `npm test -- App.test.tsx` and `npm test -- FileUpload.test.tsx` to verify they PASS
+- [X] T048 [US2] Visual verification: click "From File", upload puzzle, verify layout integrity
 
 **Checkpoint**: User Story 2 complete - file upload workflow functional with persistent navigation
 
@@ -133,20 +133,20 @@ description: "Implementation tasks for UI Refactor - Persistent Navigation Layou
 
 ### Tests for User Story 3 (TDD - REQUIRED)
 
-- [ ] T049 [P] [US3] Add test to App.test.tsx: sidebar onNavigationAction handler works when currentView='puzzle-active'
-- [ ] T050 [P] [US3] Add test to App.test.tsx: clicking "From File" during active game changes currentView to 'file-upload' (no confirmation)
-- [ ] T051 [P] [US3] Add test to App.test.tsx: sidebar does not overlap main content when puzzle interface is active
-- [ ] T052 [P] [US3] Add test to App.test.tsx: sidebar maintains min 180px width and max 20% viewport width
-- [ ] T053 [US3] Run tests with `npm test -- App.test.tsx` to verify they FAIL
+- [X] T049 [P] [US3] Add test to App.test.tsx: sidebar onNavigationAction handler works when currentView='puzzle-active'
+- [X] T050 [P] [US3] Add test to App.test.tsx: clicking "From File" during active game changes currentView to 'file-upload' (no confirmation)
+- [X] T051 [P] [US3] Add test to App.test.tsx: sidebar does not overlap main content when puzzle interface is active
+- [X] T052 [P] [US3] Add test to App.test.tsx: sidebar maintains min 180px width and max 20% viewport width
+- [X] T053 [US3] Run tests with `npm test -- App.test.tsx` to verify they FAIL
 
 ### Implementation for User Story 3
 
-- [ ] T054 [US3] Verify frontend/src/App.tsx: onNavigationAction handler works from any currentView state (already implemented in T041)
-- [ ] T055 [US3] Verify frontend/src/App.css: sidebar width constraints use min(180px) and max(20vw) in grid-template-columns
-- [ ] T056 [US3] Update frontend/src/App.css: ensure main area uses fr unit to fill remaining space
-- [ ] T057 [US3] Run tests with `npm test -- App.test.tsx` to verify they PASS
-- [ ] T058 [US3] Visual verification: start puzzle, interact with words/recommendations, verify sidebar remains accessible
-- [ ] T059 [US3] Regression test: click "From File" during active puzzle, verify immediate transition (no confirmation dialog)
+- [X] T054 [US3] Verify frontend/src/App.tsx: onNavigationAction handler works from any currentView state (already implemented in T041)
+- [X] T055 [US3] Verify frontend/src/App.css: sidebar width constraints use min(180px) and max(20vw) in grid-template-columns
+- [X] T056 [US3] Update frontend/src/App.css: ensure main area uses fr unit to fill remaining space
+- [X] T057 [US3] Run tests with `npm test -- App.test.tsx` to verify they PASS
+- [X] T058 [US3] Visual verification: start puzzle, interact with words/recommendations, verify sidebar remains accessible
+- [X] T059 [US3] Regression test: click "From File" during active puzzle, verify immediate transition (no confirmation dialog)
 
 **Checkpoint**: User Story 3 complete - persistent navigation works during gameplay with no behavioral regressions
 
@@ -160,22 +160,22 @@ description: "Implementation tasks for UI Refactor - Persistent Navigation Layou
 
 ### Tests for User Story 4 (TDD - REQUIRED)
 
-- [ ] T060 [P] [US4] Add test to App.test.tsx: gameStatus='won' shows success message "🎉 Congratulations! You solved the puzzle!" in main area
-- [ ] T061 [P] [US4] Add test to App.test.tsx: gameStatus='lost' shows failure message "Game Over - Maximum mistakes reached" in main area
-- [ ] T062 [P] [US4] Add test to App.test.tsx: gameStatus='won' or 'lost' renders GameSummary component in main area
-- [ ] T063 [P] [US4] Add test to App.test.tsx: title and sidebar remain visible when gameStatus='won' or 'lost'
-- [ ] T064 [P] [US4] Add test to App.test.tsx: clicking "From File" after game end changes currentView to 'file-upload'
-- [ ] T065 [US4] Run tests with `npm test -- App.test.tsx` to verify they FAIL
+- [X] T060 [P] [US4] Add test to App.test.tsx: gameStatus='won' shows success message "🎉 Congratulations! You solved the puzzle!" in main area
+- [X] T061 [P] [US4] Add test to App.test.tsx: gameStatus='lost' shows failure message "Game Over - Maximum mistakes reached" in main area
+- [X] T062 [P] [US4] Add test to App.test.tsx: gameStatus='won' or 'lost' renders GameSummary component in main area
+- [X] T063 [P] [US4] Add test to App.test.tsx: title and sidebar remain visible when gameStatus='won' or 'lost'
+- [X] T064 [P] [US4] Add test to App.test.tsx: clicking "From File" after game end changes currentView to 'file-upload'
+- [X] T065 [US4] Run tests with `npm test -- App.test.tsx` to verify they FAIL
 
 ### Implementation for User Story 4
 
-- [ ] T066 [US4] Update frontend/src/App.tsx: add currentView='puzzle-complete' state transition when gameStatus becomes 'won' or 'lost'
-- [ ] T067 [US4] Update frontend/src/App.tsx: render EnhancedPuzzleInterface when currentView='puzzle-complete' (preserves GameSummary rendering)
-- [ ] T068 [US4] Verify frontend/src/components/EnhancedPuzzleInterface.tsx: GameSummary component renders unchanged (no modifications needed)
-- [ ] T069 [US4] Verify frontend/src/components/GameSummary.tsx: component unchanged, renders in same relative position (no modifications needed)
-- [ ] T070 [US4] Run tests with `npm test -- App.test.tsx` to verify they PASS
-- [ ] T071 [US4] Visual regression: complete puzzle to win, verify message and GameSummary positions match baseline screenshots from T004
-- [ ] T072 [US4] Visual regression: complete puzzle to lose, verify message and GameSummary positions match baseline screenshots from T004
+- [X] T066 [US4] Update frontend/src/App.tsx: add currentView='puzzle-complete' state transition when gameStatus becomes 'won' or 'lost'
+- [X] T067 [US4] Update frontend/src/App.tsx: render EnhancedPuzzleInterface when currentView='puzzle-complete' (preserves GameSummary rendering)
+- [X] T068 [US4] Verify frontend/src/components/EnhancedPuzzleInterface.tsx: GameSummary component renders unchanged (no modifications needed)
+- [X] T069 [US4] Verify frontend/src/components/GameSummary.tsx: component unchanged, renders in same relative position (no modifications needed)
+- [X] T070 [US4] Run tests with `npm test -- App.test.tsx` to verify they PASS
+- [X] T071 [US4] Visual regression: complete puzzle to win, verify message and GameSummary positions match baseline screenshots from T004
+- [X] T072 [US4] Visual regression: complete puzzle to lose, verify message and GameSummary positions match baseline screenshots from T004
 
 **Checkpoint**: User Story 4 complete - end game display maintains visual consistency with current implementation
 
@@ -187,38 +187,38 @@ description: "Implementation tasks for UI Refactor - Persistent Navigation Layou
 
 ### Accessibility & UX
 
-- [ ] T073 [P] Add aria-label to Sidebar component in frontend/src/components/Sidebar.tsx
-- [ ] T074 [P] Verify NavigationItem keyboard navigation (Enter/Space to activate) in frontend/src/components/NavigationItem.tsx
-- [ ] T075 [P] Test reduced-motion preference with CSS transitions in frontend/src/components/NavigationItem.css
-- [ ] T076 [P] Verify focus indicators visible on all interactive elements in Sidebar and NavigationItem
+- [X] T073 [P] Add aria-label to Sidebar component in frontend/src/components/Sidebar.tsx
+- [X] T074 [P] Verify NavigationItem keyboard navigation (Enter/Space to activate) in frontend/src/components/NavigationItem.tsx
+- [X] T075 [P] Test reduced-motion preference with CSS transitions in frontend/src/components/NavigationItem.css
+- [X] T076 [P] Verify focus indicators visible on all interactive elements in Sidebar and NavigationItem
 
 ### Layout Edge Cases
 
-- [ ] T077 Test responsive behavior at viewport widths 320px, 768px, 1024px, 1920px
-- [ ] T078 Test sidebar min-width constraint (180px) prevents collapse on small screens
-- [ ] T079 Test sidebar max-width constraint (20% viewport) prevents excessive width on large screens
-- [ ] T080 Verify no horizontal scrollbars appear in main area during puzzle gameplay
+- [X] T077 Test responsive behavior at viewport widths 320px, 768px, 1024px, 1920px
+- [X] T078 Test sidebar min-width constraint (180px) prevents collapse on small screens
+- [X] T079 Test sidebar max-width constraint (20% viewport) prevents excessive width on large screens
+- [X] T080 Verify no horizontal scrollbars appear in main area during puzzle gameplay
 
 ### Performance & Quality
 
-- [ ] T081 Run full test suite with `npm test` and verify >80% coverage maintained
-- [ ] T082 Run type check with `npx tsc --noEmit` to verify no TypeScript errors
-- [ ] T083 [P] Measure layout transition times (should be <300ms per plan.md)
-- [ ] T084 [P] Verify initial render time <2s (per plan.md performance goal)
+- [X] T081 Run full test suite with `npm test` and verify >80% coverage maintained
+- [X] T082 Run type check with `npx tsc --noEmit` to verify no TypeScript errors
+- [X] T083 [P] Measure layout transition times (should be <300ms per plan.md)
+- [X] T084 [P] Verify initial render time <2s (per plan.md performance goal)
 
 ### Documentation
 
-- [ ] T085 [P] Update frontend/README.md with new component structure (Sidebar, NavigationItem)
-- [ ] T086 [P] Add JSDoc comments to Sidebar and NavigationItem components
-- [ ] T087 [P] Create architecture diagram showing new 3-region layout in docs/
+- [X] T085 [P] Update frontend/README.md with new component structure (Sidebar, NavigationItem)
+- [X] T086 [P] Add JSDoc comments to Sidebar and NavigationItem components
+- [X] T087 [P] Create architecture diagram showing new 3-region layout in docs/
 
 ### Final Validation
 
-- [ ] T088 Run complete quickstart.md workflow from fresh clone to verify setup instructions
-- [ ] T089 Verify zero backend changes with `git diff backend/` (should be empty)
-- [ ] T090 Test all acceptance scenarios from spec.md user stories (US1-US4)
-- [ ] T091 Code cleanup: remove unused imports, ensure consistent formatting with Prettier
-- [ ] T092 Final PR review: verify all FR-001 through FR-013 requirements met from spec.md
+- [X] T088 Run complete quickstart.md workflow from fresh clone to verify setup instructions
+- [X] T089 Verify zero backend changes with `git diff backend/` (should be empty)
+- [X] T090 Test all acceptance scenarios from spec.md user stories (US1-US4)
+- [X] T091 Code cleanup: remove unused imports, ensure consistent formatting with Prettier
+- [X] T092 Final PR review: verify all FR-001 through FR-013 requirements met from spec.md
 
 **Checkpoint**: All polish complete - feature ready for production deployment
 

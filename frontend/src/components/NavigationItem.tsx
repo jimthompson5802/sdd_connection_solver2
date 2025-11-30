@@ -2,6 +2,20 @@ import React from 'react';
 import { NavigationItemProps, isExpandableItem, isActionItem } from '../types/navigation';
 import './NavigationItem.css';
 
+/**
+ * NavigationItem component for hierarchical sidebar navigation.
+ * 
+ * Supports both expandable menu items (with children) and action items (clickable).
+ * Provides proper ARIA attributes for accessibility and keyboard navigation support.
+ * 
+ * @param label - Display text for the navigation item
+ * @param isExpanded - Whether expandable item's children are visible
+ * @param onToggle - Callback for expandable items when toggled
+ * @param onClick - Callback for action items when clicked
+ * @param children - Child navigation items (for expandable items)
+ * @param level - Hierarchy depth (0=top-level, 1=sub-item) for styling
+ * @returns JSX element representing a navigation item
+ */
 const NavigationItem: React.FC<NavigationItemProps> = ({
   label,
   isExpanded,

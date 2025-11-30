@@ -65,7 +65,7 @@ describe('Full Application Flow E2E Tests', () => {
         screen.queryByText(/connections/i),
         screen.queryAllByText(/puzzle/i),
         screen.queryByText(/game/i),
-        screen.queryByRole('button'),
+        screen.queryAllByRole('button'),
         screen.queryByRole('textbox'),
         screen.queryByRole('main'),
         screen.queryByRole('application')

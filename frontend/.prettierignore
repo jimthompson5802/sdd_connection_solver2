@@ -1,0 +1,9 @@
+# Prettier ignore patterns for frontend
+node_modules/
+build/
+dist/
+coverage/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+public/
