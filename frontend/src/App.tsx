@@ -52,8 +52,7 @@ const App: React.FC = () => {
     try {
       const response = await apiService.setupPuzzle(content);
       
-      setPuzzleState(prev => ({
-        ...prev,
+      setPuzzleState({
         words: response.remaining_words,
         currentRecommendation: [],
         recommendationConnection: '',
@@ -62,7 +61,8 @@ const App: React.FC = () => {
         gameStatus: 'active',
         isLoading: false,
         error: null,
-      }));
+        previousResponses: [], // Fresh start - clear previous game's guess history
+      });
       
       // Change view to show the puzzle interface
       setCurrentView('puzzle-active');
