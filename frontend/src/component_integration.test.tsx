@@ -5,7 +5,7 @@
  * matching the real implementation rather than idealized expectations.
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import App from './App';
 
@@ -13,16 +13,20 @@ describe('Frontend Component Integration', () => {
   test('file upload and puzzle setup workflow', async () => {
     render(<App />);
     
-    // Verify initial state
+    // Verify initial state - welcome message instead of file upload
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    expect(screen.getByText('Select action in Left Side Bar')).toBeInTheDocument();
     
-    // Verify file input exists
-    const fileInput = screen.getByLabelText('Puzzle file');
+    // Click "From File" to navigate to file upload
+    fireEvent.click(screen.getByText('From File'));
+    
+    // Now verify file input exists
+    const fileInput = screen.getByLabelText(/choose puzzle file/i);
     expect(fileInput).toBeInTheDocument();
     expect(fileInput).toHaveAttribute('accept', '.csv,text/csv');
     
     // Verify setup button is initially disabled
-    const setupButton = screen.getByText('Setup Puzzle');
+    const setupButton = screen.getByText(/setup puzzle/i);
     expect(setupButton).toBeInTheDocument();
     expect(setupButton).toBeDisabled();
     expect(setupButton).toHaveClass('gray-button');
@@ -47,8 +51,11 @@ describe('Frontend Component Integration', () => {
   test('file upload section structure and classes', () => {
     render(<App />);
     
+    // Click "From File" to navigate to file upload
+    fireEvent.click(screen.getByText('From File'));
+    
     // Verify file upload container
-    const fileUploadContainer = screen.getByText('Setup Puzzle').closest('.file-upload');
+    const fileUploadContainer = screen.getByText(/setup puzzle/i).closest('.file-upload');
     expect(fileUploadContainer).toBeInTheDocument();
     
     // Verify upload section
@@ -74,7 +81,10 @@ describe('Frontend Component Integration', () => {
   test('button styling and states', () => {
     render(<App />);
     
-    const setupButton = screen.getByText('Setup Puzzle');
+    // Click "From File" to navigate to file upload
+    fireEvent.click(screen.getByText('From File'));
+    
+    const setupButton = screen.getByText(/setup puzzle/i);
     
     // Verify button classes and initial state
     expect(setupButton).toHaveClass('gray-button', 'setup-button');
@@ -85,8 +95,11 @@ describe('Frontend Component Integration', () => {
   test('accessibility attributes', () => {
     render(<App />);
     
+    // Click "From File" to navigate to file upload
+    fireEvent.click(screen.getByText('From File'));
+    
     // Verify file input accessibility
-    const fileInput = screen.getByLabelText('Puzzle file');
+    const fileInput = screen.getByLabelText(/puzzle file/i);
     expect(fileInput).toHaveAttribute('aria-label', 'Puzzle file');
     expect(fileInput).toHaveAttribute('id', 'puzzle-file');
     
@@ -107,9 +120,9 @@ describe('Frontend Component Integration', () => {
     expect(header).toBeInTheDocument();
     expect(main).toBeInTheDocument();
     
-    // Verify class structure supports CSS styling: class now lives on the h1
-    const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toHaveClass('App-header');
+    // Verify class structure supports CSS styling: App-header class is on the header element
+    const headerElement = screen.getByRole('banner');
+    expect(headerElement).toHaveClass('App-header');
     expect(main).toHaveClass('App-main');
   });
 
@@ -127,24 +140,40 @@ describe('Frontend Component Integration', () => {
     // Main should be inside app container
     expect(appContainer).toContainElement(main);
     
-    // File upload should be inside main
-    const fileUploadContainer = screen.getByText('Setup Puzzle').closest('.file-upload') as HTMLElement;
+    // Initially main contains welcome message
+    expect(main).toContainElement(screen.getByText('Select action in Left Side Bar'));
+    
+    // Click "From File" to navigate to file upload
+    fireEvent.click(screen.getByText('From File'));
+    
+    // File upload should be inside main after navigation
+    const fileUploadContainer = screen.getByText(/setup puzzle/i).closest('.file-upload') as HTMLElement;
     expect(main).toContainElement(fileUploadContainer);
   });
 
   test('text content and instructions', () => {
     render(<App />);
     
-    // Verify instructional text and primary controls still present
+    // Verify initial state text and navigation
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+    expect(screen.getByText('Select action in Left Side Bar')).toBeInTheDocument();
+    expect(screen.getByText('From File')).toBeInTheDocument();
+    
+    // Click "From File" to navigate to file upload
+    fireEvent.click(screen.getByText('From File'));
+    
+    // Verify file upload text and controls appear after navigation
     expect(screen.getByText('Choose Puzzle File (CSV):')).toBeInTheDocument();
-    expect(screen.getByText('Setup Puzzle')).toBeInTheDocument();
+    expect(screen.getByText(/setup puzzle/i)).toBeInTheDocument();
   });
 
   test('form elements and input configuration', () => {
     render(<App />);
     
-    const fileInput = screen.getByLabelText('Puzzle file');
+    // Click "From File" to navigate to file upload
+    fireEvent.click(screen.getByText('From File'));
+    
+    const fileInput = screen.getByLabelText(/puzzle file/i);
     
     // Verify file input configuration
     expect(fileInput).toHaveAttribute('type', 'file');

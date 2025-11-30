@@ -91,3 +91,16 @@ venv/
 # data files
 data/
 
+# Node.js/JavaScript/TypeScript patterns
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+.npm
+.eslintcache
+build/
+
+# React build artifacts
+/frontend/build/
+

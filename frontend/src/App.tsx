@@ -1,16 +1,21 @@
 /**
  * Main App component for the NYT Connections Puzzle Assistant.
- * Manages application state and coordinates between FileUpload and PuzzleInterface components.
+ * Implements persistent three-region layout with sidebar navigation.
  */
 
 import React, { useState, useCallback } from 'react';
 import './App.css';
 import FileUpload from './components/FileUpload';
 import EnhancedPuzzleInterface from './components/EnhancedPuzzleInterface';
+import Sidebar from './components/Sidebar';
 import { PuzzleState } from './types/puzzle';
+import { AppView, NavigationAction } from './types/navigation';
 import { apiService } from './services/api';
 
 const App: React.FC = () => {
+  // Navigation state for the new layout
+  const [currentView, setCurrentView] = useState<AppView>('initial');
+  
   const [puzzleState, setPuzzleState] = useState<PuzzleState>({
     words: [],
     currentRecommendation: [],
@@ -26,14 +31,28 @@ const App: React.FC = () => {
   // LLM provider selection stored at app-level so it can be persisted or shared
   const [llmProvider, setLlmProvider] = useState<import('./types/llm-provider').LLMProvider | null>(null);
 
+  // Navigation handler for sidebar actions
+  const handleNavigationAction = useCallback((action: NavigationAction) => {
+    switch (action.type) {
+      case 'from-file':
+        setCurrentView('file-upload');
+        break;
+      case 'toggle-menu':
+        // Menu toggle is handled internally by Sidebar component
+        // This callback is for logging/analytics if needed
+        break;
+      default:
+        break;
+    }
+  }, []);
+
   const handleFileUpload = useCallback(async (content: string) => {
     setPuzzleState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
       const response = await apiService.setupPuzzle(content);
       
-      setPuzzleState(prev => ({
-        ...prev,
+      setPuzzleState({
         words: response.remaining_words,
         currentRecommendation: [],
         recommendationConnection: '',
@@ -42,7 +61,11 @@ const App: React.FC = () => {
         gameStatus: 'active',
         isLoading: false,
         error: null,
-      }));
+        previousResponses: [], // Fresh start - clear previous game's guess history
+      });
+      
+      // Change view to show the puzzle interface
+      setCurrentView('puzzle-active');
     } catch (error) {
       setPuzzleState(prev => ({
         ...prev,
@@ -86,6 +109,11 @@ const App: React.FC = () => {
           },
         ],
       }));
+
+      // Update view when game ends
+      if (response.game_status === 'won' || response.game_status === 'lost') {
+        setCurrentView('puzzle-complete');
+      }
     } catch (error) {
       setPuzzleState(prev => ({
         ...prev,
@@ -95,60 +123,64 @@ const App: React.FC = () => {
     }
   }, []);
 
-  return (
-    <div className="App">
-      <header>
-        <h1 className="App-header">NYT Connections Puzzle Assistant</h1>
-      </header>
-
-      <main className="App-main">
-        {puzzleState.gameStatus === 'waiting' ? (
+  const renderMainContent = () => {
+    switch (currentView) {
+      case 'initial':
+        return (
+          <div className="welcome-message">
+            <p>Select action in Left Side Bar</p>
+          </div>
+        );
+      
+      case 'file-upload':
+        return (
           <FileUpload
             onFileUpload={handleFileUpload}
             isLoading={puzzleState.isLoading}
             error={puzzleState.error}
           />
-        ) : (
-          <div className="puzzle-section">
-            <div className="upload-new">
-              <button
-                onClick={() => setPuzzleState({
-                  words: [],
-                  currentRecommendation: [],
-                  recommendationConnection: '',
-                  correctCount: 0,
-                  mistakeCount: 0,
-                  gameStatus: 'waiting',
-                  isLoading: false,
-                  error: null,
-                  previousResponses: [],
-                })}
-                className="secondary-button"
-              >
-                Upload New Puzzle
-              </button>
-            </div>
-            
-            <EnhancedPuzzleInterface
-              words={puzzleState.words}
-              recommendation={puzzleState.currentRecommendation}
-              recommendationConnection={puzzleState.recommendationConnection}
-              correctCount={puzzleState.correctCount}
-              mistakeCount={puzzleState.mistakeCount}
-              gameStatus={puzzleState.gameStatus}
-              isLoading={puzzleState.isLoading}
-              error={puzzleState.error}
-              onRecordResponse={handleRecordResponse}
-              previousResponses={puzzleState.previousResponses}
-              // LLM-related props (start with no provider configured)
-              llmProvider={llmProvider}
-              onProviderChange={(p) => setLlmProvider(p)}
-              showProviderControls={true}
-              puzzleContext={''}
-              previousGuesses={[]}
-            />
-          </div>
-        )}
+        );
+      
+      case 'puzzle-active':
+      case 'puzzle-complete':
+        return (
+          <EnhancedPuzzleInterface
+            words={puzzleState.words}
+            recommendation={puzzleState.currentRecommendation}
+            recommendationConnection={puzzleState.recommendationConnection}
+            correctCount={puzzleState.correctCount}
+            mistakeCount={puzzleState.mistakeCount}
+            gameStatus={puzzleState.gameStatus}
+            isLoading={puzzleState.isLoading}
+            error={puzzleState.error}
+            onRecordResponse={handleRecordResponse}
+            previousResponses={puzzleState.previousResponses}
+            llmProvider={llmProvider}
+            onProviderChange={(p) => setLlmProvider(p)}
+            showProviderControls={true}
+            puzzleContext={''}
+            previousGuesses={[]}
+          />
+        );
+      
+      default:
+        return <div className="welcome-message"><p>Select action in Left Side Bar</p></div>;
+    }
+  };
+
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>NYT Connections Puzzle Assistant</h1>
+      </header>
+
+      <Sidebar 
+        currentView={currentView}
+        onNavigationAction={handleNavigationAction}
+      />
+
+      <main className="App-main" role="main">
+        {renderMainContent()}
       </main>
     </div>
   );

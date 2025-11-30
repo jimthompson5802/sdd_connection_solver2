@@ -82,12 +82,15 @@ describe('Full Application Flow E2E Tests', () => {
     test('shows LLM provider field when puzzle is set up', async () => {
       render(<App />);
       
+      // Navigate to file upload to access setup functionality
+      fireEvent.click(screen.getByText('From File'));
+      
       // The LLM provider field might only appear after puzzle setup
       // Let's check if it exists or if setup needs to happen first
       const providerField = screen.queryByLabelText(/LLM Provider/i);
       const setupButton = screen.queryByText(/Setup Puzzle/i);
       
-      // At minimum, setup button should exist for the flow
+      // At minimum, setup button should exist for the flow after navigation
       expect(setupButton).toBeInTheDocument();
     });
 
@@ -251,6 +254,9 @@ describe('Full Application Flow E2E Tests', () => {
       const headerElement = screen.getByText(/NYT Connections Puzzle Assistant/i);
       expect(headerElement).toBeInTheDocument();
       
+      // Navigate to file upload to access setup functionality
+      fireEvent.click(screen.getByText('From File'));
+      
       const setupButton = screen.getByText(/Setup Puzzle/i);
       expect(setupButton).toBeInTheDocument();
     });
@@ -260,11 +266,15 @@ describe('Full Application Flow E2E Tests', () => {
       
       // Should have core Phase 1 elements
       const mainElement = screen.queryByRole('main');
+      expect(mainElement).toBeInTheDocument();
+      
+      // Navigate to file upload to access Phase 1 interface
+      fireEvent.click(screen.getByText('From File'));
+      
       const fileInput = screen.queryByLabelText(/Choose Puzzle File/i);
       const setupButton = screen.queryByText(/Setup Puzzle/i);
       
-      // Core elements should be present
-      expect(mainElement).toBeInTheDocument();
+      // Core elements should be present after navigation
       expect(fileInput).toBeInTheDocument();
       expect(setupButton).toBeInTheDocument();
     });
