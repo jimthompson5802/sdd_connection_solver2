@@ -27,6 +27,7 @@ All backend functionality MUST be exposed through REST API endpoints before fron
 
 ### III. Test-First Development (NON-NEGOTIABLE)
 TDD mandatory: Tests written → User approved → Tests fail → Then implement. Red-Green-Refactor cycle strictly enforced. Both frontend (Jest/React Testing Library) and backend (pytest) must achieve minimum 80% code coverage on core business logic.
+require new unit/integration/contract tests for the /api/v2/setup_puzzle_from_image endpoint (success, missing fields, oversized payload, provider failure). 
 
 **Rationale**: Ensures code quality, prevents regressions, and drives better API design through usage-first thinking.
 
@@ -47,6 +48,7 @@ Application MUST function as a standalone desktop application without external s
 **Data Layer**: In-memory/session-based data handling, Pydantic models for validation
 **Development Tools**: uv for Python dependency management, npm/yarn for Node.js dependencies
 **Code Quality**: mypy (Python), ESLint/TypeScript (frontend), pytest coverage, Jest coverage
+**Image support**:  Supported image types: image/png, image/jpeg, image/webp. Max upload size: 5MB and server must return 413 Payload Too Large when exceeded. Image uploads are limited to clipboard paste (per spec); drag-and-drop is out-of-scope — note that as a UI scope constraint (optional but clarifies implementation).
 
 **Version Requirements**: Python 3.11+, Node.js 18+, modern browser support (ES2020+)
 
@@ -69,4 +71,4 @@ Constitution supersedes all other development practices. All feature implementat
 **Compliance Review**: Each PR must pass constitution check as defined in plan-template.md
 **Violation Handling**: Architecture that cannot satisfy principles requires refactoring or explicit exception documentation
 
-**Version**: 2.0.0 | **Ratified**: 2025-09-28 | **Last Amended**: 2025-09-28
+**Version**: 2.1.0 | **Ratified**: 2025-12-13 | **Last Amended**: 2025-12-13
