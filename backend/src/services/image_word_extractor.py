@@ -6,6 +6,7 @@ Uses the existing LLM provider factory pattern for provider-agnostic processing.
 """
 
 from typing import List
+from langchain_core.messages import HumanMessage
 from ..models import ExtractedWords, ImageSetupRequest
 from .llm_provider_factory import LLMProviderFactory
 
@@ -64,9 +65,12 @@ class ImageWordExtractor:
                 }
             ]
             
+            # Wrap in HumanMessage for proper LangChain format
+            message = HumanMessage(content=message_content)
+            
             # 5. Invoke with_structured_output for word extraction
             structured_llm = provider.llm.with_structured_output(ExtractedWords)
-            result = structured_llm.invoke(message_content)
+            result = structured_llm.invoke([message])
             
             # 6. Validate response
             if not result:

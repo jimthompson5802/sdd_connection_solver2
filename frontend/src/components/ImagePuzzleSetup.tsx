@@ -200,7 +200,7 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
     
     try {
       // Import API service dynamically to avoid circular dependencies
-      const { setupPuzzleFromImage } = await import('../services/api');
+      const { apiService } = await import('../services/api');
       
       // Prepare request
       const request: ImageSetupRequest = {
@@ -211,7 +211,7 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
       };
       
       // Call API
-      const response = await setupPuzzleFromImage(request);
+      const response = await apiService.setupPuzzleFromImage(request);
       
       if (response.status === 'success') {
         // Success - call callback with extracted words
