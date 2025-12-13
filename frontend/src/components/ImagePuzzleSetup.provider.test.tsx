@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ImagePuzzleSetup } from './ImagePuzzleSetup';
+import { LLMProviderOption } from '../types/llm-provider';
 
 // Mock the api service
 const mockSetupPuzzleFromImage = jest.fn(() => Promise.resolve({
@@ -13,7 +14,7 @@ jest.mock('../services/api', () => ({
 }));
 
 describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
-  const baseProviders = [
+  const baseProviders: LLMProviderOption[] = [
     { type: 'openai', name: 'OpenAI' },
     { type: 'ollama', name: 'Ollama' },
     { type: 'simple', name: 'Simple Provider' }
@@ -30,7 +31,7 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
       const props = {
         onImageSetup: jest.fn(),
         providers: baseProviders,
-        defaultProvider: { type: 'openai', name: 'OpenAI' },
+        defaultProvider: { type: 'openai', name: 'OpenAI' } as LLMProviderOption,
         defaultModel: 'gpt-4-vision-preview',
         onError: jest.fn()
       };
@@ -50,7 +51,7 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
       const props = {
         onImageSetup: jest.fn(),
         providers: [],
-        defaultProvider: { type: 'openai', name: 'OpenAI' },
+        defaultProvider: { type: 'openai', name: 'OpenAI' } as LLMProviderOption,
         defaultModel: 'gpt-4-vision-preview',
         onError: jest.fn()
       };
@@ -70,7 +71,7 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
       const props = {
         onImageSetup: jest.fn(),
         providers: baseProviders,
-        defaultProvider: { type: 'ollama', name: 'Ollama' },
+        defaultProvider: { type: 'ollama', name: 'Ollama' } as LLMProviderOption,
         defaultModel: 'llava:latest',
         onError: jest.fn()
       };
@@ -84,8 +85,8 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
     test('falls back gracefully if default provider not in list', () => {
       const props = {
         onImageSetup: jest.fn(),
-        providers: [{ type: 'openai', name: 'OpenAI' }],
-        defaultProvider: { type: 'missing', name: 'Missing Provider' },
+        providers: [{ type: 'openai', name: 'OpenAI' }] as LLMProviderOption[],
+        defaultProvider: { type: 'missing', name: 'Missing Provider' } as any,
         defaultModel: 'some-model',
         onError: jest.fn()
       };
@@ -103,7 +104,7 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
       const props = {
         onImageSetup: jest.fn(),
         providers: baseProviders,
-        defaultProvider: { type: 'openai', name: 'OpenAI' },
+        defaultProvider: { type: 'openai', name: 'OpenAI' } as LLMProviderOption,
         defaultModel: 'gpt-4-vision-preview',
         onError: jest.fn()
       };
@@ -131,7 +132,7 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
       const props = {
         onImageSetup: jest.fn(),
         providers: baseProviders,
-        defaultProvider: { type: 'openai', name: 'OpenAI' },
+        defaultProvider: { type: 'openai', name: 'OpenAI' } as LLMProviderOption,
         defaultModel: 'gpt-4-vision-preview',
         onError: jest.fn()
       };
@@ -159,7 +160,7 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
       const props = {
         onImageSetup: jest.fn(),
         providers: baseProviders,
-        defaultProvider: { type: 'openai', name: 'OpenAI' },
+        defaultProvider: { type: 'openai', name: 'OpenAI' } as LLMProviderOption,
         defaultModel: 'gpt-4o',
         onError: jest.fn()
       };
@@ -174,7 +175,7 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
       const props = {
         onImageSetup: jest.fn(),
         providers: baseProviders,
-        defaultProvider: { type: 'ollama', name: 'Ollama' },
+        defaultProvider: { type: 'ollama', name: 'Ollama' } as LLMProviderOption,
         defaultModel: 'nonexistent-model',
         onError: jest.fn()
       };
@@ -194,8 +195,8 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
     test('shows correct models for OpenAI provider', () => {
       const props = {
         onImageSetup: jest.fn(),
-        providers: [{ type: 'openai', name: 'OpenAI' }],
-        defaultProvider: { type: 'openai', name: 'OpenAI' },
+        providers: [{ type: 'openai', name: 'OpenAI' }] as LLMProviderOption[],
+        defaultProvider: { type: 'openai', name: 'OpenAI' } as LLMProviderOption,
         defaultModel: 'gpt-4-vision-preview',
         onError: jest.fn()
       };
@@ -211,8 +212,8 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
     test('shows correct models for Ollama provider', async () => {
       const props = {
         onImageSetup: jest.fn(),
-        providers: [{ type: 'ollama', name: 'Ollama' }],
-        defaultProvider: { type: 'ollama', name: 'Ollama' },
+        providers: [{ type: 'ollama', name: 'Ollama' }] as LLMProviderOption[],
+        defaultProvider: { type: 'ollama', name: 'Ollama' } as LLMProviderOption,
         defaultModel: 'llava:latest',
         onError: jest.fn()
       };
@@ -230,8 +231,8 @@ describe('ImagePuzzleSetup - Provider/Model Configuration', () => {
     test('shows correct models for Simple provider', async () => {
       const props = {
         onImageSetup: jest.fn(),
-        providers: [{ type: 'simple', name: 'Simple Provider' }],
-        defaultProvider: { type: 'simple', name: 'Simple Provider' },
+        providers: [{ type: 'simple', name: 'Simple Provider' }] as LLMProviderOption[],
+        defaultProvider: { type: 'simple', name: 'Simple Provider' } as LLMProviderOption,
         defaultModel: 'simple-model',
         onError: jest.fn()
       };

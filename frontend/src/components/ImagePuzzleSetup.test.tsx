@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ImagePuzzleSetup } from './ImagePuzzleSetup';
+import { LLMProviderOption } from '../types/llm-provider';
 
 // Mock the api service
 const mockSetupPuzzleFromImage = jest.fn(() => Promise.resolve({
@@ -18,8 +19,8 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
     providers: [
       { type: 'openai', name: 'OpenAI' },
       { type: 'ollama', name: 'Ollama' }
-    ],
-    defaultProvider: { type: 'openai', name: 'OpenAI' },
+    ] as LLMProviderOption[],
+    defaultProvider: { type: 'openai', name: 'OpenAI' } as LLMProviderOption,
     defaultModel: 'gpt-4-vision-preview',
     onError: jest.fn()
   };
@@ -83,8 +84,8 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
       const mockFileReader = {
         readAsDataURL: jest.fn(),
         result: 'data:image/png;base64,fakebase64data',
-        onload: null,
-        onerror: null
+        onload: null as any,
+        onerror: null as any
       };
       
       global.FileReader = jest.fn(() => mockFileReader) as any;
@@ -125,8 +126,8 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
       const mockFileReader = {
         readAsDataURL: jest.fn(),
         result: 'data:image/jpeg;base64,fakebase64data',
-        onload: null,
-        onerror: null
+        onload: null as any,
+        onerror: null as any
       };
       
       global.FileReader = jest.fn(() => mockFileReader) as any;
@@ -217,8 +218,8 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
       const mockFileReader1 = {
         readAsDataURL: jest.fn(),
         result: 'data:image/png;base64,firstimage',
-        onload: null,
-        onerror: null
+        onload: null as any,
+        onerror: null as any
       };
       
       global.FileReader = jest.fn(() => mockFileReader1) as any;
@@ -250,8 +251,8 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
       const mockFileReader2 = {
         readAsDataURL: jest.fn(),
         result: 'data:image/jpeg;base64,secondimage',
-        onload: null,
-        onerror: null
+        onload: null as any,
+        onerror: null as any
       };
       
       global.FileReader = jest.fn(() => mockFileReader2) as any;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ImagePuzzleSetup } from './ImagePuzzleSetup';
+import { LLMProviderOption } from '../types/llm-provider';
 
 // Mock the api service
 const mockSetupPuzzleFromImage = jest.fn();
@@ -15,8 +16,8 @@ describe('ImagePuzzleSetup - Error Handling', () => {
     providers: [
       { type: 'openai', name: 'OpenAI' },
       { type: 'ollama', name: 'Ollama' }
-    ],
-    defaultProvider: { type: 'openai', name: 'OpenAI' },
+    ] as LLMProviderOption[],
+    defaultProvider: { type: 'openai', name: 'OpenAI' } as LLMProviderOption,
     defaultModel: 'gpt-4-vision-preview',
     onError: jest.fn()
   };
@@ -86,8 +87,8 @@ describe('ImagePuzzleSetup - Error Handling', () => {
       const mockFileReader = {
         readAsDataURL: jest.fn(),
         result: 'data:image/png;base64,validimagedata',
-        onload: null,
-        onerror: null
+        onload: null as any,
+        onerror: null as any
       };
       
       global.FileReader = jest.fn(() => mockFileReader) as any;
@@ -135,8 +136,8 @@ describe('ImagePuzzleSetup - Error Handling', () => {
       const mockFileReader = {
         readAsDataURL: jest.fn(),
         result: 'data:image/png;base64,testimage',
-        onload: null,
-        onerror: null
+        onload: null as any,
+        onerror: null as any
       };
       
       global.FileReader = jest.fn(() => mockFileReader) as any;
@@ -325,8 +326,8 @@ describe('ImagePuzzleSetup - Error Handling', () => {
     const mockFileReader = {
       readAsDataURL: jest.fn(),
       result: 'data:image/png;base64,testimage',
-      onload: null,
-      onerror: null
+      onload: null as any,
+      onerror: null as any
     };
     
     global.FileReader = jest.fn(() => mockFileReader) as any;

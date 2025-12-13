@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { ImageSetupRequest, ImagePasteState } from '../types/puzzle';
-import { LLMProviderType } from '../types/llm-provider';
+import { LLMProviderOption } from '../types/llm-provider';
 import './ImagePuzzleSetup.css';
 
 export interface ImagePuzzleSetupProps {
   onImageSetup: (words: string[]) => void;    // Callback with extracted words
-  providers: LLMProviderType[];                // Available LLM providers
-  defaultProvider: LLMProviderType;            // Default provider selection
+  providers: LLMProviderOption[];              // Available LLM providers
+  defaultProvider: LLMProviderOption;          // Default provider selection
   defaultModel: string;                        // Default model selection
   onError: (error: string) => void;            // Error callback
 }
