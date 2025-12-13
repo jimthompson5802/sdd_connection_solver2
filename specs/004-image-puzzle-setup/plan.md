@@ -121,59 +121,66 @@ frontend/
 
 ## Phase 0: Outline & Research
 
-**Status**: ⏳ PENDING  
+**Status**: ✅ COMPLETE  
 **Output**: [research.md](./research.md)
 
-### Unknowns to Resolve
+### Research Decisions Summary
 
-1. **LLM Vision Model Capabilities**
-   - **Unknown**: Which LLM providers (OpenAI, Ollama, Simple) support vision/image analysis?
-   - **Research Task**: "Survey LLM vision capabilities for OpenAI GPT-4 Vision, Ollama vision models (llava, bakllava), and determine if Simple provider can support vision"
-   - **Decision Needed**: Default provider/model for image setup, capability detection strategy
+All research tasks completed with the following key decisions:
 
-2. **Image Encoding Best Practices**
-   - **Unknown**: Optimal base64 encoding approach for 5MB image limit, MIME type detection
-   - **Research Task**: "Research browser Clipboard API for image paste, base64 encoding performance, MIME type validation patterns"
-   - **Decision Needed**: Client-side vs server-side validation, supported image formats
+1. **LLM Vision Model Capabilities** ✅
+   - **Decision**: User-selected models with graceful degradation (no upfront capability detection)
+   - **Error Handling**: Unified message "LLM unable to extract puzzle words" for all extraction failures
+   - **Rationale**: Simplifies implementation, allows user experimentation with any model
 
-3. **Structured Output Format for Word Extraction**
-   - **Unknown**: Pydantic schema design for LLM vision output, handling of grid structure hints
-   - **Research Task**: "Design Pydantic model for LLM vision word extraction ensuring exactly 16 words with reading order, research LangChain `with_structured_output()` patterns for vision models"
-   - **Decision Needed**: Schema structure, grid position hints in prompt vs. pure extraction
+2. **Image Encoding Best Practices** ✅
+   - **Decision**: Frontend-only validation, base64 encoding client-side
+   - **Supported Formats**: PNG, JPEG, JPG, GIF (5MB max)
+   - **Rationale**: Immediate user feedback, no wasted uploads, simpler backend
 
-4. **Error Handling for Vision Failures**
-   - **Unknown**: How to distinguish between "model lacks vision" vs "image unclear" vs "wrong grid size"
-   - **Research Task**: "Research error patterns from OpenAI Vision API and Ollama vision models, design error classification strategy"
-   - **Decision Needed**: HTTP status code mapping, user-facing error messages
+3. **Structured Output Format for Word Extraction** ✅
+   - **Decision**: `ExtractedWords` Pydantic model with comprehensive 4-strategy prompt
+   - **Prompt Includes**: Basic extraction + grid hints + example format + validation instructions
+   - **Word Format**: Lowercase normalization (matches existing puzzle words)
+   - **Rationale**: Maximum accuracy through redundant guidance
 
-### Best Practices to Investigate
+4. **Error Handling for Vision Failures** ✅
+   - **Decision**: Unified error handling - all backend failures return HTTP 400 with same message
+   - **Frontend Errors**: Specific validation errors (size, format) shown immediately
+   - **Rationale**: Simplified implementation, consistent UX, retry-friendly
 
-1. **Browser Clipboard API for Images**
-   - **Research Task**: "Find best practices for Clipboard API image paste, cross-browser compatibility (Chrome, Firefox, Safari), security considerations"
-   - **Outcome**: Implementation pattern for paste handler, fallback strategies
+5. **LLM Provider Factory Integration** ✅
+   - **Decision**: Use existing `LLMProviderFactory.create_provider()` pattern - no changes
+   - **Pattern**: Create `LLMProvider` model, pass to factory, access via `provider.llm`
+   - **Special Error**: "LLM does not support 'with_structured_output()' method" if capability missing
+   - **Rationale**: Zero changes to provider infrastructure, maintains architectural consistency
 
-2. **Base64 Image Transmission**
-   - **Research Task**: "Research best practices for base64 image transmission over REST APIs, size limits, chunking vs. single payload"
-   - **Outcome**: Transmission strategy, compression recommendations
+6. **Session State Integration** ✅
+   - **Decision**: Use existing `session_manager.create_session(words)` - no changes
+   - **Compatibility**: Perfect - `PuzzleSession` already normalizes to lowercase
+   - **Source Agnostic**: Works identically for file-based and image-based setup
+   - **Rationale**: No session management changes required, seamless integration
 
-3. **LLM Vision Prompting**
-   - **Research Task**: "Research effective prompting strategies for GPT-4 Vision and vision LLMs to extract text from grid layouts, including grid structure hints"
-   - **Outcome**: Prompt template for word extraction
+### Consolidated Architecture Impact
 
-### Integration Patterns to Explore
+| Component | Change Required | Decision |
+|-----------|----------------|----------|
+| LLM Provider Factory | None | Use existing patterns |
+| Session Manager | None | Use existing `create_session()` |
+| Image Validation | Frontend only | Client-side size/format checks |
+| Error Handling | Unified | Single backend error message |
+| Word Normalization | None | Existing lowercase conversion |
+| Prompt Strategy | New | Combined 4-strategy approach |
 
-1. **LLM Provider Factory Integration**
-   - **Research Task**: "Analyze existing LLMProviderFactory pattern, determine how to invoke vision-capable models via `with_structured_output()`"
-   - **Outcome**: Code patterns for vision model invocation
+### Implementation Insights
 
-2. **Session State Integration**
-   - **Research Task**: "Review existing `session_manager.create_session()` flow, ensure image-extracted words integrate identically to file-based words"
-   - **Outcome**: Integration checkpoints, test scenarios
+- **Zero infrastructure changes**: Existing provider factory and session manager work as-is
+- **Frontend handles validation**: Size, format, and base64 encoding all client-side
+- **Backend focuses on extraction**: Only LLM vision invocation and error handling
+- **Graceful degradation**: No capability detection needed - fail with clear message
+- **Perfect compatibility**: Image-extracted words integrate identically to file-loaded words
 
-**Consolidation**: All findings documented in `research.md` with:
-- **Decision**: Chosen approach (e.g., "Use OpenAI GPT-4 Vision as default for image setup")
-- **Rationale**: Why chosen (e.g., "GPT-4 Vision has proven accuracy for grid text extraction, widely available")
-- **Alternatives considered**: Other options evaluated (e.g., "Ollama llava considered but requires local model, less predictable accuracy")
+**See [research.md](./research.md) for complete analysis, code patterns, and detailed rationale.**
 
 ## Phase 1: Design & Contracts
 
@@ -707,6 +714,6 @@ describe('Image Setup Flow', () => {
 
 ---
 
-**Plan Status**: ⏳ DRAFT - Awaiting Phase 0 research completion
+**Plan Status**: ✅ PHASE 0 COMPLETE - Ready for Phase 1 (Design & Contracts)
 **Branch**: `004-image-puzzle-setup`
 **Last Updated**: December 13, 2025
