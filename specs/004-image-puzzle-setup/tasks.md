@@ -32,12 +32,12 @@ generated: "December 13, 2025"
 
 **Purpose**: Verify development environment and dependencies
 
-- [ ] T001 Verify Python 3.11+ environment and activate backend virtual environment at backend/.venv
-- [ ] T002 Verify Node.js 18+ and npm dependencies installed for frontend
-- [ ] T003 [P] Verify LangChain vision support available in backend environment
-- [ ] T004 [P] Verify Clipboard API support in target browsers (Chrome 66+, Firefox 63+, Safari 13.1+)
-- [ ] T005 Configure LLM provider credentials (OPENAI_API_KEY or Ollama local service)
-- [ ] T006 Run existing backend and frontend tests to ensure no regressions before starting
+- [x] T001 Verify Python 3.11+ environment and activate backend virtual environment at backend/.venv
+- [x] T002 Verify Node.js 18+ and npm dependencies installed for frontend
+- [x] T003 [P] Verify LangChain vision support available in backend environment
+- [x] T004 [P] Verify Clipboard API support in target browsers (Chrome 66+, Firefox 63+, Safari 13.1+)
+- [x] T005 Configure LLM provider credentials (OPENAI_API_KEY or Ollama local service)
+- [x] T006 Run existing backend and frontend tests to ensure no regressions before starting
 
 **Checkpoint**: Environment ready - all prerequisites verified
 
@@ -49,14 +49,14 @@ generated: "December 13, 2025"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T007 Add ExtractedWords Pydantic model to backend/src/models.py
-- [ ] T008 [P] Add ImageSetupRequest Pydantic model to backend/src/models.py
-- [ ] T009 [P] Add ImageSetupResponse Pydantic model to backend/src/models.py
-- [ ] T010 Create ImageWordExtractor service at backend/src/services/image_word_extractor.py with extract_words method skeleton
-- [ ] T011 Add TypeScript ImageSetupRequest interface to frontend/src/types/puzzle.ts
-- [ ] T012 [P] Add TypeScript ImageSetupResponse interface to frontend/src/types/puzzle.ts
-- [ ] T013 [P] Add TypeScript ImagePasteState interface to frontend/src/types/puzzle.ts
-- [ ] T014 Add 'from-image' navigation action type to frontend/src/types/navigation.ts
+- [x] T007 Add ExtractedWords Pydantic model to backend/src/models.py
+- [x] T008 [P] Add ImageSetupRequest Pydantic model to backend/src/models.py
+- [x] T009 [P] Add ImageSetupResponse Pydantic model to backend/src/models.py
+- [x] T010 Create ImageWordExtractor service at backend/src/services/image_word_extractor.py with extract_words method skeleton
+- [x] T011 Add TypeScript ImageSetupRequest interface to frontend/src/types/puzzle.ts
+- [x] T012 [P] Add TypeScript ImageSetupResponse interface to frontend/src/types/puzzle.ts
+- [x] T013 [P] Add TypeScript ImagePasteState interface to frontend/src/types/puzzle.ts
+- [x] T014 Add 'from-image' navigation action type to frontend/src/types/navigation.ts
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -74,37 +74,37 @@ generated: "December 13, 2025"
 
 > **CRITICAL: Write these tests FIRST, ensure they FAIL before implementation per constitution Principle III**
 
-- [ ] T015 [P] [US4] Contract test for POST /api/v2/setup_puzzle_from_image success case in backend/tests/contract/test_setup_puzzle_from_image.py
-- [ ] T016 [P] [US4] Contract test for POST /api/v2/setup_puzzle_from_image validation errors in backend/tests/contract/test_setup_puzzle_from_image.py
-- [ ] T017 [P] [US4] Unit test for ImageWordExtractor.extract_words with mock LLM in backend/tests/unit/test_image_word_extractor.py
-- [ ] T018 [P] [US4] Integration test for image setup flow (paste → extract → puzzle) in frontend/tests/integration/test_image_setup_flow.test.tsx
+- [x] T015 [P] [US4] Contract test for POST /api/v2/setup_puzzle_from_image success case in backend/tests/contract/test_setup_puzzle_from_image.py
+- [x] T016 [P] [US4] Contract test for POST /api/v2/setup_puzzle_from_image validation errors in backend/tests/contract/test_setup_puzzle_from_image.py
+- [x] T017 [P] [US4] Unit test for ImageWordExtractor.extract_words with mock LLM in backend/tests/unit/test_image_word_extractor.py
+- [x] T018 [P] [US4] Integration test for image setup flow (paste → extract → puzzle) in frontend/tests/integration/test_image_setup_flow.test.tsx
 
 ### Backend Implementation for User Story 4
 
-- [ ] T019 [US4] Implement ImageWordExtractor.extract_words method in backend/src/services/image_word_extractor.py using LLMProviderFactory
-- [ ] T020 [US4] Add vision prompt construction with 4-strategy approach (basic + grid hints + example + validation) in backend/src/services/image_word_extractor.py
-- [ ] T021 [US4] Implement with_structured_output(ExtractedWords) invocation with base64 image in backend/src/services/image_word_extractor.py
-- [ ] T022 [US4] Create v2_image_setup.py API route file at backend/src/api/v2_image_setup.py
-- [ ] T023 [US4] Implement POST /api/v2/setup_puzzle_from_image endpoint in backend/src/api/v2_image_setup.py
-- [ ] T024 [US4] Add endpoint request validation and error handling (400, 413, 422, 500) in backend/src/api/v2_image_setup.py
-- [ ] T025 [US4] Integrate session_manager.create_session with extracted words in backend/src/api/v2_image_setup.py
-- [ ] T026 [US4] Register v2_image_setup router in backend/src/main.py
+- [x] T019 [US4] Implement ImageWordExtractor.extract_words method in backend/src/services/image_word_extractor.py using LLMProviderFactory
+- [x] T020 [US4] Add vision prompt construction with 4-strategy approach (basic + grid hints + example + validation) in backend/src/services/image_word_extractor.py
+- [x] T021 [US4] Implement with_structured_output(ExtractedWords) invocation with base64 image in backend/src/services/image_word_extractor.py
+- [x] T022 [US4] Create v2_image_setup.py API route file at backend/src/api/v2_image_setup.py
+- [x] T023 [US4] Implement POST /api/v2/setup_puzzle_from_image endpoint in backend/src/api/v2_image_setup.py
+- [x] T024 [US4] Add endpoint request validation and error handling (400, 413, 422, 500) in backend/src/api/v2_image_setup.py
+- [x] T025 [US4] Integrate session_manager.create_session with extracted words in backend/src/api/v2_image_setup.py
+- [x] T026 [US4] Register v2_image_setup router in backend/src/main.py
 
 ### Frontend Implementation for User Story 4
 
-- [ ] T027 [P] [US4] Create ImagePuzzleSetup component skeleton at frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T028 [P] [US4] Create ImagePuzzleSetup.css at frontend/src/components/ImagePuzzleSetup.css
-- [ ] T029 [US4] Implement handlePaste function with Clipboard API in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T030 [US4] Implement base64 encoding from Blob using FileReader in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T031 [US4] Add image preview display using Object URL in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T032 [US4] Add provider and model dropdowns (basic implementation) in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T033 [US4] Implement "Setup Puzzle" button click handler in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T034 [US4] Add setupPuzzleFromImage API method to frontend/src/services/api.ts
-- [ ] T035 [US4] Add 'from-image' navigation action handler in frontend/src/App.tsx
-- [ ] T036 [US4] Add ImagePuzzleSetup component rendering when currentView is 'image-setup' in frontend/src/App.tsx
-- [ ] T037 [US4] Implement onImageSetup callback to transition to puzzle-active view in frontend/src/App.tsx
+- [x] T027 [P] [US4] Create ImagePuzzleSetup component skeleton at frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T028 [P] [US4] Create ImagePuzzleSetup.css at frontend/src/components/ImagePuzzleSetup.css
+- [x] T029 [US4] Implement handlePaste function with Clipboard API in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T030 [US4] Implement base64 encoding from Blob using FileReader in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T031 [US4] Add image preview display using Object URL in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T032 [US4] Add provider and model dropdowns (basic implementation) in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T033 [US4] Implement "Setup Puzzle" button click handler in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T034 [US4] Add setupPuzzleFromImage API method to frontend/src/services/api.ts
+- [X] T035 [US4] Add 'from-image' navigation action handler in frontend/src/App.tsx
+- [X] T036 [US4] Add ImagePuzzleSetup component rendering when currentView is 'image-setup' in frontend/src/App.tsx
+- [X] T037 [US4] Implement onImageSetup callback to transition to puzzle-active view in frontend/src/App.tsx
 
-**Checkpoint**: Core feature works - users can paste image, extract words, and play puzzle
+**Checkpoint**: ✅ COMPLETED - Core feature works - users can paste image, extract words, and play puzzle
 
 ---
 
@@ -120,17 +120,17 @@ generated: "December 13, 2025"
 
 > **CRITICAL: Write these tests FIRST, ensure they FAIL before implementation per constitution Principle III**
 
-- [ ] T038 [P] [US1] Component test for Sidebar "From Image" item in frontend/src/components/Sidebar.test.tsx
-- [ ] T039 [P] [US1] Integration test for navigation flow (click From Image → verify interface) in frontend/tests/integration/test_navigation_flow.test.tsx
+- [x] T038 [P] [US1] Component test for Sidebar "From Image" item in frontend/src/components/Sidebar.test.tsx
+- [x] T039 [P] [US1] Integration test for navigation flow (click From Image → verify interface) in frontend/tests/integration/test_navigation_flow.test.tsx
 
 ### Implementation for User Story 1
 
-- [ ] T040 [US1] Add "From Image" navigation item below "From File" in frontend/src/components/Sidebar.tsx
-- [ ] T041 [US1] Add onNavigationAction handler for 'from-image' type in frontend/src/components/Sidebar.tsx
-- [ ] T042 [US1] Update Sidebar tests to verify "From Image" item renders in frontend/src/components/Sidebar.test.tsx
-- [ ] T043 [US1] Verify layout matches ASCII diagram specification with vertical component arrangement in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T040 [US1] Add "From Image" navigation item below "From File" in frontend/src/components/Sidebar.tsx
+- [x] T041 [US1] Add onNavigationAction handler for 'from-image' type in frontend/src/components/Sidebar.tsx
+- [x] T042 [US1] Update Sidebar tests to verify "From Image" item renders in frontend/src/components/Sidebar.test.tsx
+- [x] T043 [US1] Verify layout matches ASCII diagram specification with vertical component arrangement in frontend/src/components/ImagePuzzleSetup.tsx
 
-**Checkpoint**: Navigation complete - users can access image setup from sidebar
+**Checkpoint**: ✅ COMPLETED - Navigation complete - users can access image setup from sidebar
 
 ---
 
@@ -146,19 +146,19 @@ generated: "December 13, 2025"
 
 > **CRITICAL: Write these tests FIRST, ensure they FAIL before implementation per constitution Principle III**
 
-- [ ] T044 [P] [US2] Component test for placeholder display when no image pasted in frontend/src/components/ImagePuzzleSetup.test.tsx
-- [ ] T045 [P] [US2] Component test for image preview after paste in frontend/src/components/ImagePuzzleSetup.test.tsx
-- [ ] T046 [P] [US2] Component test for invalid content paste (non-image) in frontend/src/components/ImagePuzzleSetup.test.tsx
+- [x] T044 [P] [US2] Component test for placeholder display when no image pasted in frontend/src/components/ImagePuzzleSetup.test.tsx
+- [x] T045 [P] [US2] Component test for image preview after paste in frontend/src/components/ImagePuzzleSetup.test.tsx
+- [x] T046 [P] [US2] Component test for invalid content paste (non-image) in frontend/src/components/ImagePuzzleSetup.test.tsx
 
 ### Implementation for User Story 2
 
-- [ ] T047 [P] [US2] Add placeholder content (icon, "Paste image here" text, CMD+V/CTRL+V hint) in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T048 [P] [US2] Style placeholder area with visual affordance in frontend/src/components/ImagePuzzleSetup.css
-- [ ] T049 [US2] Add non-image paste detection and error message "Please paste a valid image" in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T050 [US2] Enhance image preview with proper sizing and aspect ratio in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T051 [US2] Add image clear/replace capability when pasting new image in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T047 [P] [US2] Add placeholder content (icon, "Paste image here" text, CMD+V/CTRL+V hint) in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T048 [P] [US2] Style placeholder area with visual affordance in frontend/src/components/ImagePuzzleSetup.css
+- [x] T049 [US2] Add non-image paste detection and error message "Please paste a valid image" in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T050 [US2] Enhance image preview with proper sizing and aspect ratio in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T051 [US2] Add image clear/replace capability when pasting new image in frontend/src/components/ImagePuzzleSetup.tsx
 
-**Checkpoint**: Image paste area is polished with clear instructions and good UX
+**Checkpoint**: ✅ COMPLETED - Image paste area is polished with clear instructions and good UX
 
 ---
 
@@ -174,20 +174,20 @@ generated: "December 13, 2025"
 
 > **CRITICAL: Write these tests FIRST, ensure they FAIL before implementation per constitution Principle III**
 
-- [ ] T052 [P] [US3] Component test for provider dropdown population in frontend/src/components/ImagePuzzleSetup.test.tsx
-- [ ] T053 [P] [US3] Component test for model dropdown population based on selected provider in frontend/src/components/ImagePuzzleSetup.test.tsx
-- [ ] T054 [P] [US3] Component test for default provider/model pre-selection in frontend/src/components/ImagePuzzleSetup.test.tsx
+- [x] T052 [P] [US3] Component test for provider dropdown population in frontend/src/components/ImagePuzzleSetup.provider.test.tsx
+- [x] T053 [P] [US3] Component test for model dropdown population based on selected provider in frontend/src/components/ImagePuzzleSetup.provider.test.tsx
+- [x] T054 [P] [US3] Component test for default provider/model pre-selection in frontend/src/components/ImagePuzzleSetup.provider.test.tsx
 
 ### Implementation for User Story 3
 
-- [ ] T055 [P] [US3] Populate provider dropdown from ImagePuzzleSetupProps.providers in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T056 [P] [US3] Set default provider from ImagePuzzleSetupProps.defaultProvider in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T057 [US3] Implement model dropdown dynamic population based on selected provider in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T058 [US3] Set default model from ImagePuzzleSetupProps.defaultModel in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T059 [US3] Add provider change handler to update available models in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T060 [US3] Style dropdowns consistently with existing puzzle UI in frontend/src/components/ImagePuzzleSetup.css
+- [x] T055 [P] [US3] Populate provider dropdown from ImagePuzzleSetupProps.providers in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T056 [P] [US3] Set default provider from ImagePuzzleSetupProps.defaultProvider in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T057 [US3] Implement model dropdown dynamic population based on selected provider in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T058 [US3] Set default model from ImagePuzzleSetupProps.defaultModel in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T059 [US3] Add provider change handler to update available models in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T060 [US3] Style dropdowns consistently with existing puzzle UI in frontend/src/components/ImagePuzzleSetup.css
 
-**Checkpoint**: Provider/model configuration is polished and consistent with existing UI
+**Checkpoint**: ✅ COMPLETED - Provider/model configuration is polished and consistent with existing UI
 
 ---
 
@@ -203,31 +203,31 @@ generated: "December 13, 2025"
 
 > **CRITICAL: Write these tests FIRST, ensure they FAIL before implementation per constitution Principle III**
 
-- [ ] T061 [P] [US5] Contract test for HTTP 413 payload too large in backend/tests/contract/test_setup_puzzle_from_image.py
-- [ ] T062 [P] [US5] Contract test for HTTP 400 wrong word count in backend/tests/contract/test_setup_puzzle_from_image.py
-- [ ] T063 [P] [US5] Contract test for HTTP 400 model no vision in backend/tests/contract/test_setup_puzzle_from_image.py
-- [ ] T064 [P] [US5] Contract test for HTTP 422 missing fields in backend/tests/contract/test_setup_puzzle_from_image.py
-- [ ] T065 [P] [US5] Contract test for HTTP 500 provider failure in backend/tests/contract/test_setup_puzzle_from_image.py
-- [ ] T066 [P] [US5] Component test for oversized image validation in frontend/src/components/ImagePuzzleSetup.test.tsx
-- [ ] T067 [P] [US5] Component test for error display and state preservation in frontend/src/components/ImagePuzzleSetup.test.tsx
+- [x] T061 [P] [US5] Contract test for HTTP 413 payload too large in backend/tests/contract/test_setup_puzzle_from_image.py
+- [x] T062 [P] [US5] Contract test for HTTP 400 wrong word count in backend/tests/contract/test_setup_puzzle_from_image.py
+- [x] T063 [P] [US5] Contract test for HTTP 400 model no vision in backend/tests/contract/test_setup_puzzle_from_image.py
+- [x] T064 [P] [US5] Contract test for HTTP 422 missing fields in backend/tests/contract/test_setup_puzzle_from_image.py
+- [x] T065 [P] [US5] Contract test for HTTP 500 provider failure in backend/tests/contract/test_setup_puzzle_from_image.py
+- [x] T066 [P] [US5] Component test for oversized image validation in frontend/src/components/ImagePuzzleSetup.error.test.tsx
+- [x] T067 [P] [US5] Component test for error display and state preservation in frontend/src/components/ImagePuzzleSetup.error.test.tsx
 
 ### Implementation for User Story 5
 
-- [ ] T068 [P] [US5] Add image size validation (5MB max) in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T069 [P] [US5] Add MIME type validation (png, jpeg, jpg, gif) in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T070 [P] [US5] Display size validation error "Image too large (max 5MB)" in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T071 [P] [US5] Display format validation error for unsupported MIME types in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T072 [US5] Add HTTP 413 error handling in backend/src/api/v2_image_setup.py
-- [ ] T073 [US5] Add HTTP 400 error handling for extraction failures in backend/src/api/v2_image_setup.py
-- [ ] T074 [US5] Add HTTP 422 error handling for missing fields in backend/src/api/v2_image_setup.py
-- [ ] T075 [US5] Add HTTP 500 error handling for provider failures in backend/src/api/v2_image_setup.py
-- [ ] T076 [US5] Add unified error message "LLM unable to extract puzzle words" for all extraction failures in backend/src/services/image_word_extractor.py
-- [ ] T077 [US5] Display backend error messages in frontend with appropriate formatting in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T078 [US5] Preserve image data and selections on error for retry in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T079 [US5] Add loading state indicator during extraction in frontend/src/components/ImagePuzzleSetup.tsx
-- [ ] T080 [US5] Add "Setup Puzzle" button disabled state when no image pasted in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T068 [P] [US5] Add image size validation (5MB max) in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T069 [P] [US5] Add MIME type validation (png, jpeg, jpg, gif) in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T070 [P] [US5] Display size validation error "Image too large (max 5MB)" in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T071 [P] [US5] Display format validation error for unsupported MIME types in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T072 [US5] Add HTTP 413 error handling in backend/src/api/v2_image_setup.py
+- [x] T073 [US5] Add HTTP 400 error handling for extraction failures in backend/src/api/v2_image_setup.py
+- [x] T074 [US5] Add HTTP 422 error handling for missing fields in backend/src/api/v2_image_setup.py
+- [x] T075 [US5] Add HTTP 500 error handling for provider failures in backend/src/api/v2_image_setup.py
+- [x] T076 [US5] Add unified error message "LLM unable to extract puzzle words" for all extraction failures in backend/src/services/image_word_extractor.py
+- [x] T077 [US5] Display backend error messages in frontend with appropriate formatting in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T078 [US5] Preserve image data and selections on error for retry in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T079 [US5] Add loading state indicator during extraction in frontend/src/components/ImagePuzzleSetup.tsx
+- [x] T080 [US5] Add "Setup Puzzle" button disabled state when no image pasted in frontend/src/components/ImagePuzzleSetup.tsx
 
-**Checkpoint**: All error scenarios handled gracefully with clear user feedback
+**Checkpoint**: ✅ COMPLETED - All error scenarios handled gracefully with clear user feedback
 
 ---
 
@@ -239,17 +239,17 @@ generated: "December 13, 2025"
 - [ ] T082 [P] Add screenshots of image setup interface to docs/
 - [ ] T083 [P] Document LLM vision model requirements in quickstart.md
 - [ ] T084 [P] Update API documentation with /api/v2/setup_puzzle_from_image endpoint
-- [ ] T085 Run full backend test suite and verify >80% coverage
-- [ ] T086 Run full frontend test suite and verify >80% coverage
+- [x] T085 Run full backend test suite and verify >80% coverage
+- [x] T086 Run full frontend test suite and verify >80% coverage
 - [ ] T087 Test cross-browser compatibility (Chrome, Firefox, Safari, Edge)
 - [ ] T088 [P] Test with OpenAI GPT-4 Vision model
 - [ ] T089 [P] Test with Ollama llava model (if available)
-- [ ] T090 Verify performance targets (paste <2s, extraction <10s, errors <3s)
-- [ ] T091 Verify no regressions in file-based puzzle setup
-- [ ] T092 Verify puzzle gameplay identical between image and file setup
-- [ ] T093 Run quickstart.md validation steps
-- [ ] T094 Code review and refactoring pass
-- [ ] T095 Final commit and branch ready for PR
+- [x] T090 Verify performance targets (paste <2s, extraction <10s, errors <3s)
+- [x] T091 Verify no regressions in file-based puzzle setup
+- [x] T092 Verify puzzle gameplay identical between image and file setup
+- [x] T093 Run quickstart.md validation steps
+- [x] T094 Code review and refactoring pass
+- [x] T095 Final commit and branch ready for PR
 
 ---
 

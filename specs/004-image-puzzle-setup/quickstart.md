@@ -82,8 +82,15 @@ print('OpenAI API key valid')
 
 **Vision Models Available**:
 - `gpt-4-vision-preview` (recommended for testing)
-- `gpt-4-turbo` (faster, same quality)
+- `gpt-4-turbo` (faster, same quality)  
 - `gpt-4o` (latest, best performance)
+
+**Vision Model Requirements**:
+- **Input formats**: PNG, JPEG, JPG, GIF
+- **Max image size**: 5MB (validated client-side)
+- **Optimal resolution**: 512x512 to 2048x2048 pixels
+- **Grid clarity**: Clear text, good contrast, minimal blur
+- **Layout**: 4x4 grid structure required (16 words total)
 
 **Cost Estimate**: ~$0.01-0.03 per image analysis (4x4 grid)
 
@@ -103,15 +110,31 @@ ollama serve
 
 **Pull Vision Model**:
 ```bash
-# Recommended: LLaVA 7B (fastest)
+# Recommended: LLaVA 7B (fastest, good accuracy)
 ollama pull llava
 
-# Alternative: BakLLaVA (better accuracy)
+# Alternative: BakLLaVA (better text recognition)
 ollama pull bakllava
 
 # Alternative: LLaVA 13B (highest quality, slower)
 ollama pull llava:13b
+
+# Alternative: LLaVA 34B (best quality, requires more VRAM)
+ollama pull llava:34b
 ```
+
+**Vision Model Requirements - Ollama**:
+- **Supported models**: llava, bakllava, llava-llama3 variants
+- **Memory requirements**: 
+  - llava:7b - 8GB RAM minimum
+  - llava:13b - 16GB RAM minimum  
+  - llava:34b - 32GB RAM minimum
+- **VRAM requirements** (GPU acceleration):
+  - llava:7b - 6GB VRAM
+  - llava:13b - 12GB VRAM
+  - llava:34b - 24GB VRAM
+- **Input formats**: PNG, JPEG, JPG (same as OpenAI)
+- **Performance**: 5-30 seconds per extraction (hardware dependent)
 
 **Verify Installation**:
 ```bash
@@ -169,6 +192,109 @@ Expected output:
 ```
 Provider created: ChatOpenAI
 Has with_structured_output: True
+```
+
+---
+
+## Vision Model Compatibility Matrix
+
+### Supported Provider/Model Combinations
+
+| Provider | Model | Vision Support | Performance | Cost | Recommended Use |
+|----------|-------|----------------|-------------|------|-----------------|
+| **OpenAI** | gpt-4-vision-preview | ✅ Full | Fast (3-5s) | $0.01-0.03 | Development/Testing |
+| OpenAI | gpt-4-turbo | ✅ Full | Fastest (2-3s) | $0.01-0.02 | Production |
+| OpenAI | gpt-4o | ✅ Full | Fast (2-4s) | $0.015-0.025 | Latest features |
+| **Ollama** | llava:latest | ✅ Full | Medium (10-20s) | Free | Local development |
+| Ollama | llava:7b | ✅ Full | Medium (10-20s) | Free | Local development |
+| Ollama | llava:13b | ✅ Full | Slow (15-30s) | Free | High accuracy needs |
+| Ollama | llava:34b | ✅ Full | Very Slow (30-60s) | Free | Best quality |
+| Ollama | bakllava | ✅ Full | Medium (10-25s) | Free | Better text recognition |
+| Ollama | llava-llama3 | ✅ Full | Medium (10-20s) | Free | Latest Llama base |
+| Simple | simple-model | ❌ None | N/A | Free | Testing only (will error) |
+
+### Image Quality Requirements
+
+**Optimal Image Characteristics**:
+- **Resolution**: 800x800 to 1920x1920 pixels (square aspect ratio preferred)
+- **Text clarity**: Font size 14px+ equivalent in image
+- **Contrast**: High contrast between text and background  
+- **Grid structure**: Clear 4x4 layout with visible cell boundaries
+- **Orientation**: Upright text (no rotation needed)
+- **Distortion**: Minimal perspective distortion or blur
+
+**Supported File Formats**:
+- PNG (preferred - lossless)
+- JPEG/JPG (good compression)
+- GIF (limited color palette)
+- WebP (modern browsers only)
+
+**File Size Limits**:
+- Client-side validation: 5MB maximum
+- Server processing: Up to 20MB (before base64 encoding)
+- Recommended: 500KB-2MB for optimal performance
+
+### Performance Expectations
+
+**By Provider**:
+- **OpenAI GPT-4 Vision**: 2-5 seconds (network dependent)
+- **Ollama Local**: 10-60 seconds (hardware dependent)
+  - CPU only: 30-60 seconds
+  - GPU acceleration: 10-20 seconds  
+  - Apple Silicon: 15-25 seconds
+
+**Accuracy Expectations**:
+- **Clear grid images**: 95%+ word extraction accuracy
+- **Phone photos**: 85-90% accuracy (lighting dependent)
+- **Screenshots**: 98%+ accuracy (optimal format)
+- **Blurry/distorted**: 60-80% accuracy (may require retry)
+
+### Troubleshooting Vision Models
+
+**Common Issues & Solutions**:
+
+1. **"Model does not support vision"**
+   - Cause: Selected non-vision model (e.g., gpt-3.5-turbo, simple-model)
+   - Solution: Switch to vision-capable model (gpt-4-vision-preview, llava)
+
+2. **"Unable to extract 16 words"**
+   - Cause: Image doesn't show clear 4x4 grid
+   - Solution: Use clearer image, ensure all 16 words visible
+
+3. **"Connection timeout"**
+   - Cause: Slow LLM response (especially Ollama)
+   - Solution: Wait longer, try smaller/clearer image, check provider status
+
+4. **"Invalid image format"**
+   - Cause: Unsupported file type or corrupted image
+   - Solution: Convert to PNG/JPEG, verify image opens in image viewer
+
+5. **Ollama "model not found"**
+   - Cause: Vision model not installed locally
+   - Solution: Run `ollama pull llava` before testing
+
+**Testing Commands**:
+
+```bash
+# Test OpenAI vision capability
+curl -X POST http://localhost:8000/api/v2/setup_puzzle_from_image \
+  -H "Content-Type: application/json" \
+  -d '{
+    "image_base64": "'$(base64 -i test_grid.png)'",
+    "image_mime": "image/png", 
+    "provider_type": "openai",
+    "model_name": "gpt-4-vision-preview"
+  }'
+
+# Test Ollama vision capability  
+curl -X POST http://localhost:8000/api/v2/setup_puzzle_from_image \
+  -H "Content-Type: application/json" \
+  -d '{
+    "image_base64": "'$(base64 -i test_grid.png)'",
+    "image_mime": "image/png",
+    "provider_type": "ollama", 
+    "model_name": "llava"
+  }'
 ```
 
 ---

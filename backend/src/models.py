@@ -52,6 +52,89 @@ class SetupPuzzleRequest(BaseModel):
         return v
 
 
+class ExtractedWords(BaseModel):
+    """Pydantic model for LLM structured output from image word extraction."""
+    
+    words: List[str] = Field(
+        ..., 
+        min_items=16, 
+        max_items=16, 
+        description="16 words from 4x4 grid in reading order"
+    )
+    
+    @validator('words')
+    def validate_word_count(cls, v: List[str]) -> List[str]:
+        """Ensure exactly 16 words extracted."""
+        if len(v) != 16:
+            raise ValueError(f"Expected 16 words, got {len(v)}")
+        return v
+
+
+class ImageSetupRequest(BaseModel):
+    """Request model for setting up puzzle from image."""
+    
+    image_base64: str = Field(
+        ..., 
+        description="Base64-encoded image content (without data URL prefix)"
+    )
+    image_mime: str = Field(
+        ..., 
+        description="Image MIME type (image/png, image/jpeg, image/jpg, image/gif, image/webp)"
+    )
+    provider_type: str = Field(
+        ..., 
+        description="LLM provider type for word extraction (openai, ollama, simple)"
+    )
+    model_name: str = Field(
+        ..., 
+        description="Specific model name for provider (e.g., gpt-4-vision-preview)"
+    )
+    
+    @validator('image_base64')
+    def validate_image_size(cls, v: str) -> str:
+        """Validate base64 image doesn't exceed 5MB.
+        
+        Base64 encoding adds ~33% overhead: 5MB raw = ~6.67MB base64
+        """
+        max_base64_size = 6_666_666  # bytes (~5MB original)
+        if len(v) > max_base64_size:
+            raise ValueError("Image size exceeds 5MB limit")
+        return v
+    
+    @validator('image_mime')
+    def validate_mime_type(cls, v: str) -> str:
+        """Validate image MIME type is supported."""
+        supported = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp']
+        if v not in supported:
+            raise ValueError(f"Unsupported MIME type: {v}. Supported types: {supported}")
+        return v
+    
+    @validator('provider_type')
+    def validate_provider_type(cls, v: str) -> str:
+        """Validate provider type is recognized."""
+        supported = ['openai', 'ollama', 'simple']
+        if v not in supported:
+            raise ValueError(f"Unsupported provider: {v}. Supported providers: {supported}")
+        return v
+
+
+class ImageSetupResponse(BaseModel):
+    """Response model for image-based puzzle setup."""
+    
+    remaining_words: List[str] = Field(
+        ..., 
+        description="16 words extracted from image (or empty list on error)"
+    )
+    status: str = Field(
+        ..., 
+        description="Setup status ('success' or 'error')"
+    )
+    message: Optional[str] = Field(
+        None, 
+        description="Error message if status is 'error', None if 'success'"
+    )
+
+
 class NextRecommendationRequest(BaseModel):
     """Request model for getting next recommendation."""
 
@@ -378,4 +461,8 @@ __all__ = [
     "RecommendationResponse",
     "PuzzleState",
     "CompletedGroup",
+    # Phase 4 Image-based puzzle setup models
+    "ExtractedWords",
+    "ImageSetupRequest", 
+    "ImageSetupResponse",
 ]

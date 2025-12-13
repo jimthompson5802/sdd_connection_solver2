@@ -35,6 +35,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigationAction }) =>
     onNavigationAction({ type: 'from-file' });
   };
 
+  const handleFromImageClick = () => {
+    onNavigationAction({ type: 'from-image' });
+  };
+
   const isStartNewGameExpanded = expandedMenus.has(NAVIGATION_MENUS.START_NEW_GAME);
 
   return (
@@ -49,6 +53,12 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigationAction }) =>
           label="From File"
           isExpanded={false}
           onClick={handleFromFileClick}
+          level={1}
+        />
+        <NavigationItem
+          label="From Image"
+          isExpanded={false}
+          onClick={handleFromImageClick}
           level={1}
         />
       </NavigationItem>

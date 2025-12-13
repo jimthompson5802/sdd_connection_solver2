@@ -7,6 +7,7 @@ import React, { useState, useCallback } from 'react';
 import './App.css';
 import FileUpload from './components/FileUpload';
 import EnhancedPuzzleInterface from './components/EnhancedPuzzleInterface';
+import { ImagePuzzleSetup } from './components/ImagePuzzleSetup';
 import Sidebar from './components/Sidebar';
 import { PuzzleState } from './types/puzzle';
 import { AppView, NavigationAction } from './types/navigation';
@@ -36,6 +37,9 @@ const App: React.FC = () => {
     switch (action.type) {
       case 'from-file':
         setCurrentView('file-upload');
+        break;
+      case 'from-image':
+        setCurrentView('image-setup');
         break;
       case 'toggle-menu':
         // Menu toggle is handled internally by Sidebar component
@@ -73,6 +77,33 @@ const App: React.FC = () => {
         error: error instanceof Error ? error.message : 'Failed to setup puzzle',
       }));
     }
+  }, []);
+
+  const handleImageSetup = useCallback((extractedWords: string[]) => {
+    // Set up puzzle state with words extracted from image
+    setPuzzleState({
+      words: extractedWords,
+      currentRecommendation: [],
+      recommendationConnection: '',
+      correctCount: 0,
+      mistakeCount: 0,
+      gameStatus: 'active',
+      isLoading: false,
+      error: null,
+      previousResponses: [], // Fresh start
+    });
+    
+    // Transition to puzzle interface
+    setCurrentView('puzzle-active');
+  }, []);
+
+  const handleImageError = useCallback((error: string) => {
+    // Error handling for image setup failures
+    setPuzzleState(prev => ({
+      ...prev,
+      error: error,
+      isLoading: false
+    }));
   }, []);
 
   const handleRecordResponse = useCallback(async (
@@ -134,14 +165,27 @@ const App: React.FC = () => {
       
       case 'file-upload':
         return (
-          <FileUpload
+          <FileUpload 
             onFileUpload={handleFileUpload}
             isLoading={puzzleState.isLoading}
             error={puzzleState.error}
           />
         );
       
-      case 'puzzle-active':
+      case 'image-setup':
+        return (
+          <ImagePuzzleSetup
+            onImageSetup={handleImageSetup}
+            providers={[
+              { type: 'openai', name: 'OpenAI' },
+              { type: 'ollama', name: 'Ollama' },
+              { type: 'simple', name: 'Simple' }
+            ]}
+            defaultProvider={{ type: 'openai', name: 'OpenAI' }}
+            defaultModel="gpt-4-vision-preview"
+            onError={handleImageError}
+          />
+        );      case 'puzzle-active':
       case 'puzzle-complete':
         return (
           <EnhancedPuzzleInterface
