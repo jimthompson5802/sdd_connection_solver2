@@ -91,9 +91,9 @@ When a user attempts to set up a puzzle from an image, the system should validat
 
 **Acceptance Scenarios**:
 
-1. **Given** the user attempts to paste an image larger than 5MB, **When** the Setup Puzzle button is clicked, **Then** the system returns HTTP 413 with message "Payload too large" and displays this to the user
+1. **Given** the user attempts to paste an image larger than 5MB, **When** the Setup Puzzle button is clicked, **Then** the frontend displays error message "Image too large (max 5MB)" without calling the backend
 2. **Given** the LLM cannot extract exactly 16 words from the pasted image, **When** the extraction completes, **Then** the system returns HTTP 400 with message "Could not extract 16 words" and the user remains on the image setup interface
-3. **Given** a model without vision capabilities is selected, **When** the Setup Puzzle button is clicked, **Then** the system returns HTTP 400 with message "Model does not support vision" and the user can select a vision-capable model
+3. **Given** a model without vision capabilities is selected, **When** the Setup Puzzle button is clicked, **Then** the system returns HTTP 400 with unified message "Could not extract 16 words" (per FR-019a unified error handling) and the user can select a different model or image
 4. **Given** the LLM provider encounters a failure during extraction, **When** the error occurs, **Then** the system returns HTTP 500 with message "Internal error: LLM provider failure" and the user can retry with a different provider or image
 5. **Given** an error occurs during setup, **When** the error message is displayed, **Then** the pasted image and provider/model selections are preserved so the user can adjust and retry without starting over
 
@@ -103,7 +103,7 @@ When a user attempts to set up a puzzle from an image, the system should validat
 
 - What happens when the pasted image contains text but not in a clear 4x4 grid format? The LLM extraction will fail to identify exactly 16 words, returning HTTP 400 with "Could not extract 16 words" error message, allowing the user to try a different image.
 - How does the system handle images with words that are partially obscured or unclear? The LLM will attempt extraction with its vision capabilities; if successful, the words are returned even if imperfect; if the LLM cannot confidently extract 16 words, it returns the "Could not extract 16 words" error.
-- What happens when a user selects a model without vision capabilities (e.g., text-only model)? The backend attempts the extraction, detects the model limitation, and returns HTTP 400 with "Model does not support vision" error message, prompting the user to select a vision-capable model.
+- What happens when a user selects a model without vision capabilities (e.g., text-only model)? The backend attempts the extraction, and returns HTTP 400 with unified error message "Could not extract 16 words" (per FR-019a), prompting the user to try a different model or image.
 - What happens if the user pastes multiple images in succession before clicking Setup Puzzle? Only the most recently pasted image is retained and displayed in the preview area, replacing any previous image.
 - How does the system behave if the user switches between "From File" and "From Image" multiple times? Each navigation action clears the previous state - switching to "From Image" shows a fresh interface, and switching to "From File" shows the file upload interface without any image data.
 - What happens when the user has an active game and clicks "From Image"? Following existing behavior from "From File", the application immediately switches to the image setup interface without confirmation, abandoning the current game state.
@@ -125,7 +125,7 @@ When a user attempts to set up a puzzle from an image, the system should validat
 - **FR-009**: Clicking "Setup Puzzle" button MUST validate that an image has been pasted and return an error message "Please paste a puzzle image first" if no image is present
 - **FR-010**: When "Setup Puzzle" is clicked with a valid image, the system MUST encode the image as base64 content and determine the MIME type (e.g., image/png, image/jpeg)
 - **FR-011**: System MUST validate that the image size does not exceed 5MB before sending to the backend
-- **FR-012**: If image exceeds 5MB, the system MUST display HTTP 413 error with message "Payload too large" without calling the backend
+- **FR-012**: Frontend MUST perform client-side image size validation. If image exceeds 5MB, the system MUST display error message "Image too large (max 5MB)" without calling the backend. Note: Backend SHOULD also validate and return HTTP 413 if oversized images bypass client validation.
 - **FR-013**: Frontend MUST call backend endpoint `/api/v2/setup_puzzle_from_image` with JSON payload containing `image_base64`, `image_mime`, `provider_type`, and `model_name`
 - **FR-014**: Backend endpoint `/api/v2/setup_puzzle_from_image` MUST connect to the specified LLM provider and model
 - **FR-015**: Backend MUST invoke the LLM using `with_structured_output()` method to extract exactly 16 words from the image
@@ -134,7 +134,7 @@ When a user attempts to set up a puzzle from an image, the system should validat
 - **FR-017**: Upon successful extraction of 16 words, backend MUST return HTTP 200 with JSON containing `remaining_words` (list of 16 words) and `status: "success"`
 - **FR-018**: The word list format returned by image-based setup MUST match the format returned by file-based setup to ensure compatibility with existing puzzle initialization
 - **FR-019**: If LLM cannot extract exactly 16 words, backend MUST return HTTP 400 with JSON containing `status: "error"` and `message: "Could not extract 16 words"`
-- **FR-019a**: If selected model does not support vision/image analysis capabilities, backend MUST return HTTP 400 with JSON containing `status: "error"` and `message: "Model does not support vision"`
+- **FR-019a**: If selected model does not support vision/image analysis capabilities OR extraction fails for any LLM-related reason, backend MUST return HTTP 400 with JSON containing `status: "error"` and unified `message: "Could not extract 16 words"` (per research.md unified error handling strategy)
 - **FR-020**: If request is missing required fields, backend MUST return HTTP 422 with JSON containing `status: "error"` and `message: "Unprocessable Entity: missing fields"`
 - **FR-021**: If LLM provider fails or encounters an error, backend MUST return HTTP 500 with JSON containing `status: "error"` and `message: "Internal error: LLM provider failure"`
 - **FR-022**: Upon successful word extraction, the application MUST transition to the puzzle-active view displaying the extracted words
@@ -169,7 +169,7 @@ When a user attempts to set up a puzzle from an image, the system should validat
 - Words in the puzzle images are in English and use standard fonts/formatting that LLMs can recognize
 - LLM vision models (particularly GPT-4 Vision or equivalent) have sufficient capability to accurately identify text in grid layouts
 - The existing backend LLM provider infrastructure supports models with vision capabilities and structured output
-- Image MIME types are limited to common formats: image/png, image/jpeg, image/gif, image/webp
+- Image MIME types are limited to common formats: image/png, image/jpeg, image/jpg, image/gif, image/webp (aligns with constitution and plan.md)
 - The 5MB size limit is sufficient for typical puzzle screenshot images while preventing abuse
 - Users understand that OCR is not being used; the feature relies on LLM vision capabilities which may have different accuracy characteristics
 - Network bandwidth and LLM API latency allow for reasonable response times when sending base64-encoded images
