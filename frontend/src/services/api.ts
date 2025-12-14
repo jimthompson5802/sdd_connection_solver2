@@ -9,6 +9,8 @@ import {
   NextRecommendationResponse,
   RecordResponseRequest,
   RecordResponseResponse,
+  ImageSetupRequest,
+  ImageSetupResponse,
   PuzzleError,
 } from '../types/puzzle';
 
@@ -143,6 +145,40 @@ class ApiService {
   }
 
   /**
+   * Set up a new puzzle from an image using LLM vision extraction.
+   */
+  async setupPuzzleFromImage(request: ImageSetupRequest): Promise<ImageSetupResponse> {
+    this.validateInput(request.image_base64, 'Image data cannot be empty');
+    this.validateInput(request.image_mime, 'Image MIME type cannot be empty');
+    this.validateInput(request.provider_type, 'Provider type cannot be empty');
+    this.validateInput(request.model_name, 'Model name cannot be empty');
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/v2/setup_puzzle_from_image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        throw new PuzzleError(
+          `Failed to setup puzzle from image: ${response.status} ${response.statusText}`,
+          response.status
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error instanceof PuzzleError) {
+        throw error;
+      }
+      throw new PuzzleError(`Network error: ${(error as Error).message}`);
+    }
+  }
+
+  /**
    * Health check endpoint to verify API connectivity.
    */
   async healthCheck(): Promise<{ status: string; service: string }> {
@@ -226,5 +262,6 @@ export const {
   setupPuzzle,
   getNextRecommendation,
   recordResponse,
+  setupPuzzleFromImage,
   healthCheck,
 } = apiService;

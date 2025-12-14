@@ -33,6 +33,29 @@ export interface RecordResponseResponse {
   game_status: 'active' | 'won' | 'lost';
 }
 
+// Image-Based Puzzle Setup Types (Feature 004)
+export interface ImageSetupRequest {
+  image_base64: string;
+  image_mime: string;
+  provider_type: string;
+  model_name: string;
+}
+
+export interface ImageSetupResponse {
+  remaining_words: string[];
+  status: string;
+  message?: string;
+}
+
+export interface ImagePasteState {
+  imageData: string | null;          // Base64 image data
+  imageMime: string | null;           // MIME type
+  previewUrl: string | null;          // Object URL for preview
+  sizeBytes: number;                  // Image size in bytes
+  isValid: boolean;                   // Validation state
+  error: string | null;               // Validation error message
+}
+
 // Application State Types
 export interface PuzzleState {
   words: string[];

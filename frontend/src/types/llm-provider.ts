@@ -5,6 +5,14 @@
 
 export type LLMProviderType = "simple" | "ollama" | "openai";
 
+/**
+ * Provider option for UI selection with display name
+ */
+export interface LLMProviderOption {
+  type: LLMProviderType;
+  name: string;
+}
+
 export interface LLMProvider {
   provider_type: LLMProviderType;
   model_name: string | null;

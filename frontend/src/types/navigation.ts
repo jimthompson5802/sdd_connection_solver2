@@ -11,6 +11,7 @@
 export type AppView = 
   | 'initial'          // First load, no action taken - shows welcome message
   | 'file-upload'      // File upload interface showing in main area
+  | 'image-setup'      // Image upload/paste interface showing in main area
   | 'puzzle-active'    // Game in progress - EnhancedPuzzleInterface showing
   | 'puzzle-complete'; // Game finished (won/lost) - EnhancedPuzzleInterface with GameSummary
 
@@ -19,6 +20,7 @@ export type AppView =
  */
 export type NavigationAction = 
   | { type: 'from-file' }                    // User clicked "From File" menu item
+  | { type: 'from-image' }                   // User clicked "From Image" menu item
   | { type: 'toggle-menu'; menu: string };   // User clicked expandable menu header
 
 /**

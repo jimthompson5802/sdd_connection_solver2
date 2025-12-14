@@ -91,4 +91,32 @@ describe('Sidebar', () => {
     // The component should manage its own expansion state internally
     // This test verifies the component behavior matches the design
   });
+
+  test('renders "From Image" navigation item', () => {
+    render(<Sidebar currentView="initial" onNavigationAction={mockOnNavigationAction} />);
+    
+    // Should show "From Image" sub-item under "Start New Game"
+    expect(screen.getByText('From Image')).toBeInTheDocument();
+  });
+
+  test('clicking "From Image" triggers navigation action', () => {
+    render(<Sidebar currentView="initial" onNavigationAction={mockOnNavigationAction} />);
+    
+    fireEvent.click(screen.getByText('From Image'));
+    expect(mockOnNavigationAction).toHaveBeenCalledWith({ type: 'from-image' });
+  });
+
+  test('renders "From Image" below "From File" in navigation hierarchy', () => {
+    render(<Sidebar currentView="initial" onNavigationAction={mockOnNavigationAction} />);
+    
+    const fromFile = screen.getByText('From File');
+    const fromImage = screen.getByText('From Image');
+    
+    expect(fromFile).toBeInTheDocument();
+    expect(fromImage).toBeInTheDocument();
+    
+    // Both should be level 1 children under "Start New Game"
+    expect(fromFile.closest('.navigation-item')).toHaveClass('level-1');
+    expect(fromImage.closest('.navigation-item')).toHaveClass('level-1');
+  });
 });
