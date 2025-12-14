@@ -84,7 +84,6 @@ Take screenshots of puzzle grids and extract words using AI vision:
 - Click "Setup Puzzle" to extract words and start solving
 
 ![](./docs/screenshots/01_image_puzzle_setup.png)
-![](./docs/screenshots/01_image_puzzlw_setup_with_image.png)
 
 #### Supported Image Sources
 - Screenshots of NYT Connections puzzles
@@ -103,11 +102,19 @@ Take screenshots of puzzle grids and extract words using AI vision:
 - Group suggestions with confidence scores
 - Hint generation and explanation
 
-![](./docs/screenshots/02_game_play00.png)
-![](./docs/screenshots/02_game_play01.png)
-![](./docs/screenshots/02_game_play02.png)
-![](./docs/screenshots/02_game_play03.png)
-![](./docs/screenshots/02_game_play04.png)
+![](./docs/screenshots/02_puzzle_image_setup.png)
+![](./docs/screenshots/03_puzzle_image_setup_copy_paste.png)
+![](./docs/screenshots/04_puzzle_initialized.png)
+![](./docs/screenshots/05_puzzle_first_guess.png)
+![](./docs/screenshots/06_puzzle_first_guess_recommendation.png)
+![](./docs/screenshots/07_puzzle_first_guess_result.png)
+![](./docs/screenshots/08_puzzle_second_guess_recommendation.png)
+![](./docs/screenshots/09_puzzle_second_guess_result.png)
+![](./docs/screenshots/10_puzzle_third_guess_recommendation.png)
+![](./docs/screenshots/11_puzzle_third_guess_result.png)
+![](./docs/screenshots/12_puzzle_fourth_guess_recommendation.png)
+![](./docs/screenshots/13_puzzle_solved.png)
+
 
 
 ## Testing
