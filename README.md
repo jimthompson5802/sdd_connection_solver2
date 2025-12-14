@@ -38,7 +38,7 @@ This work is based on an earlier [Virtual Assistant](https://github.com/jimthomp
    ```bash
    # For OpenAI (recommended)
    export OPENAI_API_KEY="sk-proj-your-api-key"
-   
+
    # OR for local Ollama
    ollama serve  # In separate terminal
    ollama pull llama2  # Pull a supported model
@@ -65,11 +65,16 @@ This work is based on an earlier [Virtual Assistant](https://github.com/jimthomp
 
 ## Features
 
+![](./docs/screenshots/00_initial_web_page.png)
+
 ### 1. File-Based Puzzle Setup
 Upload CSV files containing NYT Connections puzzle data:
 - Navigate to "From File" in the sidebar
 - Upload a CSV file with 16 words
 - Get AI-powered solving recommendations
+
+![](./docs/screenshots/01_file_puzzle_setup.png)
+![](./docs/screenshots/01_file_puzzle_setup_with_file.png)
 
 ### 2. Image-Based Puzzle Setup ✨ NEW
 Take screenshots of puzzle grids and extract words using AI vision:
@@ -77,6 +82,9 @@ Take screenshots of puzzle grids and extract words using AI vision:
 - Paste an image of a 4x4 word grid (Ctrl+V / Cmd+V)
 - Select your LLM provider and vision model
 - Click "Setup Puzzle" to extract words and start solving
+
+![](./docs/screenshots/01_image_puzzle_setup.png)
+![](./docs/screenshots/01_image_puzzlw_setup_with_image.png)
 
 #### Supported Image Sources
 - Screenshots of NYT Connections puzzles
@@ -95,28 +103,12 @@ Take screenshots of puzzle grids and extract words using AI vision:
 - Group suggestions with confidence scores
 - Hint generation and explanation
 
-## Example Usage
+![](./docs/screenshots/02_game_play00.png)
+![](./docs/screenshots/02_game_play01.png)
+![](./docs/screenshots/02_game_play02.png)
+![](./docs/screenshots/02_game_play03.png)
+![](./docs/screenshots/02_game_play04.png)
 
-### Image-Based Setup Workflow
-```bash
-# 1. Take screenshot of NYT Connections puzzle
-# 2. Open application at localhost:3000
-# 3. Click "From Image" in sidebar
-# 4. Paste image (Ctrl+V / Cmd+V)
-# 5. Select provider: "OpenAI" 
-# 6. Select model: "gpt-4-vision-preview"
-# 7. Click "Setup Puzzle"
-# 8. Words extracted automatically → puzzle starts
-```
-
-### File-Based Setup Example
-```csv
-# puzzle_example.csv
-ABSOLUTE,COMPLETE,OUTRIGHT,TOTAL
-BIRD,MAGIC,CELTICS,HEAT
-SALT,PEPPER,PAPRIKA,CUMIN
-WORD,EXCEL,ACCESS,OUTLOOK
-```
 
 ## Testing
 
@@ -127,7 +119,7 @@ cd backend
 source .venv/bin/activate
 pytest
 
-# Frontend tests  
+# Frontend tests
 cd frontend
 npm test
 ```
@@ -174,7 +166,7 @@ API_BASE_URL=http://localhost:8000
 This project uses specification-driven development (SDD) with the spec-kit framework. New features go through:
 
 1. **Specification** (`specs/*/spec.md`) - User requirements and acceptance criteria
-2. **Planning** (`specs/*/plan.md`) - Technical implementation plan  
+2. **Planning** (`specs/*/plan.md`) - Technical implementation plan
 3. **Implementation** (`specs/*/tasks.md`) - Detailed task breakdown
 4. **Testing** - TDD approach with >80% coverage requirement
 
@@ -211,4 +203,3 @@ npm start
 ```
 
 For detailed troubleshooting, see `specs/004-image-puzzle-setup/quickstart.md`.
-
