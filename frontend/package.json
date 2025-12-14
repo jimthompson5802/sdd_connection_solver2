@@ -48,6 +48,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "baseline-browser-mapping": "^2.9.7",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "jest-fetch-mock": "^3.0.3",
