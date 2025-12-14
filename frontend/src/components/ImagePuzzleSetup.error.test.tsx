@@ -104,7 +104,7 @@ describe('ImagePuzzleSetup - Error Handling', () => {
       }
 
       await waitFor(() => {
-        expect(screen.getByAltText('Pasted image preview')).toBeInTheDocument();
+        expect(screen.getByAltText('Pasted preview')).toBeInTheDocument();
         expect(screen.queryByText('Image too large (max 5MB)')).not.toBeInTheDocument();
       });
 
@@ -152,7 +152,7 @@ describe('ImagePuzzleSetup - Error Handling', () => {
       }
 
       await waitFor(() => {
-        expect(screen.getByAltText('Pasted image preview')).toBeInTheDocument();
+        expect(screen.getByAltText('Pasted preview')).toBeInTheDocument();
       });
 
       // Click setup button to trigger error
@@ -237,7 +237,7 @@ describe('ImagePuzzleSetup - Error Handling', () => {
       });
 
       // Verify image and selections are preserved
-      expect(screen.getByAltText('Pasted image preview')).toBeInTheDocument();
+      expect(screen.getByAltText('Pasted preview')).toBeInTheDocument();
       expect((providerSelect as HTMLSelectElement).value).toBe('ollama');
 
       // User should be able to retry
@@ -342,7 +342,7 @@ describe('ImagePuzzleSetup - Error Handling', () => {
     }
 
     await waitFor(() => {
-      expect(screen.getByAltText('Pasted image preview')).toBeInTheDocument();
+      expect(screen.getByAltText('Pasted preview')).toBeInTheDocument();
     });
 
     const setupButton = screen.getByLabelText('Setup Puzzle');

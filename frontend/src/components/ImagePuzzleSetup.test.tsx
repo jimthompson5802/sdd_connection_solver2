@@ -27,7 +27,7 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock URL methods for tests
     global.URL.createObjectURL = jest.fn(() => 'blob:fake-url');
     global.URL.revokeObjectURL = jest.fn();
@@ -36,13 +36,13 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
   describe('Placeholder Display', () => {
     test('displays placeholder content when no image is pasted', () => {
       render(<ImagePuzzleSetup {...defaultProps} />);
-      
+
       // Should show placeholder icon, text, and keyboard hints
       expect(screen.getByText('📋')).toBeInTheDocument();
       expect(screen.getByText('Paste image here')).toBeInTheDocument();
       expect(screen.getByText('Cmd+V')).toBeInTheDocument();
       expect(screen.getByText('Ctrl+V')).toBeInTheDocument();
-      
+
       // Check for platform hints text (broken up by elements)
       const hintElement = screen.getByText(/Press/);
       expect(hintElement).toBeInTheDocument();
@@ -51,11 +51,11 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
 
     test('placeholder area has proper visual affordance styling', () => {
       render(<ImagePuzzleSetup {...defaultProps} />);
-      
+
       const pasteArea = screen.getByTestId('image-paste-area');
       expect(pasteArea).toHaveClass('paste-area');
       expect(pasteArea).not.toHaveClass('has-image');
-      
+
       const placeholder = screen.getByText('Paste image here').closest('.paste-placeholder');
       expect(placeholder).toBeInTheDocument();
     });
@@ -64,9 +64,9 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
   describe('Image Preview', () => {
     test('displays image preview after successful paste', async () => {
       render(<ImagePuzzleSetup {...defaultProps} />);
-      
+
       const pasteArea = screen.getByTestId('image-paste-area');
-      
+
       // Create mock image data
       const mockFile = new File(['fake image data'], 'test.png', { type: 'image/png' });
       const mockClipboardEvent = {
@@ -87,20 +87,20 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
         onload: null as any,
         onerror: null as any
       };
-      
+
       global.FileReader = jest.fn(() => mockFileReader) as any;
       global.URL.createObjectURL = jest.fn(() => 'blob:fake-url');
-      
+
       // Simulate paste event
       fireEvent.paste(pasteArea, mockClipboardEvent as any);
-      
+
       // Simulate FileReader onload
       if (mockFileReader.onload) {
         mockFileReader.onload({ target: mockFileReader } as any);
       }
-      
+
       await waitFor(() => {
-        expect(screen.getByAltText('Pasted image preview')).toBeInTheDocument();
+        expect(screen.getByAltText('Pasted preview')).toBeInTheDocument();
         expect(screen.getByText(/Size:.*KB/)).toBeInTheDocument();
         expect(screen.getByText(/Format: image\/png/)).toBeInTheDocument();
       });
@@ -108,10 +108,10 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
 
     test('image preview has proper sizing and aspect ratio', async () => {
       render(<ImagePuzzleSetup {...defaultProps} />);
-      
+
       const pasteArea = screen.getByTestId('image-paste-area');
       const mockFile = new File(['fake image data'], 'test.jpg', { type: 'image/jpeg' });
-      
+
       const mockClipboardEvent = {
         preventDefault: jest.fn(),
         clipboardData: {
@@ -129,18 +129,18 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
         onload: null as any,
         onerror: null as any
       };
-      
+
       global.FileReader = jest.fn(() => mockFileReader) as any;
       global.URL.createObjectURL = jest.fn(() => 'blob:fake-url');
-      
+
       fireEvent.paste(pasteArea, mockClipboardEvent as any);
-      
+
       if (mockFileReader.onload) {
         mockFileReader.onload({ target: mockFileReader } as any);
       }
-      
+
       await waitFor(() => {
-        const previewImage = screen.getByAltText('Pasted image preview');
+        const previewImage = screen.getByAltText('Pasted preview');
         expect(previewImage).toHaveClass('preview-image');
       });
     });
@@ -149,9 +149,9 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
   describe('Invalid Content Handling', () => {
     test('displays error message when pasting non-image content', async () => {
       render(<ImagePuzzleSetup {...defaultProps} />);
-      
+
       const pasteArea = screen.getByTestId('image-paste-area');
-      
+
       // Mock clipboard with text content (no image)
       const mockClipboardEvent = {
         preventDefault: jest.fn(),
@@ -165,7 +165,7 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
       };
 
       fireEvent.paste(pasteArea, mockClipboardEvent as any);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Please paste a valid image')).toBeInTheDocument();
       });
@@ -173,10 +173,10 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
 
     test('displays error for unsupported image formats', async () => {
       render(<ImagePuzzleSetup {...defaultProps} />);
-      
+
       const pasteArea = screen.getByTestId('image-paste-area');
       const mockFile = new File(['fake image data'], 'test.bmp', { type: 'image/bmp' });
-      
+
       const mockClipboardEvent = {
         preventDefault: jest.fn(),
         clipboardData: {
@@ -189,7 +189,7 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
       };
 
       fireEvent.paste(pasteArea, mockClipboardEvent as any);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/Unsupported image format.*png.*jpeg.*jpg.*gif.*webp/)).toBeInTheDocument();
       });
@@ -199,9 +199,9 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
   describe('Image Clear/Replace Capability', () => {
     test('allows pasting new image to replace existing one', async () => {
       render(<ImagePuzzleSetup {...defaultProps} />);
-      
+
       const pasteArea = screen.getByTestId('image-paste-area');
-      
+
       // First image
       const firstFile = new File(['fake image data'], 'first.png', { type: 'image/png' });
       const firstClipboardEvent = {
@@ -221,20 +221,20 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
         onload: null as any,
         onerror: null as any
       };
-      
+
       global.FileReader = jest.fn(() => mockFileReader1) as any;
       global.URL.createObjectURL = jest.fn(() => 'blob:first-url');
       global.URL.revokeObjectURL = jest.fn();
-      
+
       fireEvent.paste(pasteArea, firstClipboardEvent as any);
       if (mockFileReader1.onload) {
         mockFileReader1.onload({ target: mockFileReader1 } as any);
       }
-      
+
       await waitFor(() => {
-        expect(screen.getByAltText('Pasted image preview')).toBeInTheDocument();
+        expect(screen.getByAltText('Pasted preview')).toBeInTheDocument();
       });
-      
+
       // Second image (replacement)
       const secondFile = new File(['different image data'], 'second.jpg', { type: 'image/jpeg' });
       const secondClipboardEvent = {
@@ -254,15 +254,15 @@ describe('ImagePuzzleSetup - Enhanced UX', () => {
         onload: null as any,
         onerror: null as any
       };
-      
+
       global.FileReader = jest.fn(() => mockFileReader2) as any;
       global.URL.createObjectURL = jest.fn(() => 'blob:second-url');
-      
+
       fireEvent.paste(pasteArea, secondClipboardEvent as any);
       if (mockFileReader2.onload) {
         mockFileReader2.onload({ target: mockFileReader2 } as any);
       }
-      
+
       await waitFor(() => {
         expect(screen.getByText(/Format: image\/jpeg/)).toBeInTheDocument();
         // Should have revoked the old URL

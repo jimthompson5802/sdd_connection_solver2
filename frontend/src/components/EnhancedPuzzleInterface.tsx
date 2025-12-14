@@ -209,7 +209,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     // You could trigger the traditional recommendation system with these words
     // or implement direct guess submission here
   }, []);
-  
+
 
   // Retry LLM recommendation on error
   const handleRetryLlmRecommendation = useCallback(() => {
@@ -234,6 +234,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const renderStats = () => {
     if (gameStatus !== 'active') return null;
 
@@ -335,6 +336,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
     );
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const renderPreviousResponses = () => {
     if (!previousResponses || previousResponses.length === 0) return null;
 
@@ -400,7 +402,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
                 onChange={handleProviderChange}
                 disabled={llmLoading}
               />
-              
+
               <div className="llm-controls">
                 <button
                   onClick={handleGetLlmRecommendation}

@@ -302,7 +302,7 @@ describe('LLMProviderInput Component', () => {
     });
 
     test('shows loading state during validation', async () => {
-      const onValidate = jest.fn(() => new Promise(resolve => setTimeout(() => resolve(true), 100)));
+      const onValidate = jest.fn((): Promise<boolean> => new Promise(resolve => setTimeout(() => resolve(true), 100)));
       render(
         <LLMProviderInput
           {...defaultProps}
@@ -487,7 +487,7 @@ describe('LLMProviderInput Component', () => {
     });
 
     test('disables validation button during validation', async () => {
-      const onValidate = jest.fn(() => new Promise(resolve => setTimeout(() => resolve(true), 100)));
+      const onValidate = jest.fn((): Promise<boolean> => new Promise(resolve => setTimeout(() => resolve(true), 100)));
       render(
         <LLMProviderInput
           {...defaultProps}

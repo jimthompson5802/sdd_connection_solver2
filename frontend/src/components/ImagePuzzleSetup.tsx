@@ -34,7 +34,7 @@ const PROVIDER_MODELS: Record<string, { value: string; label: string }[]> = {
 export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
   onImageSetup,
   providers,
-  defaultProvider, 
+  defaultProvider,
   defaultModel,
   onError
 }) => {
@@ -47,13 +47,13 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
   // Get the initial model for a provider
   const getInitialModel = (providerType: string): string => {
     const availableModels = PROVIDER_MODELS[providerType] || [];
-    
+
     // If default model is available for this provider, use it
     const modelExists = availableModels.some(m => m.value === defaultModel);
     if (modelExists) {
       return defaultModel;
     }
-    
+
     // Otherwise use first available model for this provider
     return availableModels[0]?.value || 'gpt-4-vision-preview';
   };
@@ -70,22 +70,22 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
     isValid: false,
     error: null
   });
-  
+
   // Provider/model selection state
   const [selectedProvider, setSelectedProvider] = useState<string>(initialProvider);
   const [selectedModel, setSelectedModel] = useState<string>(initialModel);
-  
+
   // Loading state
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  
+
   // Error state
   const [extractionError, setExtractionError] = useState<string | null>(null);
-  
+
   // Handle paste events
   const handlePaste = useCallback(async (event: React.ClipboardEvent) => {
     event.preventDefault();
     setExtractionError(null);
-    
+
     try {
       // Access clipboard data
       const clipboardData = event.clipboardData;
@@ -93,10 +93,10 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
         setImageState(prev => ({ ...prev, error: 'No clipboard data available' }));
         return;
       }
-      
+
       // Look for image data in clipboard
       let imageFile: File | null = null;
-      
+
       // Check clipboard items for images
       const items = Array.from(clipboardData.items);
       for (const item of items) {
@@ -105,38 +105,38 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
           break;
         }
       }
-      
+
       if (!imageFile) {
-        setImageState(prev => ({ 
-          ...prev, 
+        setImageState(prev => ({
+          ...prev,
           error: 'Please paste a valid image',
           isValid: false
         }));
         return;
       }
-      
+
       // Validate file size (5MB limit)
       const maxSize = 5 * 1024 * 1024; // 5MB in bytes
       if (imageFile.size > maxSize) {
-        setImageState(prev => ({ 
-          ...prev, 
+        setImageState(prev => ({
+          ...prev,
           error: 'Image too large (max 5MB)',
           isValid: false
         }));
         return;
       }
-      
+
       // Validate MIME type
       const supportedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
       if (!supportedTypes.includes(imageFile.type)) {
-        setImageState(prev => ({ 
-          ...prev, 
+        setImageState(prev => ({
+          ...prev,
           error: `Unsupported image format. Supported: ${supportedTypes.join(', ')}`,
           isValid: false
         }));
         return;
       }
-      
+
       // Convert to base64
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -144,10 +144,10 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
         if (result) {
           // Extract base64 data (remove data URL prefix)
           const base64Data = result.split(',')[1];
-          
+
           // Create object URL for preview
           const previewUrl = URL.createObjectURL(imageFile!);
-          
+
           setImageState({
             imageData: base64Data,
             imageMime: imageFile!.type,
@@ -158,50 +158,50 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
           });
         }
       };
-      
+
       reader.onerror = () => {
-        setImageState(prev => ({ 
-          ...prev, 
+        setImageState(prev => ({
+          ...prev,
           error: 'Failed to read image file',
           isValid: false
         }));
       };
-      
+
       reader.readAsDataURL(imageFile);
-      
+
     } catch (error) {
       console.error('Paste handling error:', error);
-      setImageState(prev => ({ 
-        ...prev, 
+      setImageState(prev => ({
+        ...prev,
         error: 'Failed to process pasted image',
         isValid: false
       }));
     }
   }, []);
-  
+
   // Handle provider change
   const handleProviderChange = useCallback((newProvider: string) => {
     setSelectedProvider(newProvider);
-    
+
     // Update model to first available for new provider
     const availableModels = PROVIDER_MODELS[newProvider] || [];
     const firstModel = availableModels[0]?.value || 'gpt-4-vision-preview';
     setSelectedModel(firstModel);
   }, []);
-  
+
   // Handle setup puzzle button click
   const handleSetupPuzzle = useCallback(async () => {
     if (!imageState.isValid || !imageState.imageData || !imageState.imageMime) {
       return;
     }
-    
+
     setIsLoading(true);
     setExtractionError(null);
-    
+
     try {
       // Import API service dynamically to avoid circular dependencies
       const { apiService } = await import('../services/api');
-      
+
       // Prepare request
       const request: ImageSetupRequest = {
         image_base64: imageState.imageData,
@@ -209,10 +209,10 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
         provider_type: selectedProvider,
         model_name: selectedModel
       };
-      
+
       // Call API
       const response = await apiService.setupPuzzleFromImage(request);
-      
+
       if (response.status === 'success') {
         // Success - call callback with extracted words
         onImageSetup(response.remaining_words);
@@ -222,7 +222,7 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
         setExtractionError(errorMsg);
         onError(errorMsg);
       }
-      
+
     } catch (error) {
       console.error('Setup puzzle error:', error);
       const errorMsg = error instanceof Error ? error.message : 'LLM unable to extract puzzle words';
@@ -232,7 +232,7 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
       setIsLoading(false);
     }
   }, [imageState, selectedProvider, selectedModel, onImageSetup, onError]);
-  
+
   // Clean up object URLs when component unmounts or image changes
   React.useEffect(() => {
     return () => {
@@ -241,13 +241,13 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
       }
     };
   }, [imageState.previewUrl]);
-  
+
   return (
     <div className="image-puzzle-setup">
       <h2>Setup Puzzle from Image</h2>
-      
+
       {/* Image paste area */}
-      <div 
+      <div
         className={`paste-area ${imageState.imageData ? 'has-image' : ''}`}
         data-testid="image-paste-area"
         onPaste={handlePaste}
@@ -263,9 +263,9 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
           </div>
         ) : (
           <div className="image-preview">
-            <img 
-              src={imageState.previewUrl || ''} 
-              alt="Pasted image preview"
+            <img
+              src={imageState.previewUrl || ''}
+              alt="Pasted preview"
               className="preview-image"
             />
             <div className="image-info">
@@ -275,7 +275,7 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
           </div>
         )}
       </div>
-      
+
       {/* Error display */}
       {imageState.error && (
         <div className="error-message">
@@ -283,20 +283,20 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
           {imageState.error}
         </div>
       )}
-      
+
       {extractionError && (
         <div className="error-message">
           <span className="error-icon">🤖</span>
           {extractionError}
         </div>
       )}
-      
+
       {/* Provider and model selection */}
       <div className="provider-selection">
         <div className="form-row">
           <div className="form-field">
             <label htmlFor="provider-select">Provider:</label>
-            <select 
+            <select
               id="provider-select"
               value={selectedProvider}
               onChange={(e) => handleProviderChange(e.target.value)}
@@ -309,10 +309,10 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
               ))}
             </select>
           </div>
-          
+
           <div className="form-field">
             <label htmlFor="model-select">Model:</label>
-            <select 
+            <select
               id="model-select"
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
@@ -327,10 +327,10 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
           </div>
         </div>
       </div>
-      
+
       {/* Setup puzzle button */}
       <div className="setup-actions">
-        <button 
+        <button
           className="setup-button"
           onClick={handleSetupPuzzle}
           disabled={!imageState.isValid || isLoading}
