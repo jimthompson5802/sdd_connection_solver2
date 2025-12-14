@@ -213,7 +213,7 @@ describe('LLMApiService - Comprehensive Tests', () => {
         json: async () => {
           throw new Error('JSON parse error');
         },
-      } as Response;
+      } as unknown as Response;
 
       await expect(service['handleResponse'](mockResponse)).rejects.toThrow(
         'HTTP 500: Internal Server Error'
@@ -226,7 +226,7 @@ describe('LLMApiService - Comprehensive Tests', () => {
         json: async () => {
           throw new Error('Invalid JSON');
         },
-      } as Response;
+      } as unknown as Response;
 
       await expect(service['handleResponse'](mockResponse)).rejects.toThrow(
         'Invalid JSON response from server'
@@ -237,10 +237,12 @@ describe('LLMApiService - Comprehensive Tests', () => {
   describe('getProviders', () => {
     test('successfully gets list of providers', async () => {
       const mockResponse: ProvidersListResponse = {
-        providers: [
-          { name: 'Simple', type: 'simple', status: 'available' },
-          { name: 'OpenAI', type: 'openai', status: 'configured' },
-        ],
+        providers: {
+          simple: { name: 'Simple', type: 'simple', status: 'available', description: 'Simple provider', requires_config: false },
+          openai: { name: 'OpenAI', type: 'openai', status: 'configured', description: 'OpenAI provider', requires_config: true },
+        },
+        default_provider: 'simple',
+        total_count: 2,
       };
 
       mockFetch.mockResolvedValueOnce({
@@ -406,12 +408,10 @@ describe('LLMApiService - Comprehensive Tests', () => {
       };
 
       const mockResponse: GenerateRecommendationResponse = {
-        recommendation: {
-          recommended_words: ['word1', 'word2', 'word3', 'word4'],
-          connection_explanation: 'Test connection',
-          provider_used: 'simple',
-          generation_time_ms: null,
-        },
+        recommended_words: ['word1', 'word2', 'word3', 'word4'],
+        connection_explanation: 'Test connection',
+        provider_used: 'simple',
+        generation_time_ms: null,
         puzzle_state: {
           remaining_words: ['word1', 'word2', 'word3', 'word4'],
           completed_groups: [],
@@ -672,11 +672,9 @@ describe('LLMApiService - Comprehensive Tests', () => {
 
       // Then generate recommendation
       const recommendationResponse: GenerateRecommendationResponse = {
-        recommendation: {
-          recommended_words: ['word1', 'word2', 'word3', 'word4'],
-          connection_explanation: 'Connection',
-          provider_used: { provider_type: 'openai', model_name: 'gpt-4' },
-        },
+        recommended_words: ['word1', 'word2', 'word3', 'word4'],
+        connection_explanation: 'Connection',
+        provider_used: { provider_type: 'openai', model_name: 'gpt-4' },
         puzzle_state: {
           remaining_words: [],
           completed_groups: [],
@@ -696,7 +694,7 @@ describe('LLMApiService - Comprehensive Tests', () => {
         remaining_words: ['word1', 'word2', 'word3', 'word4'],
       });
 
-      expect(recommendation.recommendation.recommended_words).toHaveLength(4);
+      expect(recommendation.recommended_words).toHaveLength(4);
     });
 
     test('checks connection before making API calls', async () => {

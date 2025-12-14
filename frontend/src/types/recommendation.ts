@@ -47,7 +47,7 @@ export interface RecommendationResponse {
   // Backend returns an LLMProvider object; some tests/mocks may still use a string.
   // Support both to be resilient during transition.
   provider_used: string | LLMProvider;
-  generation_time_ms?: number; // null for simple provider
+  generation_time_ms?: number | null; // null for simple provider
   puzzle_state?: PuzzleState;
   alternative_suggestions?: string[][];
 }
