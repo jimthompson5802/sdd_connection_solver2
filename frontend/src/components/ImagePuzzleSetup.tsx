@@ -225,7 +225,25 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
 
     } catch (error) {
       console.error('Setup puzzle error:', error);
-      const errorMsg = error instanceof Error ? error.message : 'LLM unable to extract puzzle words';
+      let errorMsg = 'LLM unable to extract puzzle words';
+
+      if (error instanceof Error) {
+        // Extract meaningful error from backend
+        if (error.message.includes('No valid 4x4 word grid detected')) {
+          errorMsg = 'No puzzle grid detected in this image. Please paste an image showing a 4x4 grid of words from a NYT Connections puzzle.';
+        } else if (error.message.includes('Unable to extract puzzle from image')) {
+          errorMsg = 'The image does not contain a valid 4x4 word grid. Please paste an image of a NYT Connections puzzle.';
+        } else if (error.message.includes('not contain readable text')) {
+          errorMsg = 'Unable to read text from image. Please ensure the image is clear and contains visible words.';
+        } else if (error.message.includes('appears to be sentences')) {
+          errorMsg = 'The image contains sentences instead of a word grid. Please paste a puzzle image with a 4x4 grid of words.';
+        } else if (error.message.includes('Too many repeated words')) {
+          errorMsg = 'The image does not appear to contain a valid puzzle grid. Please paste a NYT Connections puzzle image.';
+        } else {
+          errorMsg = error.message;
+        }
+      }
+
       setExtractionError(errorMsg);
       onError(errorMsg);
     } finally {

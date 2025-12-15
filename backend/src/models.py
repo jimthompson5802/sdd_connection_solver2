@@ -54,14 +54,22 @@ class SetupPuzzleRequest(BaseModel):
 
 class ExtractedWords(BaseModel):
     """Pydantic model for LLM structured output from image word extraction."""
-    
+
     words: List[str] = Field(
-        ..., 
-        min_items=16, 
-        max_items=16, 
+        ...,
+        min_items=16,
+        max_items=16,
         description="16 words from 4x4 grid in reading order"
     )
-    
+    grid_detected: bool = Field(
+        ...,
+        description="True if a valid 4x4 text grid was found in the image, False otherwise"
+    )
+    confidence: Optional[str] = Field(
+        None,
+        description="Confidence level: 'high' if clearly readable grid, 'medium' if partially clear, 'low' if uncertain"
+    )
+
     @validator('words')
     def validate_word_count(cls, v: List[str]) -> List[str]:
         """Ensure exactly 16 words extracted."""
@@ -72,35 +80,35 @@ class ExtractedWords(BaseModel):
 
 class ImageSetupRequest(BaseModel):
     """Request model for setting up puzzle from image."""
-    
+
     image_base64: str = Field(
-        ..., 
+        ...,
         description="Base64-encoded image content (without data URL prefix)"
     )
     image_mime: str = Field(
-        ..., 
+        ...,
         description="Image MIME type (image/png, image/jpeg, image/jpg, image/gif, image/webp)"
     )
     provider_type: str = Field(
-        ..., 
+        ...,
         description="LLM provider type for word extraction (openai, ollama, simple)"
     )
     model_name: str = Field(
-        ..., 
+        ...,
         description="Specific model name for provider (e.g., gpt-4-vision-preview)"
     )
-    
+
     @validator('image_base64')
     def validate_image_size(cls, v: str) -> str:
         """Validate base64 image doesn't exceed 5MB.
-        
+
         Base64 encoding adds ~33% overhead: 5MB raw = ~6.67MB base64
         """
         max_base64_size = 6_666_666  # bytes (~5MB original)
         if len(v) > max_base64_size:
             raise ValueError("Image size exceeds 5MB limit")
         return v
-    
+
     @validator('image_mime')
     def validate_mime_type(cls, v: str) -> str:
         """Validate image MIME type is supported."""
@@ -108,7 +116,7 @@ class ImageSetupRequest(BaseModel):
         if v not in supported:
             raise ValueError(f"Unsupported MIME type: {v}. Supported types: {supported}")
         return v
-    
+
     @validator('provider_type')
     def validate_provider_type(cls, v: str) -> str:
         """Validate provider type is recognized."""
@@ -120,17 +128,17 @@ class ImageSetupRequest(BaseModel):
 
 class ImageSetupResponse(BaseModel):
     """Response model for image-based puzzle setup."""
-    
+
     remaining_words: List[str] = Field(
-        ..., 
+        ...,
         description="16 words extracted from image (or empty list on error)"
     )
     status: str = Field(
-        ..., 
+        ...,
         description="Setup status ('success' or 'error')"
     )
     message: Optional[str] = Field(
-        None, 
+        None,
         description="Error message if status is 'error', None if 'success'"
     )
 
@@ -463,6 +471,6 @@ __all__ = [
     "CompletedGroup",
     # Phase 4 Image-based puzzle setup models
     "ExtractedWords",
-    "ImageSetupRequest", 
+    "ImageSetupRequest",
     "ImageSetupResponse",
 ]
