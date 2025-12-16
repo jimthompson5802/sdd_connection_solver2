@@ -84,7 +84,9 @@ Take screenshots of puzzle grids and extract words using AI vision:
 - Click "Setup Puzzle" to extract words and start solving
 
 ![](./docs/screenshots/01_image_puzzle_setup.png)
-
+![](./docs/screenshots/02_puzzle_image_setup.png)
+![](./docs/screenshots/03_puzzle_image_setup_copy_paste.png)
+![](./docs/screenshots/04_puzzle_initialized.png)
 #### Supported Image Sources
 - Screenshots of NYT Connections puzzles
 - Photos of printed puzzle grids
@@ -102,9 +104,7 @@ Take screenshots of puzzle grids and extract words using AI vision:
 - Group suggestions with confidence scores
 - Hint generation and explanation
 
-![](./docs/screenshots/02_puzzle_image_setup.png)
-![](./docs/screenshots/03_puzzle_image_setup_copy_paste.png)
-![](./docs/screenshots/04_puzzle_initialized.png)
+
 ![](./docs/screenshots/05_puzzle_first_guess.png)
 ![](./docs/screenshots/06_puzzle_first_guess_recommendation.png)
 ![](./docs/screenshots/07_puzzle_first_guess_result.png)
