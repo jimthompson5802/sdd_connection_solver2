@@ -1,0 +1,22 @@
+{
+  "id": "relationships/backend-to-ollama-connection",
+  "title": "Backend To Ollama Connection",
+  "description": "Details",
+  "source": "@site/docs/relationships/backend-to-ollama-connection.md",
+  "sourceDirName": "relationships",
+  "slug": "/relationships/backend-to-ollama-connection",
+  "permalink": "/relationships/backend-to-ollama-connection",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "backend-to-ollama-connection",
+    "title": "Backend To Ollama Connection"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Backend To Openai Connection",
+    "permalink": "/relationships/backend-to-openai-connection"
+  }
+}

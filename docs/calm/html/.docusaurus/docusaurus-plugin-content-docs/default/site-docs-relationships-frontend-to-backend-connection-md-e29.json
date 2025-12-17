@@ -1,0 +1,26 @@
+{
+  "id": "relationships/frontend-to-backend-connection",
+  "title": "Frontend To Backend Connection",
+  "description": "Details",
+  "source": "@site/docs/relationships/frontend-to-backend-connection.md",
+  "sourceDirName": "relationships",
+  "slug": "/relationships/frontend-to-backend-connection",
+  "permalink": "/relationships/frontend-to-backend-connection",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "frontend-to-backend-connection",
+    "title": "Frontend To Backend Connection"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Player Interaction",
+    "permalink": "/relationships/player-interaction"
+  },
+  "next": {
+    "title": "Backend To Openai Connection",
+    "permalink": "/relationships/backend-to-openai-connection"
+  }
+}

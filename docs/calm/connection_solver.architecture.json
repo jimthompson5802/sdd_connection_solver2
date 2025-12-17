@@ -1,0 +1,135 @@
+{
+    "$schema": "https://calm.finos.org/release/1.1/meta/calm.json",
+    "unique-id": "my-system",
+    "name": "Connection Solver Assistant Architecture",
+    "description": "A GenAI Virtual Assistant that helps users solve NYT Connections puzzles using large language models (LLMs) via a web application interface.",
+    "metadata": [
+        {
+            "version": "1.0.0",
+            "created-by": "Jim Thompson",
+            "environment": "Development"
+        }
+    ],
+    "nodes": [
+        {
+            "unique-id": "player",
+            "node-type": "actor",
+            "name": "Puzzle Player",
+            "description": "End user who interacts with the web application to solve NYT Connections puzzles with AI assistance"
+        },
+        {
+            "unique-id": "frontend-webclient",
+            "node-type": "webclient",
+            "name": "Connection Solver Web Application",
+            "description": "React-based web application providing the user interface for solving NYT Connections puzzles with LLM assistance",
+            "metadata": [
+                {
+                    "technology": "React",
+                    "language": "TypeScript",
+                    "build-tool": "Create React App",
+                    "testing": "Jest, React Testing Library"
+                }
+            ]
+        },
+        {
+            "unique-id": "backend-api-service",
+            "node-type": "service",
+            "name": "Connection Solver Backend API",
+            "description": "FastAPI-based REST API service that orchestrates puzzle solving, manages game sessions, and integrates with LLM providers for generating recommendations",
+            "metadata": [
+                {
+                    "technology": "FastAPI",
+                    "language": "Python 3.11+",
+                    "framework": "Uvicorn",
+                    "testing": "pytest, mypy",
+                    "validation": "Pydantic"
+                }
+            ]
+        },
+        {
+            "unique-id": "openai-llm-service",
+            "node-type": "service",
+            "name": "OpenAI LLM Service",
+            "description": "External OpenAI API service providing large language model capabilities for generating puzzle-solving recommendations",
+            "metadata": [
+                {
+                    "provider": "OpenAI",
+                    "deployment": "external",
+                    "api-type": "REST API",
+                    "authentication": "API Key"
+                }
+            ]
+        },
+        {
+            "unique-id": "ollama-llm-service",
+            "node-type": "service",
+            "name": "Ollama LLM Service",
+            "description": "Local Ollama service providing open-source large language models running on the same system as the backend",
+            "metadata": [
+                {
+                    "provider": "Ollama",
+                    "deployment": "local",
+                    "api-type": "REST API",
+                    "location": "localhost"
+                }
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "unique-id": "player-interaction",
+            "description": "Player interacts with the web application to solve puzzles",
+            "relationship-type": {
+                "interacts": {
+                    "actor": "player",
+                    "nodes": ["frontend-webclient"]
+                }
+            }
+        },
+        {
+            "unique-id": "frontend-to-backend-connection",
+            "description": "Frontend web application sends HTTP requests to backend API for puzzle operations",
+            "relationship-type": {
+                "connects": {
+                    "source": {
+                        "node": "frontend-webclient"
+                    },
+                    "destination": {
+                        "node": "backend-api-service"
+                    }
+                }
+            },
+            "protocol": "HTTP"
+        },
+        {
+            "unique-id": "backend-to-openai-connection",
+            "description": "Backend service sends API requests to OpenAI for LLM-based puzzle recommendations",
+            "relationship-type": {
+                "connects": {
+                    "source": {
+                        "node": "backend-api-service"
+                    },
+                    "destination": {
+                        "node": "openai-llm-service"
+                    }
+                }
+            },
+            "protocol": "HTTPS"
+        },
+        {
+            "unique-id": "backend-to-ollama-connection",
+            "description": "Backend service sends local API requests to Ollama for LLM-based puzzle recommendations",
+            "relationship-type": {
+                "connects": {
+                    "source": {
+                        "node": "backend-api-service"
+                    },
+                    "destination": {
+                        "node": "ollama-llm-service"
+                    }
+                }
+            },
+            "protocol": "HTTP"
+        }
+    ]
+}
