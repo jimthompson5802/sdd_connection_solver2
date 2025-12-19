@@ -1,0 +1,26 @@
+{
+  "id": "nodes/backend-api-service",
+  "title": "Connection Solver Backend API",
+  "description": "Details",
+  "source": "@site/docs/nodes/backend-api-service.md",
+  "sourceDirName": "nodes",
+  "slug": "/nodes/backend-api-service",
+  "permalink": "/nodes/backend-api-service",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "backend-api-service",
+    "title": "Connection Solver Backend API"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Connection Solver Web Application",
+    "permalink": "/nodes/frontend-webclient"
+  },
+  "next": {
+    "title": "OpenAI LLM Service",
+    "permalink": "/nodes/openai-llm-service"
+  }
+}

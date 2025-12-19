@@ -1,0 +1,26 @@
+{
+  "id": "nodes/frontend-webclient",
+  "title": "Connection Solver Web Application",
+  "description": "Details",
+  "source": "@site/docs/nodes/frontend-webclient.md",
+  "sourceDirName": "nodes",
+  "slug": "/nodes/frontend-webclient",
+  "permalink": "/nodes/frontend-webclient",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "frontend-webclient",
+    "title": "Connection Solver Web Application"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Puzzle Player",
+    "permalink": "/nodes/player"
+  },
+  "next": {
+    "title": "Connection Solver Backend API",
+    "permalink": "/nodes/backend-api-service"
+  }
+}

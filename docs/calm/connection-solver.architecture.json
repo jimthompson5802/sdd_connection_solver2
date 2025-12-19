@@ -1,0 +1,439 @@
+{
+    "$schema": "https://calm.finos.org/release/1.1/meta/calm.json",
+    "unique-id": "connection-solver-architecture",
+    "name": "NYT Connections Puzzle Solver Architecture",
+    "description": "A web-based application that assists users in solving New York Times Connections puzzles using AI-powered word grouping recommendations from multiple LLM providers (OpenAI, Ollama, Simple).",
+    "metadata": [
+        {
+            "version": "1.0.0",
+            "created-by": "Architecture Team",
+            "created-date": "2025-12-18",
+            "environment": "production",
+            "tech-stack": "React, TypeScript, FastAPI, Python 3.11+, LangChain",
+            "deployment-model": "Full-stack web application with frontend and backend services"
+        }
+    ],
+    "nodes": [
+        {
+            "unique-id": "player",
+            "node-type": "actor",
+            "name": "Puzzle Player",
+            "description": "End user who interacts with the web application to solve NYT Connections puzzles with AI assistance",
+            "interfaces": [
+                {
+                    "unique-id": "player-browser-interface",
+                    "hostname": "localhost"
+                }
+            ]
+        },
+        {
+            "unique-id": "frontend-webclient",
+            "node-type": "webclient",
+            "name": "Connection Solver Web Application",
+            "description": "React-based web application providing the user interface for solving NYT Connections puzzles with LLM assistance",
+            "interfaces": [
+                {
+                    "unique-id": "frontend-http-interface",
+                    "hostname": "localhost",
+                    "port": 3000
+                },
+                {
+                    "unique-id": "frontend-api-client",
+                    "url": "http://localhost:8000"
+                }
+            ]
+        },
+        {
+            "unique-id": "backend-api-service",
+            "node-type": "service",
+            "name": "Connection Solver Backend API",
+            "description": "FastAPI-based REST API service that orchestrates puzzle solving, manages game sessions, and integrates with LLM providers for generating recommendations",
+            "interfaces": [
+                {
+                    "unique-id": "backend-rest-api",
+                    "hostname": "localhost",
+                    "port": 8000
+                },
+                {
+                    "unique-id": "puzzle-setup-endpoint",
+                    "url": "http://localhost:8000/api/puzzle/setup_puzzle"
+                },
+                {
+                    "unique-id": "next-recommendation-endpoint",
+                    "url": "http://localhost:8000/api/puzzle/next_recommendation"
+                },
+                {
+                    "unique-id": "record-response-endpoint",
+                    "url": "http://localhost:8000/api/puzzle/record_response"
+                },
+                {
+                    "unique-id": "v2-recommendations-endpoint",
+                    "url": "http://localhost:8000/api/v2/recommendations"
+                },
+                {
+                    "unique-id": "v2-provider-validate-endpoint",
+                    "url": "http://localhost:8000/api/v2/providers/validate"
+                },
+                {
+                    "unique-id": "v2-provider-status-endpoint",
+                    "url": "http://localhost:8000/api/v2/providers/status"
+                },
+                {
+                    "unique-id": "v2-image-setup-endpoint",
+                    "url": "http://localhost:8000/api/v2/setup_puzzle_from_image"
+                }
+            ]
+        },
+        {
+            "unique-id": "openai-llm-service",
+            "node-type": "service",
+            "name": "OpenAI LLM Service",
+            "description": "External OpenAI API service providing large language model capabilities for generating puzzle-solving recommendations",
+            "interfaces": [
+                {
+                    "unique-id": "openai-api-interface",
+                    "url": "https://api.openai.com/v1"
+                }
+            ]
+        },
+        {
+            "unique-id": "ollama-llm-service",
+            "node-type": "service",
+            "name": "Ollama LLM Service",
+            "description": "Local Ollama service providing open-source large language models running on the same system as the backend",
+            "interfaces": [
+                {
+                    "unique-id": "ollama-api-interface",
+                    "hostname": "localhost",
+                    "port": 11434
+                }
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "unique-id": "player-interaction",
+            "description": "Interacts with the web application through browser",
+            "relationship-type": {
+                "interacts": {
+                    "actor": "player",
+                    "nodes": ["frontend-webclient"]
+                }
+            }
+        },
+        {
+            "unique-id": "frontend-to-backend-connection",
+            "description": "Makes REST API calls for puzzle operations",
+            "relationship-type": {
+                "connects": {
+                    "source": {
+                        "node": "frontend-webclient",
+                        "interfaces": ["frontend-api-client"]
+                    },
+                    "destination": {
+                        "node": "backend-api-service",
+                        "interfaces": ["backend-rest-api"]
+                    }
+                }
+            },
+            "protocol": "HTTP"
+        },
+        {
+            "unique-id": "backend-to-openai-connection",
+            "description": "Sends LLM requests to and receives recommendations from",
+            "relationship-type": {
+                "connects": {
+                    "source": {
+                        "node": "backend-api-service"
+                    },
+                    "destination": {
+                        "node": "openai-llm-service",
+                        "interfaces": ["openai-api-interface"]
+                    }
+                }
+            },
+            "protocol": "HTTPS"
+        },
+        {
+            "unique-id": "backend-to-ollama-connection",
+            "description": "Sends prompts to and receives recommendations from local LLM",
+            "relationship-type": {
+                "connects": {
+                    "source": {
+                        "node": "backend-api-service"
+                    },
+                    "destination": {
+                        "node": "ollama-llm-service",
+                        "interfaces": ["ollama-api-interface"]
+                    }
+                }
+            },
+            "protocol": "HTTP"
+        }
+    ],
+    "flows": [
+        {
+            "unique-id": "puzzle-setup-flow",
+            "name": "Puzzle Setup Process",
+            "description": "User uploads a CSV file containing 16 words to initialize a new puzzle session",
+            "transitions": [
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 1,
+                    "description": "Player uploads CSV file through web interface",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 2,
+                    "description": "Frontend sends puzzle setup request with CSV content to backend API",
+                    "direction": "source-to-destination"
+                }
+            ],
+            "metadata": {
+                "business-process": "Puzzle Initialization",
+                "user-journey-step": "1-Setup",
+                "api-endpoint": "POST /api/puzzle/setup_puzzle",
+                "success-criteria": "Session created with 16 validated words"
+            }
+        },
+        {
+            "unique-id": "recommendation-generation-flow",
+            "name": "AI Recommendation Generation Process",
+            "description": "User requests AI-powered word grouping recommendations from selected LLM provider",
+            "transitions": [
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 1,
+                    "description": "Player clicks button to request recommendation",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 2,
+                    "description": "Frontend requests recommendation from backend with LLM provider selection",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-openai-connection",
+                    "sequence-number": 3,
+                    "description": "Backend invokes OpenAI API for recommendation (if OpenAI provider selected)",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-openai-connection",
+                    "sequence-number": 4,
+                    "description": "OpenAI returns recommendation with 4 words and explanation",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 5,
+                    "description": "Backend returns formatted recommendation to frontend",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 6,
+                    "description": "Frontend displays recommended words and explanation to player",
+                    "direction": "destination-to-source"
+                }
+            ],
+            "metadata": {
+                "business-process": "Recommendation Generation",
+                "user-journey-step": "2-Get-Recommendation",
+                "api-endpoints": "GET /api/puzzle/next_recommendation, POST /api/v2/recommendations",
+                "llm-providers": "OpenAI, Ollama, Simple",
+                "success-criteria": "4 words returned with connection explanation"
+            }
+        },
+        {
+            "unique-id": "ollama-recommendation-flow",
+            "name": "Local LLM Recommendation Process",
+            "description": "User requests recommendations using local Ollama LLM service",
+            "transitions": [
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 1,
+                    "description": "Player selects Ollama provider and requests recommendation",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 2,
+                    "description": "Frontend sends recommendation request with Ollama provider",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-ollama-connection",
+                    "sequence-number": 3,
+                    "description": "Backend calls local Ollama service for recommendation",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-ollama-connection",
+                    "sequence-number": 4,
+                    "description": "Ollama returns recommendation response",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 5,
+                    "description": "Backend processes and returns recommendation to frontend",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 6,
+                    "description": "Frontend displays Ollama recommendation to player",
+                    "direction": "destination-to-source"
+                }
+            ],
+            "metadata": {
+                "business-process": "Local LLM Recommendation",
+                "user-journey-step": "2-Get-Recommendation",
+                "api-endpoint": "POST /api/v2/recommendations",
+                "llm-provider": "Ollama",
+                "deployment": "Local service on same host"
+            }
+        },
+        {
+            "unique-id": "response-recording-flow",
+            "name": "User Response Recording Process",
+            "description": "User provides feedback on recommendation correctness and system updates game state",
+            "transitions": [
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 1,
+                    "description": "Player indicates if recommendation was correct, incorrect, or one-away",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 2,
+                    "description": "Frontend sends response recording request with result type",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 3,
+                    "description": "Backend updates session state and returns updated game status",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 4,
+                    "description": "Frontend displays updated puzzle state with remaining words and mistake count",
+                    "direction": "destination-to-source"
+                }
+            ],
+            "metadata": {
+                "business-process": "Response Recording",
+                "user-journey-step": "3-Record-Response",
+                "api-endpoint": "POST /api/puzzle/record_response",
+                "state-updates": "remaining_words, mistake_count, game_status",
+                "game-rules": "Max 4 mistakes allowed"
+            }
+        },
+        {
+            "unique-id": "provider-validation-flow",
+            "name": "LLM Provider Validation Process",
+            "description": "System validates LLM provider configuration and availability before generating recommendations",
+            "transitions": [
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 1,
+                    "description": "Player configures LLM provider settings",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 2,
+                    "description": "Frontend requests provider validation",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-openai-connection",
+                    "sequence-number": 3,
+                    "description": "Backend tests OpenAI API connectivity and credentials",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-openai-connection",
+                    "sequence-number": 4,
+                    "description": "OpenAI returns validation result",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 5,
+                    "description": "Backend returns validation status to frontend",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 6,
+                    "description": "Frontend displays provider status and any configuration errors",
+                    "direction": "destination-to-source"
+                }
+            ],
+            "metadata": {
+                "business-process": "Provider Configuration",
+                "user-journey-step": "0-Setup",
+                "api-endpoint": "POST /api/v2/providers/validate",
+                "validation-checks": "API key, connectivity, model availability"
+            }
+        },
+        {
+            "unique-id": "image-puzzle-setup-flow",
+            "name": "Image-Based Puzzle Setup Process",
+            "description": "User uploads an image of a puzzle grid and LLM vision capabilities extract the 16 words",
+            "transitions": [
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 1,
+                    "description": "Player uploads puzzle image through web interface",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 2,
+                    "description": "Frontend sends base64-encoded image to backend",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-openai-connection",
+                    "sequence-number": 3,
+                    "description": "Backend invokes OpenAI Vision API to extract words from image",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-openai-connection",
+                    "sequence-number": 4,
+                    "description": "OpenAI Vision returns extracted 16 words",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 5,
+                    "description": "Backend creates session and returns word list to frontend",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 6,
+                    "description": "Frontend displays extracted words and initializes puzzle interface",
+                    "direction": "destination-to-source"
+                }
+            ],
+            "metadata": {
+                "business-process": "Image-Based Setup",
+                "user-journey-step": "1-Setup-Alternative",
+                "api-endpoint": "POST /api/v2/setup_puzzle_from_image",
+                "llm-capability": "Vision API",
+                "image-format": "base64-encoded, JPEG/PNG",
+                "success-criteria": "16 words extracted from 4x4 grid"
+            }
+        }
+    ]
+}

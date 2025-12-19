@@ -1,0 +1,26 @@
+{
+  "id": "relationships/backend-to-openai-connection",
+  "title": "Backend To Openai Connection",
+  "description": "Details",
+  "source": "@site/docs/relationships/backend-to-openai-connection.md",
+  "sourceDirName": "relationships",
+  "slug": "/relationships/backend-to-openai-connection",
+  "permalink": "/relationships/backend-to-openai-connection",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "backend-to-openai-connection",
+    "title": "Backend To Openai Connection"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Frontend To Backend Connection",
+    "permalink": "/relationships/frontend-to-backend-connection"
+  },
+  "next": {
+    "title": "Backend To Ollama Connection",
+    "permalink": "/relationships/backend-to-ollama-connection"
+  }
+}

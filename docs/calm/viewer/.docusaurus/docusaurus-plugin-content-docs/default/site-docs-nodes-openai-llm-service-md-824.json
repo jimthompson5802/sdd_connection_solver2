@@ -1,0 +1,26 @@
+{
+  "id": "nodes/openai-llm-service",
+  "title": "OpenAI LLM Service",
+  "description": "Details",
+  "source": "@site/docs/nodes/openai-llm-service.md",
+  "sourceDirName": "nodes",
+  "slug": "/nodes/openai-llm-service",
+  "permalink": "/nodes/openai-llm-service",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "openai-llm-service",
+    "title": "OpenAI LLM Service"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Connection Solver Backend API",
+    "permalink": "/nodes/backend-api-service"
+  },
+  "next": {
+    "title": "Ollama LLM Service",
+    "permalink": "/nodes/ollama-llm-service"
+  }
+}
