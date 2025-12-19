@@ -1,0 +1,26 @@
+{
+  "id": "flows/ollama-recommendation-flow",
+  "title": "Local LLM Recommendation Process",
+  "description": "Details",
+  "source": "@site/docs/flows/ollama-recommendation-flow.md",
+  "sourceDirName": "flows",
+  "slug": "/flows/ollama-recommendation-flow",
+  "permalink": "/flows/ollama-recommendation-flow",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "ollama-recommendation-flow",
+    "title": "Local LLM Recommendation Process"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "AI Recommendation Generation Process",
+    "permalink": "/flows/recommendation-generation-flow"
+  },
+  "next": {
+    "title": "User Response Recording Process",
+    "permalink": "/flows/response-recording-flow"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "flows/puzzle-setup-flow",
+  "title": "Puzzle Setup Process",
+  "description": "Details",
+  "source": "@site/docs/flows/puzzle-setup-flow.md",
+  "sourceDirName": "flows",
+  "slug": "/flows/puzzle-setup-flow",
+  "permalink": "/flows/puzzle-setup-flow",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "puzzle-setup-flow",
+    "title": "Puzzle Setup Process"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Backend To Ollama Connection",
+    "permalink": "/relationships/backend-to-ollama-connection"
+  },
+  "next": {
+    "title": "AI Recommendation Generation Process",
+    "permalink": "/flows/recommendation-generation-flow"
+  }
+}

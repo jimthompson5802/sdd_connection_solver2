@@ -1,0 +1,26 @@
+{
+  "id": "flows/recommendation-generation-flow",
+  "title": "AI Recommendation Generation Process",
+  "description": "Details",
+  "source": "@site/docs/flows/recommendation-generation-flow.md",
+  "sourceDirName": "flows",
+  "slug": "/flows/recommendation-generation-flow",
+  "permalink": "/flows/recommendation-generation-flow",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "recommendation-generation-flow",
+    "title": "AI Recommendation Generation Process"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Puzzle Setup Process",
+    "permalink": "/flows/puzzle-setup-flow"
+  },
+  "next": {
+    "title": "Local LLM Recommendation Process",
+    "permalink": "/flows/ollama-recommendation-flow"
+  }
+}
