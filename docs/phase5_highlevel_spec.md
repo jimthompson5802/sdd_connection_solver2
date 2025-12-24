@@ -76,6 +76,13 @@ When a session is created, the following session attributes are maintained by th
 - `llm_provider_name`: name of the LLM provider. Initialized to `None` and updated when a recommendation is generated.
 - `llm_model_name`: name of the LLM model used to make a recommendation. Initialized to `None` and updated when a recommendation is generated.
 
+## Changes to RecommendationService
+
+modify `get_recommendation()` method so that when it saves the `session.last_recommendation - response.recommended_words` it also does
+
+- `session.llm_provider_name = authoritative_request.llm_provider.llm_type`
+- `session.llm_model_name = authoritative_request.llm_provider.model_name`
+
 
 ## Database Backend Service
 
