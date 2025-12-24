@@ -2,31 +2,71 @@ Phase 5 Implementation Notes
 
 This file contains implementation-level details, DDL, exact API examples, and other technical guidance for engineers implementing the Phase 5 feature set. These notes are intended to be kept separate from the high-level functional specification.
 
-1) Database Table (Postgres example)
+1) Database Table (SQLite / `sqlite3`)
 
-Suggested SQL (Postgres dialect):
+This project uses SQLite for local development and lightweight deployments. The following consolidated schema and notes describe recommended storage and behavior for `sqlite3`.
+
+Suggested SQL (SQLite dialect):
 
 ```sql
-CREATE TABLE game_results (
-    result_id   SERIAL PRIMARY KEY,
-    puzzle_id   TEXT NOT NULL,
-    game_date   TIMESTAMPTZ NOT NULL,
-    puzzle_solved BOOLEAN NOT NULL,
-    count_groups_found INTEGER NOT NULL,
-    count_mistakes INTEGER NOT NULL,
-    total_guesses INTEGER NOT NULL,
-    llm_provider_name TEXT NULL,
-    llm_model_name TEXT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    UNIQUE (puzzle_id, game_date)
+CREATE TABLE IF NOT EXISTS game_results (
+  result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  puzzle_id TEXT NOT NULL,
+  -- store ISO 8601 timestamps as TEXT (e.g. "2025-12-24T15:30:00Z")
+  game_date TEXT NOT NULL,
+  -- store boolean as TEXT with values "true" or "false"
+  puzzle_solved TEXT NOT NULL,
+  count_groups_found INTEGER NOT NULL,
+  count_mistakes INTEGER NOT NULL,
+  total_guesses INTEGER NOT NULL,
+  llm_provider_name TEXT,
+  llm_model_name TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (puzzle_id, game_date)
 );
 ```
 
-Notes:
-- `result_id` is an autoincrementing integer primary key (Postgres `SERIAL` shown).
-- `game_date` is stored as a timezone-aware timestamp (`TIMESTAMPTZ`).
-- `llm_provider_name` and `llm_model_name` are nullable.
-- Uniqueness enforced by `(puzzle_id, game_date)` as required by the high-level spec.
+Notes for SQLite:
+- `result_id`: use `INTEGER PRIMARY KEY AUTOINCREMENT` to get an autoincrementing integer key.
+- `game_date`: SQLite lacks a native TIMESTAMP WITH TIME ZONE type. Store timestamps as normalized ISO 8601 `TEXT` (UTC `Z` or include offset). The application server should canonicalize timezones (recommend converting to UTC before persisting) and validate the format on insert.
+- `puzzle_solved`: store as the literal strings `"true"` or `"false"` (read/write code should map Python booleans to these strings when persisting and parse them back when reading).
+- `created_at`: use `datetime('now')` to set UTC timestamp in ISO-like format. For more precise control, the application can set `created_at` explicitly using Python's `datetime.utcnow().isoformat()`.
+- The `UNIQUE (puzzle_id, game_date)` constraint enforces the duplicate-check semantics.
+
+Python (`sqlite3`) usage tips:
+- Use the builtin `sqlite3` module for small deployments. Example to create the DB/table:
+
+```python
+import sqlite3
+
+conn = sqlite3.connect('game_results.db')
+cur = conn.cursor()
+cur.executescript('''
+CREATE TABLE IF NOT EXISTS game_results (
+  result_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  puzzle_id TEXT NOT NULL,
+  game_date TEXT NOT NULL,
+  puzzle_solved TEXT NOT NULL,
+  count_groups_found INTEGER NOT NULL,
+  count_mistakes INTEGER NOT NULL,
+  total_guesses INTEGER NOT NULL,
+  llm_provider_name TEXT,
+  llm_model_name TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE (puzzle_id, game_date)
+);
+''')
+conn.commit()
+conn.close()
+```
+
+- When reading rows, set `conn.row_factory = sqlite3.Row` to access columns by name.
+- Use parameterized queries (`?` placeholders) to avoid injection.
+- When inserting/updating `puzzle_solved`, write the literal strings `"true"` or `"false"`. When reading, parse those back into booleans in your application layer.
+- Wrap writes in transactions (the default connection behavior does so for `sqlite3` unless `isolation_level=None`) and be mindful of concurrent writers — SQLite serializes writes and can raise `sqlite3.OperationalError: database is locked` under heavy contention. For server deployments, prefer a client/server RDBMS; SQLite is best for local/test environments.
+
+Migration / export compatibility:
+- The CSV exporter and API semantics described below remain unchanged. When exporting, represent `puzzle_solved` as the boolean values `true`/`false` (unquoted) in the CSV column, or as strings depending on downstream consumers' expectations. Ensure the exporter converts the stored `"true"`/`"false"` strings to the desired CSV representation.
 
 2) API Examples (exact request/response samples)
 
