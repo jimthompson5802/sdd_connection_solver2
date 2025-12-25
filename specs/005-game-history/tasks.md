@@ -172,11 +172,10 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 
 - [ ] T054 [P] Add comprehensive unit tests for PuzzleSession enhancements in backend/tests/models/test_puzzle_session.py
 - [ ] T055 [P] Add unit tests for GameResult model validation in backend/tests/models/test_game_result.py
-- [ ] T056 [P] Add unit tests for database repository methods in backend/tests/database/test_game_results_repository.py
-- [ ] T057 [P] Update API documentation in docs/ with game history endpoints and examples
-- [ ] T058 [P] Add quickstart validation for game history workflow in docs/quickstart-validation-results.md
-- [ ] T059 Code review and refactoring for consistency across all user stories
-- [ ] T060 Performance testing with 100+ game records to verify no degradation
+- [ ] T057 [P] Add unit tests for database repository methods in backend/tests/database/test_game_results_repository.py
+- [ ] T058 [P] Update API documentation in docs/ with game history endpoints and examples
+- [ ] T059 [P] Add quickstart validation for game history workflow in docs/quickstart-validation-results.md
+- [ ] T060 Code review and refactoring for consistency across all user stories
 - [ ] T061 [P] Update frontend component tests for coverage targets (75%+) in frontend/tests/components/
 - [ ] T062 Run full backend test suite and verify 80%+ coverage requirement
 - [ ] T063 Run quickstart.md validation per specs/005-game-history/quickstart.md
@@ -299,8 +298,8 @@ With multiple developers:
 - **User Story 1 (P1)**: 17 tasks (4 tests + 13 implementation)
 - **User Story 2 (P2)**: 15 tasks (4 tests + 11 implementation)
 - **User Story 3 (P3)**: 11 tasks (3 tests + 8 implementation)
-- **Polish Phase**: 10 tasks
-- **Parallel Opportunities**: 32 tasks marked [P] can run in parallel within their phases
+- **Polish Phase**: 9 tasks
+- **Parallel Opportunities**: 31 tasks marked [P] can run in parallel within their phases
 
 ---
 
