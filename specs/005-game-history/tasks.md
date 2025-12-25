@@ -27,10 +27,10 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 
 **Purpose**: Project initialization and database setup
 
-- [ ] T001 Create database directory at backend/data/
-- [ ] T002 Create database schema file at backend/src/database/schema.py with game_results table DDL
-- [ ] T003 [P] Create database initialization module at backend/src/database/__init__.py with connection management
-- [ ] T004 [P] Add DATABASE_PATH environment variable to backend .env configuration
+- [X] T001 Create database directory at backend/data/
+- [X] T002 Create database schema file at backend/src/database/schema.py with game_results table DDL
+- [X] T003 [P] Create database initialization module at backend/src/database/__init__.py with connection management
+- [X] T004 [P] Add DATABASE_PATH environment variable to backend .env configuration
 
 ---
 
@@ -40,13 +40,13 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Enhance PuzzleSession model in backend/src/models/puzzle_session.py with puzzle_id (UUID v5), llm_provider_name, llm_model_name attributes
-- [ ] T006 Implement generate_puzzle_id() method in backend/src/models/puzzle_session.py using uuid.uuid5(uuid.NAMESPACE_DNS, joined_words)
-- [ ] T007 [P] Create GameResult Pydantic model in backend/src/models/game_result.py with all fields from data-model.md
-- [ ] T008 [P] Create database repository module at backend/src/database/game_results_repository.py with insert/select/duplicate_check methods
-- [ ] T009 Implement set_llm_info(provider_name: str, model_name: str) method in backend/src/models/puzzle_session.py
-- [ ] T009a Update LLM recommendation services to call session.set_llm_info(provider, model) when generating recommendations
-- [ ] T010 Create database migration/initialization script at backend/src/database/migrations.py to create game_results table
+- [X] T005 Enhance PuzzleSession model in backend/src/models/puzzle_session.py with puzzle_id (UUID v5), llm_provider_name, llm_model_name attributes
+- [X] T006 Implement generate_puzzle_id() method in backend/src/models/puzzle_session.py using uuid.uuid5(uuid.NAMESPACE_DNS, joined_words)
+- [X] T007 [P] Create GameResult Pydantic model in backend/src/models/game_result.py with all fields from data-model.md
+- [X] T008 [P] Create database repository module at backend/src/database/game_results_repository.py with insert/select/duplicate_check methods
+- [X] T009 Implement set_llm_info(provider_name: str, model_name: str) method in backend/src/models/puzzle_session.py
+- [X] T009a Update LLM recommendation services to call session.set_llm_info(provider, model) when generating recommendations
+- [X] T010 Create database migration/initialization script at backend/src/database/migrations.py to create game_results table
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 

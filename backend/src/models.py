@@ -257,6 +257,11 @@ class PuzzleSession:
         # Tracks the last recommendation issued to the user (list of 4 words)
         self.last_recommendation: Optional[List[str]] = None
 
+        # New attributes for game history feature
+        self.puzzle_id = self.generate_puzzle_id()
+        self.llm_provider_name: Optional[str] = None
+        self.llm_model_name: Optional[str] = None
+
     # TODO: cleanup
     #     # Initialize placeholder groups (will be populated by ML analysis)
     #     self._initialize_placeholder_groups()
@@ -394,6 +399,70 @@ class PuzzleSession:
                 break
 
         return invalid_groups
+
+    def generate_puzzle_id(self) -> str:
+        """
+        Generate deterministic puzzle_id from normalized, sorted words.
+
+        Uses UUID v5 (name-based) to create a consistent identifier
+        for the same set of words regardless of order.
+
+        Returns:
+            UUID v5 string identifier
+        """
+        normalized = [word.strip().lower() for word in self.words]
+        sorted_words = sorted(normalized)
+        joined = ",".join(sorted_words)
+        return str(uuid.uuid5(uuid.NAMESPACE_DNS, joined))
+
+    def set_llm_info(self, provider_name: str, model_name: str) -> None:
+        """
+        Record LLM provider and model used for recommendation.
+
+        Args:
+            provider_name: Name of the LLM provider (e.g., 'openai', 'ollama')
+            model_name: Specific model name (e.g., 'gpt-4', 'llama2')
+        """
+        self.llm_provider_name = provider_name
+        self.llm_model_name = model_name
+
+    def to_game_result(self, game_date: datetime) -> Dict[str, Any]:
+        """
+        Convert session state to GameResult data for recording.
+
+        Args:
+            game_date: Timestamp when the game was completed
+
+        Returns:
+            Dictionary with game result data ready for database insertion
+        """
+        from datetime import timezone
+
+        return {
+            "puzzle_id": self.puzzle_id,
+            "game_date": game_date.astimezone(timezone.utc).isoformat(),
+            "puzzle_solved": "true" if self.game_won else "false",
+            "count_groups_found": self.groups_found_count,
+            "count_mistakes": self.mistakes_made,
+            "total_guesses": self.total_guesses_count,
+            "llm_provider_name": self.llm_provider_name,
+            "llm_model_name": self.llm_model_name,
+        }
+
+    @property
+    def is_finished(self) -> bool:
+        """Returns True if game is complete (won or lost)."""
+        return self.game_complete
+
+    @property
+    def groups_found_count(self) -> int:
+        """Returns count of groups marked as found."""
+        return sum(1 for group in self.groups if group.found)
+
+    @property
+    def total_guesses_count(self) -> int:
+        """Returns total number of attempts made."""
+        return len(self.attempts)
 
 
 # Session storage (in-memory for now)
