@@ -304,3 +304,4 @@ With multiple developers:
 - Puzzle ID uses UUID v5 (not SHA1) per research.md
 - Boolean storage uses TEXT "true"/"false" per Phase 5 pattern
 - All timestamps ISO 8601 with timezone, canonicalized to UTC
+- Activate the virutal environment `cd backend && source .venv/bin/activate` to run python programs or tests
