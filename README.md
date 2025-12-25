@@ -131,6 +131,25 @@ cd frontend
 npm test
 ```
 
+### Generate Test Coverage Report
+```bash
+# Backend
+cd backend
+source .venv/bin/activate
+pytest --cov=src --cov-report=html:htmlcov tests/
+
+# open report
+open
+
+# Frontend
+cd frontend
+CI=true npm test -- --coverage --watchAll=false
+
+# open report
+open frontend/coverage/lcov-report/index.html
+```
+
+
 ### Image Feature Testing
 ```bash
 # Test with sample images (requires vision-capable LLM)
