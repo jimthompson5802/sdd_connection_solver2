@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 
 from ..database import get_database_connection
-from ..models.game_result import GameResult
+from ..game_result import GameResult
 
 
 class GameResultsRepository:

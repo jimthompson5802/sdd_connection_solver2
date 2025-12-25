@@ -19,7 +19,7 @@ import csv
 
 from ..models import SessionManager
 from ..database.game_results_repository import GameResultsRepository
-from ..models.game_result import GameResult
+from ..game_result import GameResult
 
 
 # Configure logger

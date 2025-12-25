@@ -30,9 +30,9 @@ async def setup_puzzle(request: SetupPuzzleRequest) -> SetupPuzzleResponse:
         words = [word.strip().lower() for word in request.file_content.split(",")]
 
         # Create a new puzzle session (store for later use in other endpoints)
-        session_manager.create_session(words)
+        session = session_manager.create_session(words)
 
-        return SetupPuzzleResponse(remaining_words=words, status="success")
+        return SetupPuzzleResponse(remaining_words=words, status="success", session_id=session.session_id)
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"status": str(e)})

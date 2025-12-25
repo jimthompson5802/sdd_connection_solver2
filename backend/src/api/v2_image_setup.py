@@ -59,12 +59,13 @@ async def setup_puzzle_from_image(
         extracted_words = await extractor.extract_words(request)
         
         # Create new puzzle session with extracted words
-        session_manager.create_session(extracted_words)
+        session = session_manager.create_session(extracted_words)
         
         # Return successful response
         return ImageSetupResponse(
             remaining_words=extracted_words,
-            status="success"
+            status="success",
+            session_id=session.session_id
         )
         
     except ValueError as e:

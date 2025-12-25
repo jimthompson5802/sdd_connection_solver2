@@ -17,6 +17,9 @@ const App: React.FC = () => {
   // Navigation state for the new layout
   const [currentView, setCurrentView] = useState<AppView>('initial');
   
+  // Session ID for recording game results
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  
   const [puzzleState, setPuzzleState] = useState<PuzzleState>({
     words: [],
     currentRecommendation: [],
@@ -56,6 +59,9 @@ const App: React.FC = () => {
     try {
       const response = await apiService.setupPuzzle(content);
       
+      // Store the session ID for recording game results
+      setSessionId(response.session_id);
+      
       setPuzzleState({
         words: response.remaining_words,
         currentRecommendation: [],
@@ -79,7 +85,12 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleImageSetup = useCallback((extractedWords: string[]) => {
+  const handleImageSetup = useCallback((extractedWords: string[], sessionIdFromImage?: string) => {
+    // Store the session ID if provided
+    if (sessionIdFromImage) {
+      setSessionId(sessionIdFromImage);
+    }
+    
     // Set up puzzle state with words extracted from image
     setPuzzleState({
       words: extractedWords,
@@ -204,6 +215,7 @@ const App: React.FC = () => {
             showProviderControls={true}
             puzzleContext={''}
             previousGuesses={[]}
+            sessionId={sessionId}
           />
         );
       

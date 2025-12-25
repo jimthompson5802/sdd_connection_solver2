@@ -86,6 +86,18 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 - [X] T026 [US1] Implement error message handling (duplicate, incomplete, network) in frontend/src/components/RecordGameButton.tsx
 - [X] T027 [US1] Add button disable logic during API call to prevent duplicate submissions in frontend/src/components/RecordGameButton.tsx
 
+### Session ID Integration (Missing Prerequisites)
+
+> **NOTE: These tasks were identified as missing after T011-T027 implementation. Required for RecordGameButton to actually appear.**
+
+- [X] T027a [US1] Add session_id field to SetupPuzzleResponse model in backend/src/models.py
+- [X] T027b [US1] Return session_id in setup_puzzle endpoint response in backend/src/api_v1.py
+- [X] T027c [US1] Return session_id in setup_puzzle_from_image endpoint response in backend/src/api/v2_image_setup.py
+- [X] T027d [US1] Add sessionId to SetupPuzzleResponse interface in frontend/src/types/puzzle.ts
+- [X] T027e [US1] Store sessionId from setup response in App.tsx state
+- [X] T027f [US1] Pass sessionId prop to EnhancedPuzzleInterface in frontend/src/App.tsx
+- [X] T027g [US1] Accept and pass sessionId prop from EnhancedPuzzleInterface to GameSummary in frontend/src/components/EnhancedPuzzleInterface.tsx
+
 **Checkpoint**: At this point, User Story 1 should be fully functional - users can record completed games with validation
 
 ---

@@ -137,6 +137,10 @@ class ImageSetupResponse(BaseModel):
         ...,
         description="Setup status ('success' or 'error')"
     )
+    session_id: Optional[str] = Field(
+        None,
+        description="Unique session identifier for this puzzle (only on success)"
+    )
     message: Optional[str] = Field(
         None,
         description="Error message if status is 'error', None if 'success'"
@@ -187,6 +191,7 @@ class SetupPuzzleResponse(BaseModel):
 
     remaining_words: List[str] = Field(..., description="List of words in the puzzle")
     status: str = Field(default="success", description="Status of the operation")
+    session_id: str = Field(..., description="Unique session identifier for this puzzle")
 
 
 class NextRecommendationResponse(BaseModel):

@@ -4,7 +4,7 @@ import { LLMProviderOption } from '../types/llm-provider';
 import './ImagePuzzleSetup.css';
 
 export interface ImagePuzzleSetupProps {
-  onImageSetup: (words: string[]) => void;    // Callback with extracted words
+  onImageSetup: (words: string[], sessionId?: string) => void;    // Callback with extracted words and optional session_id
   providers: LLMProviderOption[];              // Available LLM providers
   defaultProvider: LLMProviderOption;          // Default provider selection
   defaultModel: string;                        // Default model selection
@@ -214,8 +214,8 @@ export const ImagePuzzleSetup: React.FC<ImagePuzzleSetupProps> = ({
       const response = await apiService.setupPuzzleFromImage(request);
 
       if (response.status === 'success') {
-        // Success - call callback with extracted words
-        onImageSetup(response.remaining_words);
+        // Success - call callback with extracted words and optional session_id
+        onImageSetup(response.remaining_words, response.session_id);
       } else {
         // API returned error status
         const errorMsg = response.message || 'Failed to extract words from image';
