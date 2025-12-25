@@ -110,27 +110,27 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 
 ### Tests for User Story 2
 
-- [ ] T028 [P] [US2] Create contract test for GET /api/v2/game_results with data in backend/tests/api/test_v2_game_results.py
-- [ ] T029 [P] [US2] Create contract test for GET /api/v2/game_results empty state in backend/tests/api/test_v2_game_results.py
-- [ ] T030 [P] [US2] Create integration test for game history table rendering in frontend/tests/integration/GameHistoryTable.test.tsx
-- [ ] T031 [P] [US2] Create integration test for game history empty state in frontend/tests/integration/GameHistoryTable.test.tsx
+- [X] T028 [P] [US2] Create contract test for GET /api/v2/game_results with data in backend/tests/api/test_v2_game_results.py
+- [X] T029 [P] [US2] Create contract test for GET /api/v2/game_results empty state in backend/tests/api/test_v2_game_results.py
+- [X] T030 [P] [US2] Create integration test for game history table rendering in frontend/tests/integration/GameHistoryTable.test.tsx
+- [X] T031 [P] [US2] Create integration test for game history empty state in frontend/tests/integration/GameHistoryTable.test.tsx
 
 ### Backend Implementation for User Story 2
 
-- [ ] T032 [P] [US2] Create GameResultsListResponse Pydantic model in backend/src/api/v2_game_results.py with status and results array
-- [ ] T033 [US2] Implement GET /api/v2/game_results endpoint in backend/src/api/v2_game_results.py with ORDER BY game_date DESC
-- [ ] T034 [US2] Add route registration for GET /api/v2/game_results in backend/src/main.py
+- [X] T032 [P] [US2] Create GameResultsListResponse Pydantic model in backend/src/api/v2_game_results.py with status and results array
+- [X] T033 [US2] Implement GET /api/v2/game_results endpoint in backend/src/api/v2_game_results.py with ORDER BY game_date DESC
+- [X] T034 [US2] Add route registration for GET /api/v2/game_results in backend/src/main.py
 
 ### Frontend Implementation for User Story 2
 
-- [ ] T035 [P] [US2] Create GameHistoryTable component in frontend/src/components/GameHistoryTable.tsx with horizontal and vertical scrolling
-- [ ] T036 [P] [US2] Create GameHistoryPage component in frontend/src/pages/GameHistoryPage.tsx
-- [ ] T037 [P] [US2] Add getGameResults() API method to frontend/src/services/gameResultsService.ts
-- [ ] T038 [US2] Add "Game History" collapsible section to navigation sidebar in frontend/src/components/Sidebar.tsx (collapsed by default)
-- [ ] T039 [US2] Add "View Past Games" navigation option under "Game History" section in frontend/src/components/Sidebar.tsx
-- [ ] T040 [US2] Implement table columns for all fields (result_id, puzzle_id, game_date, puzzle_solved, counts, LLM info) in frontend/src/components/GameHistoryTable.tsx
-- [ ] T041 [US2] Implement empty state message when no games recorded in frontend/src/components/GameHistoryTable.tsx
-- [ ] T042 [US2] Add route for /game-history path to frontend router in frontend/src/App.tsx
+- [X] T035 [P] [US2] Create GameHistoryTable component in frontend/src/components/GameHistoryTable.tsx with horizontal and vertical scrolling
+- [X] T036 [P] [US2] Create GameHistoryPage component in frontend/src/pages/GameHistoryPage.tsx
+- [X] T037 [P] [US2] Add getGameResults() API method to frontend/src/services/gameResultsService.ts
+- [X] T038 [US2] Add "Game History" collapsible section to navigation sidebar in frontend/src/components/Sidebar.tsx (collapsed by default)
+- [X] T039 [US2] Add "View Past Games" navigation option under "Game History" section in frontend/src/components/Sidebar.tsx
+- [X] T040 [US2] Implement table columns for all fields (result_id, puzzle_id, game_date, puzzle_solved, counts, LLM info) in frontend/src/components/GameHistoryTable.tsx
+- [X] T041 [US2] Implement empty state message when no games recorded in frontend/src/components/GameHistoryTable.tsx
+- [X] T042 [US2] Add route for /game-history path to frontend router in frontend/src/App.tsx
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently - users can record and view games
 

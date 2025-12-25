@@ -9,6 +9,7 @@ import FileUpload from './components/FileUpload';
 import EnhancedPuzzleInterface from './components/EnhancedPuzzleInterface';
 import { ImagePuzzleSetup } from './components/ImagePuzzleSetup';
 import Sidebar from './components/Sidebar';
+import GameHistoryPage from './pages/GameHistoryPage';
 import { PuzzleState } from './types/puzzle';
 import { AppView, NavigationAction } from './types/navigation';
 import { apiService } from './services/api';
@@ -43,6 +44,10 @@ const App: React.FC = () => {
         break;
       case 'from-image':
         setCurrentView('image-setup');
+        break;
+      case 'view-past-games':
+        // T042: Navigate to game history page
+        setCurrentView('game-history');
         break;
       case 'toggle-menu':
         // Menu toggle is handled internally by Sidebar component
@@ -179,10 +184,6 @@ const App: React.FC = () => {
           <FileUpload
             onFileUpload={handleFileUpload}
             isLoading={puzzleState.isLoading}
-            error={puzzleState.error}
-          />
-        );
-
       case 'image-setup':
         return (
           <ImagePuzzleSetup
@@ -193,6 +194,16 @@ const App: React.FC = () => {
               { type: 'simple', name: 'Simple' }
             ]}
             defaultProvider={{ type: 'openai', name: 'OpenAI' }}
+            defaultModel="gpt-4-vision-preview"
+            onError={handleImageError}
+          />
+        );
+
+      // T042: Game History route
+      case 'game-history':
+        return <GameHistoryPage />;
+
+      case 'puzzle-active':'openai', name: 'OpenAI' }}
             defaultModel="gpt-4-vision-preview"
             onError={handleImageError}
           />

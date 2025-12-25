@@ -82,8 +82,16 @@ class GameResultResponse(BaseModel):
 
 
 class GameHistoryResponse(BaseModel):
-    """Response model for game history list"""
-    status: str = Field(default="ok", description="Response status")
+    """
+    T032: Response model for game history list.
+
+    Also known as GameResultsListResponse in task description.
+
+    Attributes:
+        status: Operation status ("success" for successful retrieval)
+        results: List of game result data
+    """
+    status: str = Field(default="success", description="Response status")
     results: List[GameResultData] = Field(default_factory=list, description="List of game results")
 
 
@@ -270,7 +278,7 @@ async def get_game_results(
         logger.info(f"Retrieved {len(results)} game results")
 
         return GameHistoryResponse(
-            status="ok",
+            status="success",
             results=result_data
         )
 
