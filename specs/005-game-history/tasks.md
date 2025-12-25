@@ -170,14 +170,14 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T054 [P] Add comprehensive unit tests for PuzzleSession enhancements in backend/tests/models/test_puzzle_session.py
-- [ ] T055 [P] Add unit tests for GameResult model validation in backend/tests/models/test_game_result.py
-- [ ] T057 [P] Add unit tests for database repository methods in backend/tests/database/test_game_results_repository.py
-- [ ] T058 [P] Update API documentation in docs/ with game history endpoints and examples
-- [ ] T059 [P] Add quickstart validation for game history workflow in docs/quickstart-validation-results.md
+- [X] T054 [P] Add comprehensive unit tests for PuzzleSession enhancements in backend/tests/models/test_puzzle_session.py
+- [X] T055 [P] Add unit tests for GameResult model validation in backend/tests/models/test_game_result.py
+- [X] T057 [P] Add unit tests for database repository methods in backend/tests/database/test_game_results_repository.py
+- [X] T058 [P] Add API documentation in docs/ with game history endpoints and examples
+- [X] T059 [P] Add quickstart validation for game history workflow in docs/quickstart-validation-results.md
 - [ ] T060 Code review and refactoring for consistency across all user stories
 - [ ] T061 [P] Update frontend component tests for coverage targets (75%+) in frontend/tests/components/
-- [ ] T062 Run full backend test suite and verify 80%+ coverage requirement
+- [X] T062 Run full backend test suite and verify 80%+ coverage requirement
 - [ ] T063 Run quickstart.md validation per specs/005-game-history/quickstart.md
 
 ---
