@@ -5,36 +5,47 @@ These tests validate the API contract compliance for recording and retrieving
 game results. Tests should fail until implementation is complete (TDD approach).
 """
 
+import os
 import pytest
 from fastapi.testclient import TestClient
+from unittest.mock import patch
 
 
 class TestRecordGameContract:
     """Contract tests for POST /api/v2/game_results endpoint"""
 
     @pytest.fixture
-    def client(self):
+    def test_db_path(self, tmp_path):
+        """Create a temporary test database path."""
+        return str(tmp_path / "test_game_results.db")
+
+    @pytest.fixture(autouse=True)
+    def setup_test_database(self, test_db_path):
+        """Set up test database and clean up after test."""
+        # Set environment variable to use test database
+        with patch.dict(os.environ, {"DATABASE_PATH": test_db_path}):
+            # Initialize the test database
+            from src.database import initialize_database
+            from pathlib import Path
+            initialize_database(Path(test_db_path))
+
+            yield
+
+            # Cleanup happens automatically when tmp_path is removed
+
+    @pytest.fixture
+    def client(self, test_db_path):
         """Test client fixture"""
-        from src.main import app
-        return TestClient(app)
+        # Patch the environment to use test database
+        with patch.dict(os.environ, {"DATABASE_PATH": test_db_path}):
+            from src.main import app
+            return TestClient(app)
 
     @pytest.fixture
     def session_manager(self):
         """Get session manager from app"""
         from src.main import session_manager
         return session_manager
-
-    @pytest.fixture(autouse=True)
-    def clean_database(self):
-        """Clean database before each test"""
-        from src.database import get_database_connection
-        # Clear all records before each test
-        with get_database_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("DELETE FROM game_results")
-            conn.commit()
-        yield
-        # Optional: cleanup after test if needed
 
     @pytest.fixture
     def completed_session(self, session_manager):
@@ -265,10 +276,31 @@ class TestRetrieveGameHistoryContract:
     """Contract tests for GET /api/v2/game_results endpoint"""
 
     @pytest.fixture
-    def client(self):
+    def test_db_path(self, tmp_path):
+        """Create a temporary test database path."""
+        return str(tmp_path / "test_game_results.db")
+
+    @pytest.fixture(autouse=True)
+    def setup_test_database(self, test_db_path):
+        """Set up test database and clean up after test."""
+        # Set environment variable to use test database
+        with patch.dict(os.environ, {"DATABASE_PATH": test_db_path}):
+            # Initialize the test database
+            from src.database import initialize_database
+            from pathlib import Path
+            initialize_database(Path(test_db_path))
+
+            yield
+
+            # Cleanup happens automatically when tmp_path is removed
+
+    @pytest.fixture
+    def client(self, test_db_path):
         """Test client fixture"""
-        from src.main import app
-        return TestClient(app)
+        # Patch the environment to use test database
+        with patch.dict(os.environ, {"DATABASE_PATH": test_db_path}):
+            from src.main import app
+            return TestClient(app)
 
     @pytest.fixture
     def session_manager(self):
@@ -452,10 +484,31 @@ class TestExportGameResultsCSV:
     """Contract tests for GET /api/v2/game_results?format=csv endpoint"""
 
     @pytest.fixture
-    def client(self):
+    def test_db_path(self, tmp_path):
+        """Create a temporary test database path."""
+        return str(tmp_path / "test_game_results.db")
+
+    @pytest.fixture(autouse=True)
+    def setup_test_database(self, test_db_path):
+        """Set up test database and clean up after test."""
+        # Set environment variable to use test database
+        with patch.dict(os.environ, {"DATABASE_PATH": test_db_path}):
+            # Initialize the test database
+            from src.database import initialize_database
+            from pathlib import Path
+            initialize_database(Path(test_db_path))
+
+            yield
+
+            # Cleanup happens automatically when tmp_path is removed
+
+    @pytest.fixture
+    def client(self, test_db_path):
         """Test client fixture"""
-        from src.main import app
-        return TestClient(app)
+        # Patch the environment to use test database
+        with patch.dict(os.environ, {"DATABASE_PATH": test_db_path}):
+            from src.main import app
+            return TestClient(app)
 
     @pytest.fixture
     def session_manager(self):
