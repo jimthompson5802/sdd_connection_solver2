@@ -16,10 +16,10 @@ import { apiService } from './services/api';
 const App: React.FC = () => {
   // Navigation state for the new layout
   const [currentView, setCurrentView] = useState<AppView>('initial');
-  
+
   // Session ID for recording game results
   const [sessionId, setSessionId] = useState<string | null>(null);
-  
+
   const [puzzleState, setPuzzleState] = useState<PuzzleState>({
     words: [],
     currentRecommendation: [],
@@ -58,10 +58,10 @@ const App: React.FC = () => {
 
     try {
       const response = await apiService.setupPuzzle(content);
-      
+
       // Store the session ID for recording game results
       setSessionId(response.session_id);
-      
+
       setPuzzleState({
         words: response.remaining_words,
         currentRecommendation: [],
@@ -73,7 +73,7 @@ const App: React.FC = () => {
         error: null,
         previousResponses: [], // Fresh start - clear previous game's guess history
       });
-      
+
       // Change view to show the puzzle interface
       setCurrentView('puzzle-active');
     } catch (error) {
@@ -90,7 +90,7 @@ const App: React.FC = () => {
     if (sessionIdFromImage) {
       setSessionId(sessionIdFromImage);
     }
-    
+
     // Set up puzzle state with words extracted from image
     setPuzzleState({
       words: extractedWords,
@@ -103,7 +103,7 @@ const App: React.FC = () => {
       error: null,
       previousResponses: [], // Fresh start
     });
-    
+
     // Transition to puzzle interface
     setCurrentView('puzzle-active');
   }, []);
@@ -173,16 +173,16 @@ const App: React.FC = () => {
             <p>Select action in Left Side Bar</p>
           </div>
         );
-      
+
       case 'file-upload':
         return (
-          <FileUpload 
+          <FileUpload
             onFileUpload={handleFileUpload}
             isLoading={puzzleState.isLoading}
             error={puzzleState.error}
           />
         );
-      
+
       case 'image-setup':
         return (
           <ImagePuzzleSetup
@@ -218,7 +218,7 @@ const App: React.FC = () => {
             sessionId={sessionId}
           />
         );
-      
+
       default:
         return <div className="welcome-message"><p>Select action in Left Side Bar</p></div>;
     }
@@ -230,7 +230,7 @@ const App: React.FC = () => {
         <h1>NYT Connections Puzzle Assistant</h1>
       </header>
 
-      <Sidebar 
+      <Sidebar
         currentView={currentView}
         onNavigationAction={handleNavigationAction}
       />
