@@ -4,7 +4,7 @@ Auto-generated from all feature plans. Last updated: 2025-12-24
 
 ## Active Technologies
 
-- Python 3.11+ (backend), TypeScript 4.9+ (frontend), Node.js 18+ + FastAPI, Pydantic, uvicorn, langchain (backend); React 19.1+, TypeScript, Jest, React Testing Library (frontend) (001-game-history)
+- Python 3.11+ (backend), TypeScript 4.9+ (frontend), Node.js 18+ + FastAPI, Pydantic, uvicorn, langchain (backend); React 19.1+, TypeScript, Jest, React Testing Library (frontend) (005-game-history)
 
 ## Project Structure
 
@@ -23,7 +23,7 @@ Python 3.11+ (backend), TypeScript 4.9+ (frontend), Node.js 18+: Follow standard
 
 ## Recent Changes
 
-- 001-game-history: Added Python 3.11+ (backend), TypeScript 4.9+ (frontend), Node.js 18+ + FastAPI, Pydantic, uvicorn, langchain (backend); React 19.1+, TypeScript, Jest, React Testing Library (frontend)
+- 005-game-history: Added Python 3.11+ (backend), TypeScript 4.9+ (frontend), Node.js 18+ + FastAPI, Pydantic, uvicorn, langchain (backend); React 19.1+, TypeScript, Jest, React Testing Library (frontend)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
