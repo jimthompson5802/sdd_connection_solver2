@@ -271,7 +271,7 @@ describe('ExportCSVButton Integration', () => {
         result.value && result.value.download === 'game_results_extract.csv'
       );
       expect(linkCall).toBeDefined();
-      expect(linkCall.value.download).toBe('game_results_extract.csv');
+      expect(linkCall!.value.download).toBe('game_results_extract.csv');
     });
   });
 });
