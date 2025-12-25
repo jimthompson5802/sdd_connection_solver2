@@ -5,6 +5,16 @@
 **Status**: Draft
 **Input**: User description: "Add database support for recording and viewing game history with persistent storage"
 
+## Clarifications
+
+### Session 2025-12-24
+
+- Q: How should the deterministic puzzle_id be generated from the 16 puzzle words? → A: Normalize words (trim whitespace, lowercase), sort lexicographically, join with commas, compute SHA1 hash
+- Q: What precision should game_date timestamps have? → A: ISO 8601 format with timezone, canonicalized to UTC before storage for consistency
+- Q: How should the system handle rapid duplicate clicks on "Record Game"? → A: Button should be disabled during the recording operation to prevent multiple submissions
+- Q: What feedback should users see when recording succeeds or fails? → A: Success: Brief confirmation message with "Game recorded successfully". Failure: Error message explaining the specific issue (duplicate, incomplete session, network error)
+- Q: Where should CSV generation occur? → A: Server-side generation via GET /api/v2/game_results endpoint (with query parameter or dedicated route) to ensure data consistency and reduce client processing
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Record Completed Game (Priority: P1)
@@ -61,13 +71,13 @@ A user wants to analyze their game history outside the application or keep a bac
 
 ### Edge Cases
 
-- What happens when a user tries to record a game that is still in progress (not completed)?
-- What happens when network connectivity is lost while recording or retrieving game history?
-- What happens when the same puzzle is played and completed multiple times on the same day?
-- What happens when LLM provider/model information is missing from a completed game session?
-- What happens when game history contains hundreds or thousands of records (performance/pagination)?
-- What happens when a user clicks "Record Game" multiple times rapidly?
-- What happens when the game summary page is displayed for an incomplete or abandoned game?
+- **Incomplete game recording**: System validates session.is_finished == true before persisting; returns HTTP 400 Bad Request with error message if session is not completed
+- **Network connectivity loss**: Frontend displays appropriate error message; user can retry recording once connectivity is restored; no partial records are created
+- **Same puzzle played multiple times same day**: System enforces uniqueness on (puzzle_id, game_date); second attempt returns HTTP 409 Conflict indicating record already exists
+- **Missing LLM information**: LLM provider and model fields are nullable; games completed without recommendations will have empty/null values for these fields
+- **Large game history (hundreds/thousands of records)**: Performance target supports up to 100 records without degradation; pagination and filtering are explicitly out of scope for this phase
+- **Rapid duplicate clicks on "Record Game"**: "Record Game" button is disabled during the recording operation to prevent multiple concurrent submissions
+- **Game summary for incomplete/abandoned game**: "Record Game" button behavior is determined by session completion state; system validates before allowing recording
 
 ## Requirements *(mandatory)*
 
@@ -76,15 +86,19 @@ A user wants to analyze their game history outside the application or keep a bac
 #### User Interface Requirements
 
 - **FR-001**: System MUST add a "Record Game" button to the game summary page (end-of-game view) that is visible after any completed game
+- **FR-001a**: System MUST disable the "Record Game" button during the recording operation to prevent duplicate submissions
+- **FR-001b**: System MUST display a success confirmation message "Game recorded successfully" when recording completes
+- **FR-001c**: System MUST display specific error messages for failure cases (duplicate record, incomplete session, network error)
 - **FR-002**: System MUST add a collapsible "Game History" section to the left navigation sidebar below "Start New Game", collapsed by default
 - **FR-003**: System MUST provide a "View Past Games" option within the "Game History" navigation section
 - **FR-004**: System MUST display a scrollable table of recorded games when "View Past Games" is selected, with both horizontal and vertical scrolling when content exceeds viewport
+- **FR-004a**: System MUST display an appropriate message when no games have been recorded (empty state)
 - **FR-005**: System MUST display an "Export CSV" button associated with the game history table
 - **FR-006**: System MUST present downloaded CSV files with the default filename "game_results_extract.csv"
 
 #### Session Management Requirements
 
-- **FR-007**: System MUST generate a deterministic puzzle_id for each puzzle session based on the 16 puzzle words
+- **FR-007**: System MUST generate a deterministic puzzle_id for each puzzle session by normalizing the 16 puzzle words (trim whitespace, lowercase), sorting them lexicographically, joining with commas, and computing SHA1 hash of the resulting string
 - **FR-008**: System MUST track llm_provider_name for each session, initially empty and set when a recommendation is generated
 - **FR-009**: System MUST track llm_model_name for each session, initially empty and set when a recommendation is generated
 - **FR-010**: System MUST maintain all existing puzzle session attributes without modification
@@ -96,7 +110,7 @@ A user wants to analyze their game history outside the application or keep a bac
 
 #### Data Persistence Requirements
 
-- **FR-013**: System MUST persist game results with these fields: result_id (autogenerated), puzzle_id, game_date (ISO 8601 with timezone), puzzle_solved (boolean), count_groups_found, count_mistakes, total_guesses, llm_provider_name (nullable), llm_model_name (nullable), created_at (server timestamp)
+- **FR-013**: System MUST persist game results with these fields: result_id (autogenerated), puzzle_id, game_date (ISO 8601 with timezone, canonicalized to UTC), puzzle_solved (boolean), count_groups_found, count_mistakes, total_guesses, llm_provider_name (nullable), llm_model_name (nullable), created_at (server timestamp)
 - **FR-014**: System MUST enforce uniqueness of recorded results by the tuple (puzzle_id, game_date)
 - **FR-015**: System MUST reject duplicate game records (same puzzle_id and game_date) with HTTP 409 Conflict status
 - **FR-016**: System MUST derive all numeric counts and puzzle_solved flag from the server's PuzzleSession object, ignoring any client-supplied values
@@ -105,21 +119,22 @@ A user wants to analyze their game history outside the application or keep a bac
 
 #### API Endpoint Requirements
 
-- **FR-019**: System MUST provide POST /api/v2/game_results endpoint to record completed game results
+- **FR-019**: System MUST provide POST /api/v2/game_results endpoint to record completed game results, accepting session_id and game_date
 - **FR-020**: System MUST provide GET /api/v2/game_results endpoint to retrieve recorded game results
+- **FR-020a**: System MUST provide CSV export functionality via the GET endpoint (query parameter or dedicated route) with server-side generation
 - **FR-021**: System MUST return game results ordered by game_date descending (most recent first)
 - **FR-022**: System MUST return HTTP 201 Created with the persisted row upon successful game recording
 - **FR-023**: System MUST return HTTP 409 Conflict with explanatory message for duplicate record attempts
 - **FR-024**: System MUST return HTTP 400 Bad Request with details for validation failures
-- **FR-025**: System MUST generate CSV export containing all recorded games with header row and all data columns
+- **FR-025**: System MUST generate CSV export containing all recorded games with header row and all data columns in the order: result_id, puzzle_id, game_date, puzzle_solved, count_groups_found, count_mistakes, total_guesses, llm_provider_name, llm_model_name
 
 ### Key Entities
 
-- **Game Result**: Represents a single completed puzzle game session with performance metrics. Attributes include: unique identifier, puzzle identifier, game completion date/time with timezone, success status, number of groups found, number of mistakes made, total guesses, LLM provider name used (if any), LLM model name used (if any), and record creation timestamp
+- **Game Result**: Represents a single completed puzzle game session with performance metrics. Attributes include: unique identifier (result_id), puzzle identifier (SHA1 hash of sorted normalized words), game completion date/time (ISO 8601 with timezone, stored as UTC), success status (boolean), number of groups found (0-4), number of mistakes made (0-4), total guesses, LLM provider name used (if any, nullable), LLM model name used (if any, nullable), and record creation timestamp. Uniqueness enforced by (puzzle_id, game_date) tuple.
 
-- **Puzzle Session**: Existing entity enhanced with new attributes - puzzle_id (deterministic identifier based on 16 words), llm_provider_name (tracks which LLM provider was used), llm_model_name (tracks specific model used). Relationships: one session can generate zero or one game result record
+- **Puzzle Session**: Existing entity enhanced with new attributes - puzzle_id (deterministic SHA1 hash identifier based on sorted normalized 16 words), llm_provider_name (tracks which LLM provider was used), llm_model_name (tracks specific model used), is_finished flag (indicates session completion). Relationships: one session can generate zero or one game result record
 
-- **Puzzle Identifier**: Deterministic identifier derived from the 16 puzzle words, used to group identical puzzles across different sessions and enforce uniqueness constraints with game_date
+- **Puzzle Identifier**: Deterministic SHA1 hash identifier derived from normalizing (trim, lowercase) the 16 puzzle words, sorting them lexicographically, and joining with commas. Used to group identical puzzles across different sessions and enforce uniqueness constraints with game_date
 
 ## Success Criteria *(mandatory)*
 
