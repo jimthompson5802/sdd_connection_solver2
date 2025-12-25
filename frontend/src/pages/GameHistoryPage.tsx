@@ -1,11 +1,13 @@
 /**
- * T036: GameHistoryPage Component
+ * T036, T052: GameHistoryPage Component
  *
  * Page component that displays the game history table.
  * Serves as the main view for /game-history route.
+ * Includes export CSV functionality below the table.
  */
 import React from 'react';
 import GameHistoryTable from '../components/GameHistoryTable';
+import ExportCSVButton from '../components/ExportCSVButton';
 import './GameHistoryPage.css';
 
 const GameHistoryPage: React.FC = () => {
@@ -19,6 +21,9 @@ const GameHistoryPage: React.FC = () => {
       </div>
 
       <GameHistoryTable />
+
+      {/* T052: Add ExportCSVButton below game history table */}
+      <ExportCSVButton />
     </div>
   );
 };

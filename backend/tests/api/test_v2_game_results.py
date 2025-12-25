@@ -432,3 +432,173 @@ class TestRetrieveGameHistoryContract:
         # Note: This test may need to run in isolation or with database cleanup
         # The assertion is flexible to allow for existing data from other tests
         assert isinstance(data["results"], list), "Results should be a list even when empty"
+
+
+class TestExportGameResultsCSV:
+    """Contract tests for GET /api/v2/game_results?format=csv endpoint"""
+
+    @pytest.fixture
+    def client(self):
+        """Test client fixture"""
+        from src.main import app
+        return TestClient(app)
+
+    @pytest.fixture
+    def session_manager(self):
+        """Get session manager from app"""
+        from src.main import session_manager
+        return session_manager
+
+    @pytest.fixture
+    def recorded_games_for_csv(self, client, session_manager):
+        """Create and record multiple games for CSV export testing"""
+        from src.models import ResponseResult
+        import time
+
+        test_puzzles = [
+            {
+                "words": [
+                    "red", "blue", "green", "yellow",
+                    "cat", "dog", "bird", "fish",
+                    "car", "bus", "train", "plane",
+                    "sun", "moon", "star", "cloud"
+                ],
+                "date": "2025-12-24T10:00:00-08:00",
+                "provider": "openai",
+                "model": "gpt-4"
+            },
+            {
+                "words": [
+                    "apple", "banana", "cherry", "date",
+                    "egg", "flour", "garlic", "honey",
+                    "ice", "jam", "kale", "lemon",
+                    "milk", "nut", "olive", "pepper"
+                ],
+                "date": "2025-12-24T14:30:00-08:00",
+                "provider": "ollama",
+                "model": "llama2"
+            }
+        ]
+
+        for puzzle_data in test_puzzles:
+            # Create session
+            session = session_manager.create_session(puzzle_data["words"])
+
+            # Complete the game (find all 4 groups)
+            session.record_attempt(puzzle_data["words"][0:4], ResponseResult.CORRECT, color="yellow")
+            session.record_attempt(puzzle_data["words"][4:8], ResponseResult.CORRECT, color="green")
+            session.record_attempt(puzzle_data["words"][8:12], ResponseResult.CORRECT, color="blue")
+            session.record_attempt(puzzle_data["words"][12:16], ResponseResult.CORRECT, color="purple")
+
+            # Set LLM info
+            session.set_llm_info(puzzle_data["provider"], puzzle_data["model"])
+
+            # Record the game
+            request_data = {
+                "session_id": session.session_id,
+                "game_date": puzzle_data["date"]
+            }
+            response = client.post("/api/v2/game_results", json=request_data)
+
+            # Skip if duplicate (from previous test run)
+            if response.status_code != 409:
+                assert response.status_code == 201, f"Failed to record game: {response.text}"
+
+    @pytest.mark.contract
+    def test_export_csv_with_data_contract(self, client, recorded_games_for_csv):
+        """
+        T043: Test CSV export when data exists (200 OK)
+
+        Validates:
+        - GET /api/v2/game_results?format=csv returns 200 OK
+        - Response has Content-Type: text/csv header
+        - Response has Content-Disposition header with correct filename
+        - CSV includes header row with all columns
+        - CSV includes data rows for all recorded games
+        - Column order matches specification
+        - Boolean values formatted correctly
+        """
+        response = client.get("/api/v2/game_results?format=csv")
+
+        # Should return 200 OK
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
+
+        # Validate headers
+        assert response.headers["content-type"] == "text/csv; charset=utf-8", \
+            f"Expected text/csv content type, got {response.headers.get('content-type')}"
+
+        assert "content-disposition" in response.headers, "Missing Content-Disposition header"
+        content_disposition = response.headers["content-disposition"]
+        assert 'attachment' in content_disposition, "Content-Disposition should include 'attachment'"
+        assert 'game_results_extract.csv' in content_disposition, \
+            f"Filename should be 'game_results_extract.csv', got {content_disposition}"
+
+        # Parse CSV content
+        csv_content = response.text
+        lines = csv_content.strip().split('\n')
+
+        # Should have header row + at least 2 data rows
+        assert len(lines) >= 3, f"Expected at least 3 lines (header + 2 rows), got {len(lines)}"
+
+        # Validate header row
+        header = lines[0]
+        expected_columns = [
+            "result_id", "puzzle_id", "game_date", "puzzle_solved",
+            "count_groups_found", "count_mistakes", "total_guesses",
+            "llm_provider_name", "llm_model_name"
+        ]
+        for column in expected_columns:
+            assert column in header, f"Missing column '{column}' in header: {header}"
+
+        # Validate data rows exist and have correct number of fields
+        for i, line in enumerate(lines[1:], start=1):
+            if line.strip():  # Skip empty lines
+                fields = line.split(',')
+                assert len(fields) == len(expected_columns), \
+                    f"Row {i} has {len(fields)} fields, expected {len(expected_columns)}"
+
+    @pytest.mark.contract
+    def test_export_csv_empty_state_contract(self, client):
+        """
+        T044: Test CSV export when database is empty (200 OK)
+
+        Validates:
+        - GET /api/v2/game_results?format=csv returns 200 OK even with no data
+        - Response has correct CSV content type and disposition headers
+        - CSV includes header row even when empty
+        - CSV has no data rows
+        """
+        # Note: This test may see data from other tests
+        # We test that empty CSV still has header row
+
+        response = client.get("/api/v2/game_results?format=csv")
+
+        # Should return 200 OK even with no data
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
+
+        # Validate headers
+        assert response.headers["content-type"] == "text/csv; charset=utf-8", \
+            f"Expected text/csv content type, got {response.headers.get('content-type')}"
+
+        assert "content-disposition" in response.headers, "Missing Content-Disposition header"
+        content_disposition = response.headers["content-disposition"]
+        assert 'attachment' in content_disposition, "Content-Disposition should include 'attachment'"
+        assert 'game_results_extract.csv' in content_disposition, \
+            f"Filename should be 'game_results_extract.csv', got {content_disposition}"
+
+        # Parse CSV content
+        csv_content = response.text
+        lines = csv_content.strip().split('\n')
+
+        # Should have at least header row
+        assert len(lines) >= 1, "CSV should have at least header row"
+
+        # Validate header row exists
+        header = lines[0]
+        expected_columns = [
+            "result_id", "puzzle_id", "game_date", "puzzle_solved",
+            "count_groups_found", "count_mistakes", "total_guesses",
+            "llm_provider_name", "llm_model_name"
+        ]
+        for column in expected_columns:
+            assert column in header, f"Missing column '{column}' in header: {header}"

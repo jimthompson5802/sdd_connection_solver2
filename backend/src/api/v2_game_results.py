@@ -292,19 +292,25 @@ async def get_game_results(
 
 def _export_csv(results: List[GameResult]) -> StreamingResponse:
     """
-    Export game results as CSV file.
+    T046-T049: Export game results as CSV file.
+
+    Implements CSV generation with:
+    - Correct column order per specification
+    - Content-Type: text/csv header (T049)
+    - Content-Disposition header with filename (T048)
+    - Proper boolean formatting (T047)
 
     Args:
         results: List of GameResult objects
 
     Returns:
-        StreamingResponse with CSV content
+        StreamingResponse with CSV content and appropriate headers
     """
-    # Create CSV in memory
+    # T047: Create CSV in memory with correct column order
     output = io.StringIO()
     writer = csv.writer(output)
 
-    # Write header
+    # T047: Write header row with exact column order from specification
     writer.writerow([
         "result_id",
         "puzzle_id",
@@ -317,13 +323,13 @@ def _export_csv(results: List[GameResult]) -> StreamingResponse:
         "llm_model_name"
     ])
 
-    # Write data rows
+    # T047: Write data rows with proper formatting
     for result in results:
         writer.writerow([
             result.result_id,
             result.puzzle_id,
             result.game_date,
-            "true" if result.puzzle_solved else "false",
+            "true" if result.puzzle_solved else "false",  # Boolean as string per spec
             result.count_groups_found,
             result.count_mistakes,
             result.total_guesses,
@@ -335,11 +341,11 @@ def _export_csv(results: List[GameResult]) -> StreamingResponse:
     output.seek(0)
     csv_content = output.getvalue()
 
-    # Return as streaming response
+    # T046, T048, T049: Return as streaming response with proper headers
     return StreamingResponse(
         iter([csv_content]),
-        media_type="text/csv",
+        media_type="text/csv; charset=utf-8",  # T049: Content-Type header
         headers={
-            "Content-Disposition": "attachment; filename=game_results_extract.csv"
+            "Content-Disposition": "attachment; filename=game_results_extract.csv"  # T048: Content-Disposition header
         }
     )

@@ -144,23 +144,23 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 
 ### Tests for User Story 3
 
-- [ ] T043 [P] [US3] Create contract test for GET /api/v2/game_results?export=csv with data in backend/tests/api/test_v2_game_results.py
-- [ ] T044 [P] [US3] Create contract test for GET /api/v2/game_results?export=csv empty state in backend/tests/api/test_v2_game_results.py
-- [ ] T045 [P] [US3] Create integration test for export CSV button in frontend/tests/integration/ExportCSVButton.test.tsx
+- [X] T043 [P] [US3] Create contract test for GET /api/v2/game_results?export=csv with data in backend/tests/api/test_v2_game_results.py
+- [X] T044 [P] [US3] Create contract test for GET /api/v2/game_results?export=csv empty state in backend/tests/api/test_v2_game_results.py
+- [X] T045 [P] [US3] Create integration test for export CSV button in frontend/tests/integration/ExportCSVButton.test.tsx
 
 ### Backend Implementation for User Story 3
 
-- [ ] T046 [US3] Add CSV export logic to GET /api/v2/game_results endpoint with export query parameter in backend/src/api/v2_game_results.py
-- [ ] T047 [US3] Implement CSV generation with correct column order (result_id, puzzle_id, game_date, puzzle_solved, counts, LLM info) in backend/src/api/v2_game_results.py
-- [ ] T048 [US3] Add Content-Disposition header with filename "game_results_extract.csv" in backend/src/api/v2_game_results.py
-- [ ] T049 [US3] Add Content-Type: text/csv header in backend/src/api/v2_game_results.py
+- [X] T046 [US3] Add CSV export logic to GET /api/v2/game_results endpoint with export query parameter in backend/src/api/v2_game_results.py
+- [X] T047 [US3] Implement CSV generation with correct column order (result_id, puzzle_id, game_date, puzzle_solved, counts, LLM info) in backend/src/api/v2_game_results.py
+- [X] T048 [US3] Add Content-Disposition header with filename "game_results_extract.csv" in backend/src/api/v2_game_results.py
+- [X] T049 [US3] Add Content-Type: text/csv header in backend/src/api/v2_game_results.py
 
 ### Frontend Implementation for User Story 3
 
-- [ ] T050 [P] [US3] Create ExportCSVButton component in frontend/src/components/ExportCSVButton.tsx
-- [ ] T051 [P] [US3] Add exportGameResultsCSV() API method to frontend/src/services/gameResultsService.ts
-- [ ] T052 [US3] Add ExportCSVButton below game history table in frontend/src/pages/GameHistoryPage.tsx
-- [ ] T053 [US3] Implement download trigger with proper filename handling in frontend/src/components/ExportCSVButton.tsx
+- [X] T050 [P] [US3] Create ExportCSVButton component in frontend/src/components/ExportCSVButton.tsx
+- [X] T051 [P] [US3] Add exportGameResultsCSV() API method to frontend/src/services/gameResultsService.ts
+- [X] T052 [US3] Add ExportCSVButton below game history table in frontend/src/pages/GameHistoryPage.tsx
+- [X] T053 [US3] Implement download trigger with proper filename handling in frontend/src/components/ExportCSVButton.tsx
 
 **Checkpoint**: All user stories should now be independently functional - complete record/view/export workflow
 
