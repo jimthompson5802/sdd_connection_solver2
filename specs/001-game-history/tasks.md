@@ -44,7 +44,8 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 - [ ] T006 Implement generate_puzzle_id() method in backend/src/models/puzzle_session.py using uuid.uuid5(uuid.NAMESPACE_DNS, joined_words)
 - [ ] T007 [P] Create GameResult Pydantic model in backend/src/models/game_result.py with all fields from data-model.md
 - [ ] T008 [P] Create database repository module at backend/src/database/game_results_repository.py with insert/select/duplicate_check methods
-- [ ] T009 Update LLM recommendation services to set llm_provider_name and llm_model_name on session when generating recommendations
+- [ ] T009 Implement set_llm_info(provider_name: str, model_name: str) method in backend/src/models/puzzle_session.py
+- [ ] T009a Update LLM recommendation services to call session.set_llm_info(provider, model) when generating recommendations
 - [ ] T010 Create database migration/initialization script at backend/src/database/migrations.py to create game_results table
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
