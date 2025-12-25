@@ -1,0 +1,112 @@
+/**
+ * Styles for RecordGameButton component
+ */
+
+.record-game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.record-game-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background-color: #5a67d8;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  min-width: 150px;
+}
+
+.record-game-button:hover:not(:disabled) {
+  background-color: #4c51bf;
+  transform: translateY(-1px);
+}
+
+.record-game-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.record-game-button:disabled {
+  background-color: #cbd5e0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.record-game-button[aria-busy="true"] {
+  position: relative;
+  color: transparent;
+}
+
+.record-game-button[aria-busy="true"]::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.record-message {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  min-width: 200px;
+  animation: fadeIn 0.3s ease;
+}
+
+.record-message.success {
+  background-color: #c6f6d5;
+  color: #22543d;
+  border: 1px solid #9ae6b4;
+}
+
+.record-message.error {
+  background-color: #fed7d7;
+  color: #742a2a;
+  border: 1px solid #fc8181;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .record-game-button,
+  .record-message {
+    animation: none;
+    transition: none;
+  }
+
+  .record-game-button:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .record-game-button:active:not(:disabled) {
+    transform: none;
+  }
+}

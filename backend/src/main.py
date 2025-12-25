@@ -8,7 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .api import v2_recommendations_router, v2_providers_router
 from .api.v2_image_setup import router as v2_image_setup_router
+from .api.v2_game_results import router as v2_game_results_router
 from .api_v1 import router as v1_router
+from .models import session_manager  # Import session_manager for use in dependencies
 
 
 def create_app() -> FastAPI:
@@ -47,6 +49,7 @@ def create_app() -> FastAPI:
     app.include_router(v2_recommendations_router, tags=["v2-recommendations"])
     app.include_router(v2_providers_router, tags=["v2-providers"])
     app.include_router(v2_image_setup_router, tags=["v2-image-setup"])
+    app.include_router(v2_game_results_router, tags=["v2-game-results"])
 
     return app
 

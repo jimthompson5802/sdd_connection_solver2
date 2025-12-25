@@ -62,29 +62,29 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T011 [P] [US1] Create contract test for POST /api/v2/game_results success case in backend/tests/api/test_v2_game_results.py
-- [ ] T012 [P] [US1] Create contract test for POST /api/v2/game_results duplicate detection (409 Conflict) in backend/tests/api/test_v2_game_results.py
-- [ ] T013 [P] [US1] Create contract test for POST /api/v2/game_results incomplete session (400 Bad Request) in backend/tests/api/test_v2_game_results.py
-- [ ] T014 [P] [US1] Create integration test for record game button interaction in frontend/tests/integration/RecordGameButton.test.tsx
+- [X] T011 [P] [US1] Create contract test for POST /api/v2/game_results success case in backend/tests/api/test_v2_game_results.py
+- [X] T012 [P] [US1] Create contract test for POST /api/v2/game_results duplicate detection (409 Conflict) in backend/tests/api/test_v2_game_results.py
+- [X] T013 [P] [US1] Create contract test for POST /api/v2/game_results incomplete session (400 Bad Request) in backend/tests/api/test_v2_game_results.py
+- [X] T014 [P] [US1] Create integration test for record game button interaction in frontend/tests/integration/RecordGameButton.test.tsx
 
 ### Backend Implementation for User Story 1
 
-- [ ] T015 [P] [US1] Create RecordGameRequest Pydantic model in backend/src/api/v2_game_results.py
-- [ ] T016 [P] [US1] Create GameResultResponse Pydantic model in backend/src/api/v2_game_results.py with status and result fields
-- [ ] T017 [US1] Implement POST /api/v2/game_results endpoint in backend/src/api/v2_game_results.py with session validation
-- [ ] T018 [US1] Add duplicate detection logic using (puzzle_id, game_date) uniqueness check in backend/src/api/v2_game_results.py
-- [ ] T019 [US1] Add session completion validation (is_finished check) in backend/src/api/v2_game_results.py
-- [ ] T020 [US1] Implement error handling for 400/404/409/500 responses in backend/src/api/v2_game_results.py
-- [ ] T021 [US1] Add route registration for POST /api/v2/game_results in backend/src/main.py
+- [X] T015 [P] [US1] Create RecordGameRequest Pydantic model in backend/src/api/v2_game_results.py
+- [X] T016 [P] [US1] Create GameResultResponse Pydantic model in backend/src/api/v2_game_results.py with status and result fields
+- [X] T017 [US1] Implement POST /api/v2/game_results endpoint in backend/src/api/v2_game_results.py with session validation
+- [X] T018 [US1] Add duplicate detection logic using (puzzle_id, game_date) uniqueness check in backend/src/api/v2_game_results.py
+- [X] T019 [US1] Add session completion validation (is_finished check) in backend/src/api/v2_game_results.py
+- [X] T020 [US1] Implement error handling for 400/404/409/500 responses in backend/src/api/v2_game_results.py
+- [X] T021 [US1] Add route registration for POST /api/v2/game_results in backend/src/main.py
 
 ### Frontend Implementation for User Story 1
 
-- [ ] T022 [P] [US1] Create RecordGameButton component in frontend/src/components/RecordGameButton.tsx with disabled state during submission
-- [ ] T023 [P] [US1] Create gameResultsService in frontend/src/services/gameResultsService.ts with recordGame() API method
-- [ ] T024 [US1] Add RecordGameButton to game summary page in frontend/src/components/GameSummary.tsx
-- [ ] T025 [US1] Implement success confirmation message display in frontend/src/components/RecordGameButton.tsx
-- [ ] T026 [US1] Implement error message handling (duplicate, incomplete, network) in frontend/src/components/RecordGameButton.tsx
-- [ ] T027 [US1] Add button disable logic during API call to prevent duplicate submissions in frontend/src/components/RecordGameButton.tsx
+- [X] T022 [P] [US1] Create RecordGameButton component in frontend/src/components/RecordGameButton.tsx with disabled state during submission
+- [X] T023 [P] [US1] Create gameResultsService in frontend/src/services/gameResultsService.ts with recordGame() API method
+- [X] T024 [US1] Add RecordGameButton to game summary page in frontend/src/components/GameSummary.tsx
+- [X] T025 [US1] Implement success confirmation message display in frontend/src/components/RecordGameButton.tsx
+- [X] T026 [US1] Implement error message handling (duplicate, incomplete, network) in frontend/src/components/RecordGameButton.tsx
+- [X] T027 [US1] Add button disable logic during API call to prevent duplicate submissions in frontend/src/components/RecordGameButton.tsx
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - users can record completed games with validation
 
