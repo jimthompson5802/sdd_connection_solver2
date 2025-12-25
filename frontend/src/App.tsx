@@ -184,6 +184,10 @@ const App: React.FC = () => {
           <FileUpload
             onFileUpload={handleFileUpload}
             isLoading={puzzleState.isLoading}
+            error={puzzleState.error}
+          />
+        );
+
       case 'image-setup':
         return (
           <ImagePuzzleSetup
@@ -203,11 +207,7 @@ const App: React.FC = () => {
       case 'game-history':
         return <GameHistoryPage />;
 
-      case 'puzzle-active':'openai', name: 'OpenAI' }}
-            defaultModel="gpt-4-vision-preview"
-            onError={handleImageError}
-          />
-        );      case 'puzzle-active':
+      case 'puzzle-active':
       case 'puzzle-complete':
         return (
           <EnhancedPuzzleInterface
