@@ -139,14 +139,14 @@ source .venv/bin/activate
 pytest --cov=src --cov-report=html:htmlcov tests/
 
 # open report
-open
+open htmlcov/index.html
 
 # Frontend
 cd frontend
 CI=true npm test -- --coverage --watchAll=false
 
 # open report
-open frontend/coverage/lcov-report/index.html
+open coverage/lcov-report/index.html
 ```
 
 

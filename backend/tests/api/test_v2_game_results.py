@@ -6,7 +6,6 @@ game results. Tests should fail until implementation is complete (TDD approach).
 """
 
 import pytest
-from datetime import datetime, timezone
 from fastapi.testclient import TestClient
 
 
@@ -24,6 +23,18 @@ class TestRecordGameContract:
         """Get session manager from app"""
         from src.main import session_manager
         return session_manager
+
+    @pytest.fixture(autouse=True)
+    def clean_database(self):
+        """Clean database before each test"""
+        from src.database import get_database_connection
+        # Clear all records before each test
+        with get_database_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM game_results")
+            conn.commit()
+        yield
+        # Optional: cleanup after test if needed
 
     @pytest.fixture
     def completed_session(self, session_manager):
@@ -160,15 +171,18 @@ class TestRecordGameContract:
 
         data = response2.json()
 
-        # Validate error response structure
-        assert "status" in data
-        assert data["status"] == "conflict"
+        # Validate error response structure (nested under 'detail')
+        assert "detail" in data
+        detail = data["detail"]
 
-        assert "code" in data
-        assert data["code"] == "duplicate_record"
+        assert "status" in detail
+        assert detail["status"] == "conflict"
 
-        assert "message" in data
-        assert "already exists" in data["message"].lower()
+        assert "code" in detail
+        assert detail["code"] == "duplicate_record"
+
+        assert "message" in detail
+        assert "already exists" in detail["message"].lower()
 
     @pytest.mark.contract
     def test_record_game_incomplete_session_contract(self, client, incomplete_session):
@@ -453,7 +467,6 @@ class TestExportGameResultsCSV:
     def recorded_games_for_csv(self, client, session_manager):
         """Create and record multiple games for CSV export testing"""
         from src.models import ResponseResult
-        import time
 
         test_puzzles = [
             {
