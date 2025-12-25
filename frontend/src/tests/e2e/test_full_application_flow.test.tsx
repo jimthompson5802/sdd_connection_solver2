@@ -1,6 +1,6 @@
 /**
  * Full Application Flow End-to-End Tests
- * 
+ *
  * These tests verify the complete integration between frontend and backend,
  * testing the full user journey from provider selection to AI recommendations.
  */
@@ -51,28 +51,28 @@ beforeEach(() => {
 });
 
 describe('Full Application Flow E2E Tests', () => {
-  
+
   describe('Basic Application Flow', () => {
-    
+
     test('renders application and shows basic UI elements', async () => {
       render(<App />);
-      
+
       // Check that the app renders without crashing
       expect(document.body).toBeInTheDocument();
-      
+
       // Look for common UI elements that should exist
       const commonElements = [
         screen.queryByText(/connections/i),
         screen.queryAllByText(/puzzle/i),
-        screen.queryByText(/game/i),
+        screen.queryAllByText(/game/i),
         screen.queryAllByRole('button'),
         screen.queryByRole('textbox'),
         screen.queryByRole('main'),
         screen.queryByRole('application')
       ];
-      
+
       // At least one common element should be present
-      const foundElements = commonElements.filter(element => 
+      const foundElements = commonElements.filter(element =>
         Array.isArray(element) ? element.length > 0 : element !== null
       );
       expect(foundElements.length).toBeGreaterThan(0);
@@ -88,19 +88,19 @@ describe('Full Application Flow E2E Tests', () => {
   });
 
   describe('LLM Provider Integration Flow', () => {
-    
+
     test('handles provider selection interface', async () => {
       render(<App />);
-      
+
       // Look for any input field that could be the provider selector
       const inputs = screen.queryAllByRole('textbox');
       const selects = screen.queryAllByRole('combobox');
       const buttons = screen.queryAllByRole('button');
-      
+
       // Should have some interactive elements
       const interactiveElements = [...inputs, ...selects, ...buttons];
       expect(interactiveElements.length).toBeGreaterThan(0);
-      
+
       // Test that we can interact with elements without errors
       if (inputs.length > 0) {
         expect(() => {
@@ -117,10 +117,10 @@ describe('Full Application Flow E2E Tests', () => {
       });
 
       render(<App />);
-      
+
       // Look for any button that might trigger recommendations
       const buttons = screen.queryAllByRole('button');
-      
+
       if (buttons.length > 0) {
         // Test clicking a button doesn't crash the app
         expect(() => {
@@ -131,16 +131,16 @@ describe('Full Application Flow E2E Tests', () => {
 
     test('handles provider switching gracefully', async () => {
       render(<App />);
-      
+
       // Look for input fields
       const inputs = screen.queryAllByRole('textbox');
-      
+
       if (inputs.length > 0) {
         const providerInput = inputs[0];
-        
+
         // Test switching between different provider values
   const providers = ['simple', 'ollama:llama2', 'openai:gpt-4o-mini'];
-        
+
         for (const provider of providers) {
           expect(() => {
             fireEvent.change(providerInput, { target: { value: provider } });
@@ -152,16 +152,16 @@ describe('Full Application Flow E2E Tests', () => {
   });
 
   describe('Error Handling Flow', () => {
-    
+
     test('handles fetch errors gracefully', async () => {
       // Mock network error
       (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
 
       render(<App />);
-      
+
       // Look for buttons and try clicking them
       const buttons = screen.queryAllByRole('button');
-      
+
       if (buttons.length > 0) {
         // Should handle network errors without crashing
         expect(() => {
@@ -179,10 +179,10 @@ describe('Full Application Flow E2E Tests', () => {
       });
 
       render(<App />);
-      
+
       // Should handle invalid responses without crashing
       const buttons = screen.queryAllByRole('button');
-      
+
       if (buttons.length > 0) {
         expect(() => {
           fireEvent.click(buttons[0]);
@@ -193,45 +193,45 @@ describe('Full Application Flow E2E Tests', () => {
   });
 
   describe('User Experience Flow', () => {
-    
+
     test('maintains responsive UI during interactions', async () => {
       render(<App />);
-      
+
       // Test rapid interactions don't break the UI
       const inputs = screen.queryAllByRole('textbox');
       const buttons = screen.queryAllByRole('button');
-      
+
       // Rapid input changes
       if (inputs.length > 0) {
         for (let i = 0; i < 5; i++) {
           fireEvent.change(inputs[0], { target: { value: `test${i}` } });
         }
       }
-      
+
       // Rapid button clicks
       if (buttons.length > 0) {
         for (let i = 0; i < 3; i++) {
           fireEvent.click(buttons[0]);
         }
       }
-      
+
       // UI should still be responsive
       expect(document.body).toBeInTheDocument();
     });
 
     test('handles file upload interface if present', async () => {
       render(<App />);
-      
+
       // Look for file input
       const fileInputs = screen.queryAllByDisplayValue('');
       const uploadButtons = screen.queryAllByText(/upload|choose|file/i);
-      
+
       if (fileInputs.length > 0 || uploadButtons.length > 0) {
         // Create mock file
         const file = new File(['word1,word2,word3,word4'], 'test.csv', {
           type: 'text/csv',
         });
-        
+
         // Test file upload interface
         if (fileInputs.length > 0) {
           expect(() => {
@@ -244,20 +244,20 @@ describe('Full Application Flow E2E Tests', () => {
   });
 
   describe('Backward Compatibility Flow', () => {
-    
+
     test('preserves core application functionality', async () => {
       render(<App />);
-      
+
       // Check that essential game elements are present or app loads successfully
       const hasContent = document.body.textContent && document.body.textContent.length > 0;
       const hasElements = document.body.children.length > 0;
-      
+
       expect(hasContent || hasElements).toBeTruthy();
     });
 
     test('maintains Phase 1 compatible interface', async () => {
       render(<App />);
-      
+
       // Should have interactive elements for the game
       const interactiveElements = [
         ...screen.queryAllByRole('button'),
@@ -266,7 +266,7 @@ describe('Full Application Flow E2E Tests', () => {
         ...screen.queryAllByRole('checkbox'),
         ...screen.queryAllByRole('radio')
       ];
-      
+
       // Game should have some interactive elements
       expect(interactiveElements.length).toBeGreaterThanOrEqual(0);
     });
@@ -274,33 +274,33 @@ describe('Full Application Flow E2E Tests', () => {
   });
 
   describe('Component Integration', () => {
-    
+
     test('components render without PropType errors', async () => {
       // Capture console errors
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      
+
       render(<App />);
-      
+
       // Should not have PropType or other React errors
       expect(consoleSpy).not.toHaveBeenCalledWith(
         expect.stringContaining('Warning:')
       );
-      
+
       consoleSpy.mockRestore();
     });
 
     test('handles state updates correctly', async () => {
       render(<App />);
-      
+
       // Test state updates through user interactions
       const inputs = screen.queryAllByRole('textbox');
-      
+
       if (inputs.length > 0) {
         // Multiple state updates
         fireEvent.change(inputs[0], { target: { value: 'test1' } });
         fireEvent.change(inputs[0], { target: { value: 'test2' } });
         fireEvent.change(inputs[0], { target: { value: 'test3' } });
-        
+
         // Component should handle state updates without errors
         expect(inputs[0]).toBeInTheDocument();
       }
@@ -309,7 +309,7 @@ describe('Full Application Flow E2E Tests', () => {
   });
 
   describe('API Integration Points', () => {
-    
+
     test('handles successful API responses', async () => {
       // Mock successful response
       (global.fetch as any).mockResolvedValueOnce({
@@ -318,13 +318,13 @@ describe('Full Application Flow E2E Tests', () => {
       });
 
       render(<App />);
-      
+
       // Find and interact with elements that might trigger API calls
       const buttons = screen.queryAllByRole('button');
-      
+
       if (buttons.length > 0) {
         fireEvent.click(buttons[0]);
-        
+
         // Wait for any async operations
         await waitFor(() => {
           expect(document.body).toBeInTheDocument();
@@ -340,14 +340,14 @@ describe('Full Application Flow E2E Tests', () => {
       });
 
       render(<App />);
-      
+
       // Should handle validation without errors
       const inputs = screen.queryAllByRole('textbox');
-      
+
       if (inputs.length > 0) {
         fireEvent.change(inputs[0], { target: { value: 'simple' } });
         fireEvent.blur(inputs[0]);
-        
+
         await waitFor(() => {
           expect(inputs[0]).toBeInTheDocument();
         }, { timeout: 1000 });
@@ -357,7 +357,7 @@ describe('Full Application Flow E2E Tests', () => {
   });
 
   describe('Integration Test Summary', () => {
-    
+
     test('verifies all integration points are tested', () => {
       // Document what integration points we've covered
       const testedIntegrationPoints = [
@@ -376,10 +376,10 @@ describe('Full Application Flow E2E Tests', () => {
         'Successful API response handling',
         'API validation request handling'
       ];
-      
+
       // All major integration points should be covered
       expect(testedIntegrationPoints.length).toBe(14);
-      
+
       // Integration tests should provide confidence in the system
       expect(true).toBeTruthy();
     });
