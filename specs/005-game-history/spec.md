@@ -1,6 +1,6 @@
 # Feature Specification: Game History and Persistent Storage
 
-**Feature Branch**: `001-game-history`
+**Feature Branch**: `005-game-history`
 **Created**: 2025-12-24
 **Status**: Draft
 **Input**: User description: "Add database support for recording and viewing game history with persistent storage"

@@ -1,7 +1,7 @@
 # Quickstart Guide: Game History Feature
 
 **Feature**: Game History and Persistent Storage
-**Branch**: `001-game-history`
+**Branch**: `005-game-history`
 **Date**: 2025-12-24
 
 ## Overview
@@ -16,7 +16,7 @@ Ensure your development environment meets these requirements:
 
 - **Python**: 3.11 or higher
 - **Node.js**: 18 or higher
-- **Git**: Current branch `001-game-history`
+- **Git**: Current branch `005-game-history`
 - **IDE**: VS Code (recommended) or similar
 - **Terminal**: bash/zsh on macOS/Linux
 
@@ -24,7 +24,7 @@ Ensure your development environment meets these requirements:
 ```bash
 python3 --version  # Should be 3.11+
 node --version     # Should be 18+
-git branch        # Should show 001-game-history
+git branch        # Should show 005-game-history
 ```
 
 ---
@@ -85,7 +85,7 @@ mkdir -p backend/data
 
 1. **Create database schema file**:
    - File: `backend/src/database/schema.sql`
-   - Copy schema from `specs/001-game-history/data-model.md`
+   - Copy schema from `specs/005-game-history/data-model.md`
    - Includes table definition, indexes, and constraints
 
 2. **Implement database service**:
@@ -187,7 +187,7 @@ uvicorn src.main:app --reload --host 127.0.0.1 --port 8000
 1. **Define interfaces**:
    - File: `frontend/src/types/gameResults.ts`
    - Interfaces: `GameResult`, `RecordGameRequest`, `RecordGameResponse`, `GameHistoryResponse`
-   - Copy from `specs/001-game-history/contracts/api_contracts.md`
+   - Copy from `specs/005-game-history/contracts/api_contracts.md`
 
 2. **Type-check**:
    ```bash
@@ -568,7 +568,7 @@ Before merging to main branch:
 
 After completing implementation:
 
-1. **Code Review**: Create PR for `001-game-history` branch
+1. **Code Review**: Create PR for `005-game-history` branch
 2. **Integration Testing**: Test full flow end-to-end
 3. **Documentation**: Update main README with feature description
 4. **User Acceptance**: Demo feature to stakeholders
@@ -579,10 +579,10 @@ After completing implementation:
 ## Support and Resources
 
 **Documentation References**:
-- Feature Spec: `specs/001-game-history/spec.md`
-- Data Model: `specs/001-game-history/data-model.md`
-- API Contracts: `specs/001-game-history/contracts/api_contracts.md`
-- Research: `specs/001-game-history/research.md`
+- Feature Spec: `specs/005-game-history/spec.md`
+- Data Model: `specs/005-game-history/data-model.md`
+- API Contracts: `specs/005-game-history/contracts/api_contracts.md`
+- Research: `specs/005-game-history/research.md`
 
 **External Resources**:
 - FastAPI Docs: https://fastapi.tiangolo.com/

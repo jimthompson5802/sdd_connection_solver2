@@ -1,7 +1,7 @@
 # Data Model: Game History and Persistent Storage
 
 **Feature**: Game History and Persistent Storage
-**Branch**: `001-game-history`
+**Branch**: `005-game-history`
 **Date**: 2025-12-24
 
 ## Overview

@@ -1,7 +1,7 @@
 # API Contracts: Game History Endpoints
 
 **Feature**: Game History and Persistent Storage
-**Branch**: `001-game-history`
+**Branch**: `005-game-history`
 **Date**: 2025-12-24
 **Base URL**: `http://localhost:8000/api/v2`
 

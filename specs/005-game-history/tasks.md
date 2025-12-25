@@ -4,7 +4,7 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 
 # Tasks: Game History and Persistent Storage
 
-**Input**: Design documents from `/specs/001-game-history/`
+**Input**: Design documents from `/specs/005-game-history/`
 **Prerequisites**: plan.md ✅, spec.md ✅, research.md ✅, data-model.md ✅, contracts/api_contracts.md ✅
 
 **Tests**: Tests are included per acceptance scenarios in spec.md
@@ -167,7 +167,7 @@ description: "Implementation tasks for Game History and Persistent Storage featu
 - [ ] T060 Performance testing with 100+ game records to verify no degradation
 - [ ] T061 [P] Update frontend component tests for coverage targets (75%+) in frontend/tests/components/
 - [ ] T062 Run full backend test suite and verify 80%+ coverage requirement
-- [ ] T063 Run quickstart.md validation per specs/001-game-history/quickstart.md
+- [ ] T063 Run quickstart.md validation per specs/005-game-history/quickstart.md
 
 ---
 

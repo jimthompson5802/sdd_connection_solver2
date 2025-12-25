@@ -1,7 +1,7 @@
 # Implementation Plan: Game History and Persistent Storage
 
-**Branch**: `001-game-history` | **Date**: 2025-12-24 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-game-history/spec.md`
+**Branch**: `005-game-history` | **Date**: 2025-12-24 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/005-game-history/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
@@ -258,8 +258,8 @@ This plan document ends at Phase 1 completion as specified by speckit.plan workf
 
 ## Summary
 
-**Branch**: `001-game-history`
-**Implementation Plan**: `/Users/jim/Desktop/genai/sdd_connection_solver2/specs/001-game-history/plan.md`
+**Branch**: `005-game-history`
+**Implementation Plan**: `/Users/jim/Desktop/genai/sdd_connection_solver2/specs/005-game-history/plan.md`
 
 **Generated Artifacts**:
 - ✅ `plan.md` - This document (Technical Context, Constitution Check, Project Structure)
