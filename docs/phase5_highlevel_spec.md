@@ -8,7 +8,7 @@ Add a button labeled `Record Game` to the existing Game Summary page (end-of-gam
 
 Visually, the `Record Game` button should be placed alongside the existing summary information so users can clearly associate it with the finished game state.
 
-Example of update Game Summary Page
+Example of revised Game Summary Page
 ```text
 +---------------------------------------------------------------------------------------------+
 |  Win or lose message                                                                        |
@@ -32,7 +32,7 @@ Example of update Game Summary Page
 
 Add a top-level navigation item `Game History` below the existing `Start New Game` item. `Game History` is collapsible and contains a single entry `View Past Games`. The `Game History` node is collapsed by default.
 
-Example of update left navigation side bar
+Example of revised left navigation side bar
 ```
 +----------------------+
 | Start New Game   ▼   |
@@ -58,7 +58,7 @@ Provide a button labeled `Export CSV` associated with the table. When clicked, t
 Table columns (user-visible names):
 - `result_id`, `puzzle_id`, `game_date` (ISO 8601), `puzzle_solved`, `count_groups_found`, `count_mistakes`, `total_guesses`, `llm_provider_name`, `llm_model_name`.
 
-Example View Past Game web page
+Example new View Past Game web page
 ```text
 +---------------------------------------------------------------------------------------------------------------------------------------------------------+
 |                                                      Game Results History                                                                               |
@@ -81,6 +81,8 @@ When a puzzle session is created and played, the server-side session manager add
 - `puzzle_id`: a deterministic identifier derived from the session's 16 puzzle words. This identifier is used to group identical puzzles across sessions.
 - `llm_provider_name`: the name of the LLM provider used for a recommendation; initially empty and set when a recommendation is generated.
 - `llm_model_name`: the model name used for recommendations; initially empty and set when a recommendation is generated.
+
+No changes in the existing puzzle session attributes.
 
 
 ## RecommendationService (functional behavior)
