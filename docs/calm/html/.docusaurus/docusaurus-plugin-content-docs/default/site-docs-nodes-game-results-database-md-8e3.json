@@ -1,0 +1,26 @@
+{
+  "id": "nodes/game-results-database",
+  "title": "Game Results SQLite Database",
+  "description": "Details",
+  "source": "@site/docs/nodes/game-results-database.md",
+  "sourceDirName": "nodes",
+  "slug": "/nodes/game-results-database",
+  "permalink": "/nodes/game-results-database",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "game-results-database",
+    "title": "Game Results SQLite Database"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Ollama LLM Service",
+    "permalink": "/nodes/ollama-llm-service"
+  },
+  "next": {
+    "title": "Player Interaction",
+    "permalink": "/relationships/player-interaction"
+  }
+}

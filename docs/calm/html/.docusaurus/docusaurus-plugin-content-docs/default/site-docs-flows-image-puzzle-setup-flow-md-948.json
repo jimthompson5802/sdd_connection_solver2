@@ -1,0 +1,26 @@
+{
+  "id": "flows/image-puzzle-setup-flow",
+  "title": "Image-Based Puzzle Setup Process",
+  "description": "Details",
+  "source": "@site/docs/flows/image-puzzle-setup-flow.md",
+  "sourceDirName": "flows",
+  "slug": "/flows/image-puzzle-setup-flow",
+  "permalink": "/flows/image-puzzle-setup-flow",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "image-puzzle-setup-flow",
+    "title": "Image-Based Puzzle Setup Process"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "LLM Provider Validation Process",
+    "permalink": "/flows/provider-validation-flow"
+  },
+  "next": {
+    "title": "Game Results Recording Process",
+    "permalink": "/flows/game-results-recording-flow"
+  }
+}

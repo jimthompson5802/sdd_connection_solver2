@@ -1,0 +1,26 @@
+{
+  "id": "relationships/player-interaction",
+  "title": "Player Interaction",
+  "description": "Details",
+  "source": "@site/docs/relationships/player-interaction.md",
+  "sourceDirName": "relationships",
+  "slug": "/relationships/player-interaction",
+  "permalink": "/relationships/player-interaction",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "player-interaction",
+    "title": "Player Interaction"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Game Results SQLite Database",
+    "permalink": "/nodes/game-results-database"
+  },
+  "next": {
+    "title": "Frontend To Backend Connection",
+    "permalink": "/relationships/frontend-to-backend-connection"
+  }
+}

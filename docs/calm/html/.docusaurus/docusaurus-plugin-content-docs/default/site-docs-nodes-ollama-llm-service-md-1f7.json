@@ -1,0 +1,26 @@
+{
+  "id": "nodes/ollama-llm-service",
+  "title": "Ollama LLM Service",
+  "description": "Details",
+  "source": "@site/docs/nodes/ollama-llm-service.md",
+  "sourceDirName": "nodes",
+  "slug": "/nodes/ollama-llm-service",
+  "permalink": "/nodes/ollama-llm-service",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "ollama-llm-service",
+    "title": "Ollama LLM Service"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "OpenAI LLM Service",
+    "permalink": "/nodes/openai-llm-service"
+  },
+  "next": {
+    "title": "Game Results SQLite Database",
+    "permalink": "/nodes/game-results-database"
+  }
+}

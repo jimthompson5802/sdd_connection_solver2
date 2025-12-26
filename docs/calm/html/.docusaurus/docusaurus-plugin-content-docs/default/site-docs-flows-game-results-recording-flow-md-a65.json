@@ -1,0 +1,26 @@
+{
+  "id": "flows/game-results-recording-flow",
+  "title": "Game Results Recording Process",
+  "description": "Details",
+  "source": "@site/docs/flows/game-results-recording-flow.md",
+  "sourceDirName": "flows",
+  "slug": "/flows/game-results-recording-flow",
+  "permalink": "/flows/game-results-recording-flow",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "game-results-recording-flow",
+    "title": "Game Results Recording Process"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Image-Based Puzzle Setup Process",
+    "permalink": "/flows/image-puzzle-setup-flow"
+  },
+  "next": {
+    "title": "Game History Retrieval Process",
+    "permalink": "/flows/game-history-retrieval-flow"
+  }
+}

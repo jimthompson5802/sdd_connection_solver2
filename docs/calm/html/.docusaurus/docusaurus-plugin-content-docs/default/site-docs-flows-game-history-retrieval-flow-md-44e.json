@@ -1,0 +1,22 @@
+{
+  "id": "flows/game-history-retrieval-flow",
+  "title": "Game History Retrieval Process",
+  "description": "Details",
+  "source": "@site/docs/flows/game-history-retrieval-flow.md",
+  "sourceDirName": "flows",
+  "slug": "/flows/game-history-retrieval-flow",
+  "permalink": "/flows/game-history-retrieval-flow",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {
+    "id": "game-history-retrieval-flow",
+    "title": "Game History Retrieval Process"
+  },
+  "sidebar": "docs",
+  "previous": {
+    "title": "Game Results Recording Process",
+    "permalink": "/flows/game-results-recording-flow"
+  }
+}

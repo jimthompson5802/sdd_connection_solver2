@@ -1,0 +1,1 @@
+update calm architecture definition on docs/calm/connection-solver.architecture.json to reflect new or changed nodes, interfaces and flows.
