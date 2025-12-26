@@ -115,7 +115,9 @@ Take screenshots of puzzle grids and extract words using AI vision:
 ![](./docs/screenshots/12_puzzle_fourth_guess_recommendation.png)
 ![](./docs/screenshots/13_puzzle_solved.png)
 
+### 4. Database of Past Puzzle Results
 
+![](./docs/screenshots/14_view_past_game_results.png)
 
 ## Testing
 
