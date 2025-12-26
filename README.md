@@ -10,6 +10,8 @@ The SDD process is based on Github's [spec-kit framework](https://github.com/git
 
 This work is based on an earlier [Virtual Assistant](https://github.com/jimthompson5802/connection_solver).
 
+Overview of the [High-level Architecture](./docs/diagrams/connection-solver-archiecture.md)
+
 ## Quick Start
 
 ### Prerequisites
