@@ -36,9 +36,10 @@ class TestPydanticModels:
     def test_setup_puzzle_response_creation(self):
         """Test SetupPuzzleResponse creation."""
         words = ["apple", "banana", "cherry", "date"]
-        response = SetupPuzzleResponse(remaining_words=words)
+        response = SetupPuzzleResponse(remaining_words=words, session_id="test-session-123")
 
         assert response.remaining_words == words
+        assert response.session_id == "test-session-123"
         assert response.status == "success"  # Default value
 
     def test_next_recommendation_response_creation(self):
@@ -142,7 +143,7 @@ class TestPuzzleSession:
         from src.models import WordGroup
 
         for i in range(4):
-            group_words = session.words[i * 4 : (i + 1) * 4]
+            group_words = session.words[i * 4 : (i + 1) * 4]  # noqa: E203
             session.groups.append(WordGroup(category=f"Category {i+1}", words=group_words, difficulty=i + 1))
 
         assert len(session.words) == 16
@@ -258,7 +259,7 @@ class TestPuzzleSession:
         session = PuzzleSession(self.sample_words)
         # Create four user-confirmed groups by recording correct attempts
         for i in range(4):
-            words = session.words[i * 4 : (i + 1) * 4]
+            words = session.words[i * 4 : (i + 1) * 4]  # noqa: E203
             session.record_attempt(words, ResponseResult.CORRECT)
 
         assert session.game_complete is True
@@ -269,7 +270,7 @@ class TestPuzzleSession:
         session = PuzzleSession(self.sample_words)
         # Make four incorrect attempts
         for i in range(4):
-            words = [f"wrong{i}_{j}" for j in range(4)]
+            words = [f"wrong{i}_{j}" for j in range(4)]  # noqa: E203
             session.record_attempt(words, ResponseResult.INCORRECT)
 
         assert session.game_complete is True
@@ -283,7 +284,7 @@ class TestPuzzleSession:
         from src.models import WordGroup
 
         for i in range(4):
-            group_words = session.words[i * 4 : (i + 1) * 4]
+            group_words = session.words[i * 4 : (i + 1) * 4]  # noqa: E203
             session.groups.append(WordGroup(category=f"Category {i+1}", words=group_words, difficulty=i + 1))
 
         # Initially 4 groups remaining

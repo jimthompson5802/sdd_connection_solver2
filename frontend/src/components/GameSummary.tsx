@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import RecordGameButton from './RecordGameButton';
 
 interface PreviousResponse {
   words: string[];
@@ -13,6 +14,7 @@ interface Props {
   wordsRemaining: number;
   previousResponses: PreviousResponse[];
   gameStatus?: 'active' | 'waiting' | 'won' | 'lost';
+  sessionId?: string; // Add sessionId for recording games
 }
 
 /**
@@ -20,8 +22,16 @@ interface Props {
  * This is intended to be used both during active play and when a win/lose
  * status message is shown so the player can see final stats.
  */
-const GameSummary: React.FC<Props> = ({ correctCount, mistakeCount, wordsRemaining, previousResponses, gameStatus }) => {
+const GameSummary: React.FC<Props> = ({
+  correctCount,
+  mistakeCount,
+  wordsRemaining,
+  previousResponses,
+  gameStatus,
+  sessionId
+}) => {
   const expanded = gameStatus && (gameStatus === 'won' || gameStatus === 'lost');
+  const isFinished = gameStatus === 'won' || gameStatus === 'lost';
   const containerRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const [maxHeightPx, setMaxHeightPx] = useState<string | undefined>(undefined);
@@ -97,6 +107,14 @@ const GameSummary: React.FC<Props> = ({ correctCount, mistakeCount, wordsRemaini
           )}
         </div>
       </div>
+
+      {/* T024: Add RecordGameButton for completed games */}
+      {isFinished && sessionId && (
+        <RecordGameButton
+          sessionId={sessionId}
+          isFinished={isFinished}
+        />
+      )}
     </div>
   );
 };

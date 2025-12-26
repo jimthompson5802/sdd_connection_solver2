@@ -157,9 +157,13 @@ class RecommendationService:
         # if not validation_result["valid"]:
         #     response = self._handle_invalid_response(authoritative_request, response, validation_result)
 
-        # Persist last recommendation only when session exists
+        # Persist last recommendation and LLM info when session exists
         if session is not None:
             session.last_recommendation = response.recommended_words
+            # Record LLM provider and model info for game history
+            provider_type = response.provider_used.provider_type if response.provider_used else "unknown"
+            model_name = response.provider_used.model_name if response.provider_used else "unknown"
+            session.set_llm_info(provider_type, model_name)
         return response
 
     # Provide a helper method that tests may patch to simulate timeouts

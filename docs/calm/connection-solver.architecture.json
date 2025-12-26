@@ -5,11 +5,12 @@
     "description": "A web-based application that assists users in solving New York Times Connections puzzles using AI-powered word grouping recommendations from multiple LLM providers (OpenAI, Ollama, Simple).",
     "metadata": [
         {
-            "version": "1.0.0",
+            "version": "2.0.0",
             "created-by": "Architecture Team",
             "created-date": "2025-12-18",
+            "updated-date": "2025-12-25",
             "environment": "production",
-            "tech-stack": "React, TypeScript, FastAPI, Python 3.11+, LangChain",
+            "tech-stack": "React, TypeScript, FastAPI, Python 3.11+, LangChain, SQLite",
             "deployment-model": "Full-stack web application with frontend and backend services"
         }
     ],
@@ -47,12 +48,20 @@
             "unique-id": "backend-api-service",
             "node-type": "service",
             "name": "Connection Solver Backend API",
-            "description": "FastAPI-based REST API service that orchestrates puzzle solving, manages game sessions, and integrates with LLM providers for generating recommendations",
+            "description": "FastAPI-based REST API service that orchestrates puzzle solving, manages game sessions, integrates with LLM providers for generating recommendations, and persists game results to SQLite database",
             "interfaces": [
                 {
                     "unique-id": "backend-rest-api",
                     "hostname": "localhost",
                     "port": 8000
+                },
+                {
+                    "unique-id": "health-endpoint",
+                    "url": "http://localhost:8000/health"
+                },
+                {
+                    "unique-id": "root-endpoint",
+                    "url": "http://localhost:8000/"
                 },
                 {
                     "unique-id": "puzzle-setup-endpoint",
@@ -71,6 +80,18 @@
                     "url": "http://localhost:8000/api/v2/recommendations"
                 },
                 {
+                    "unique-id": "v2-recommendations-health-endpoint",
+                    "url": "http://localhost:8000/api/v2/recommendations/health"
+                },
+                {
+                    "unique-id": "v2-recommendations-providers-endpoint",
+                    "url": "http://localhost:8000/api/v2/recommendations/providers"
+                },
+                {
+                    "unique-id": "v2-providers-endpoint",
+                    "url": "http://localhost:8000/api/v2/providers"
+                },
+                {
                     "unique-id": "v2-provider-validate-endpoint",
                     "url": "http://localhost:8000/api/v2/providers/validate"
                 },
@@ -81,6 +102,14 @@
                 {
                     "unique-id": "v2-image-setup-endpoint",
                     "url": "http://localhost:8000/api/v2/setup_puzzle_from_image"
+                },
+                {
+                    "unique-id": "v2-game-results-post-endpoint",
+                    "url": "http://localhost:8000/api/v2/game_results"
+                },
+                {
+                    "unique-id": "v2-game-results-get-endpoint",
+                    "url": "http://localhost:8000/api/v2/game_results"
                 }
             ]
         },
@@ -106,6 +135,19 @@
                     "unique-id": "ollama-api-interface",
                     "hostname": "localhost",
                     "port": 11434
+                }
+            ]
+        },
+        {
+            "unique-id": "game-results-database",
+            "node-type": "database",
+            "name": "Game Results SQLite Database",
+            "description": "SQLite database that persists completed game sessions, including puzzle details, recommendations, player responses, and final outcomes for historical analysis",
+            "interfaces": [
+                {
+                    "unique-id": "sqlite-db-interface",
+                    "hostname": "localhost",
+                    "database": "puzzle_results.db"
                 }
             ]
         }
@@ -169,6 +211,22 @@
                 }
             },
             "protocol": "HTTP"
+        },
+        {
+            "unique-id": "backend-to-database-connection",
+            "description": "Reads and writes game results and history to persistent storage",
+            "relationship-type": {
+                "connects": {
+                    "source": {
+                        "node": "backend-api-service"
+                    },
+                    "destination": {
+                        "node": "game-results-database",
+                        "interfaces": ["sqlite-db-interface"]
+                    }
+                }
+            },
+            "protocol": "JDBC"
         }
     ],
     "flows": [
@@ -433,6 +491,106 @@
                 "llm-capability": "Vision API",
                 "image-format": "base64-encoded, JPEG/PNG",
                 "success-criteria": "16 words extracted from 4x4 grid"
+            }
+        },
+        {
+            "unique-id": "game-results-recording-flow",
+            "name": "Game Results Recording Process",
+            "description": "System persists completed game session data to database for historical tracking and analysis",
+            "transitions": [
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 1,
+                    "description": "Player completes a puzzle session (win/loss)",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 2,
+                    "description": "Frontend sends game results with puzzle details, recommendations, and outcomes",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-database-connection",
+                    "sequence-number": 3,
+                    "description": "Backend writes game session data to SQLite database",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-database-connection",
+                    "sequence-number": 4,
+                    "description": "Database confirms successful write operation",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 5,
+                    "description": "Backend returns confirmation to frontend",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 6,
+                    "description": "Frontend displays confirmation message",
+                    "direction": "destination-to-source"
+                }
+            ],
+            "metadata": {
+                "business-process": "Game Results Persistence",
+                "user-journey-step": "4-Complete-Game",
+                "api-endpoint": "POST /api/v2/game_results",
+                "database-table": "game_results",
+                "stored-data": "session_id, puzzle_date, words, recommendations, responses, final_status, timestamps"
+            }
+        },
+        {
+            "unique-id": "game-history-retrieval-flow",
+            "name": "Game History Retrieval Process",
+            "description": "User requests and views historical game results with optional CSV export functionality",
+            "transitions": [
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 1,
+                    "description": "Player navigates to game history view",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 2,
+                    "description": "Frontend requests game history data",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-database-connection",
+                    "sequence-number": 3,
+                    "description": "Backend queries SQLite database for game results",
+                    "direction": "source-to-destination"
+                },
+                {
+                    "relationship-unique-id": "backend-to-database-connection",
+                    "sequence-number": 4,
+                    "description": "Database returns game history records",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "frontend-to-backend-connection",
+                    "sequence-number": 5,
+                    "description": "Backend returns formatted game history to frontend",
+                    "direction": "destination-to-source"
+                },
+                {
+                    "relationship-unique-id": "player-interaction",
+                    "sequence-number": 6,
+                    "description": "Frontend displays game history with statistics and details",
+                    "direction": "destination-to-source"
+                }
+            ],
+            "metadata": {
+                "business-process": "Game History Analysis",
+                "user-journey-step": "5-Review-History",
+                "api-endpoint": "GET /api/v2/game_results",
+                "export-format": "JSON, CSV (via ?format=csv query parameter)",
+                "display-features": "Pagination, filtering, sorting, CSV download"
             }
         }
     ]

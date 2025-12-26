@@ -37,6 +37,8 @@ interface EnhancedPuzzleInterfaceProps extends PuzzleInterfaceProps {
   }>;
   /** Optional override for LLM recommendation (testing) */
   llmRecommendationOverride?: RecommendationResponse | null;
+  /** Session ID for recording game results */
+  sessionId?: string | null;
 }
 
 const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
@@ -56,6 +58,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
   puzzleContext,
   previousGuesses = [],
   llmRecommendationOverride = null,
+  sessionId,
 }) => {
   const [llmRecommendation, setLlmRecommendation] = useState<RecommendationResponse | null>(null);
   const [llmLoading, setLlmLoading] = useState(false);
@@ -387,6 +390,7 @@ const EnhancedPuzzleInterface: React.FC<EnhancedPuzzleInterfaceProps> = ({
           wordsRemaining={words.length}
           previousResponses={previousResponses}
           gameStatus={gameStatus}
+          sessionId={sessionId || undefined}
         />
       )}
 

@@ -311,7 +311,7 @@ class TestOpenAILLMProvider:
         llm = provider._create_llm()
 
         assert llm is mock_instance
-        mock_chat_openai.assert_called_once_with(openai_api_key="sk-test123")
+        mock_chat_openai.assert_called_once_with(model_name="gpt-4", openai_api_key="sk-test123")
 
     def test_openai_provider_create_llm_no_api_key(self):
         """Test OpenAI LLM creation without API key."""

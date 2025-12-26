@@ -86,7 +86,21 @@ class TestRecommendationEngine:
 
     def test_get_recommendation_with_minimal_words(self):
         """Test recommendation with exactly 4 words remaining."""
-        minimal_session = PuzzleSession(["APPLE", "BANANA", "CHERRY", "DATE"])
+        # Start with 16 words (required by PuzzleSession)
+        all_words = [
+            "APPLE", "BANANA", "CHERRY", "DATE",
+            "RED", "BLUE", "GREEN", "YELLOW",
+            "DOG", "CAT", "BIRD", "FISH",
+            "SUN", "MOON", "STAR", "CLOUD"
+        ]
+        minimal_session = PuzzleSession(all_words)
+
+        # Mark 12 words as found (3 groups), leaving 4 words remaining
+        from src.models import ResponseResult
+        minimal_session.record_attempt(["RED", "BLUE", "GREEN", "YELLOW"], ResponseResult.CORRECT, color="yellow")
+        minimal_session.record_attempt(["DOG", "CAT", "BIRD", "FISH"], ResponseResult.CORRECT, color="green")
+        minimal_session.record_attempt(["SUN", "MOON", "STAR", "CLOUD"], ResponseResult.CORRECT, color="blue")
+
         recommendation = self.engine.get_recommendation(minimal_session)
 
         words, connection = recommendation
@@ -112,6 +126,14 @@ class TestRecommendationEngine:
             "dog",
             "bird",
             "fish",
+            "red",
+            "blue",
+            "green",
+            "yellow",
+            "apple",
+            "banana",
+            "cherry",
+            "grape",
         ]
         words2 = [
             "car",

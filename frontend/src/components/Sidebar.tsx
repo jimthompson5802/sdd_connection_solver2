@@ -14,6 +14,7 @@ import './Sidebar.css';
  * @returns JSX element representing the sidebar navigation
  */
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigationAction }) => {
+  // T038: Game History section collapsed by default
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(
     new Set([NAVIGATION_MENUS.START_NEW_GAME])
   );
@@ -39,7 +40,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigationAction }) =>
     onNavigationAction({ type: 'from-image' });
   };
 
+  // T039: View Past Games navigation handler
+  const handleViewPastGamesClick = () => {
+    onNavigationAction({ type: 'view-past-games' });
+  };
+
   const isStartNewGameExpanded = expandedMenus.has(NAVIGATION_MENUS.START_NEW_GAME);
+  const isGameHistoryExpanded = expandedMenus.has(NAVIGATION_MENUS.GAME_HISTORY);
 
   return (
     <nav className="sidebar" aria-label="Main Navigation">
@@ -59,6 +66,21 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigationAction }) =>
           label="From Image"
           isExpanded={false}
           onClick={handleFromImageClick}
+          level={1}
+        />
+      </NavigationItem>
+
+      {/* T038, T039: Game History section (collapsed by default) */}
+      <NavigationItem
+        label="Game History"
+        isExpanded={isGameHistoryExpanded}
+        onToggle={() => handleMenuToggle(NAVIGATION_MENUS.GAME_HISTORY)}
+        level={0}
+      >
+        <NavigationItem
+          label="View Past Games"
+          isExpanded={false}
+          onClick={handleViewPastGamesClick}
           level={1}
         />
       </NavigationItem>

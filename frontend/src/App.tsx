@@ -9,6 +9,7 @@ import FileUpload from './components/FileUpload';
 import EnhancedPuzzleInterface from './components/EnhancedPuzzleInterface';
 import { ImagePuzzleSetup } from './components/ImagePuzzleSetup';
 import Sidebar from './components/Sidebar';
+import GameHistoryPage from './pages/GameHistoryPage';
 import { PuzzleState } from './types/puzzle';
 import { AppView, NavigationAction } from './types/navigation';
 import { apiService } from './services/api';
@@ -16,7 +17,10 @@ import { apiService } from './services/api';
 const App: React.FC = () => {
   // Navigation state for the new layout
   const [currentView, setCurrentView] = useState<AppView>('initial');
-  
+
+  // Session ID for recording game results
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
   const [puzzleState, setPuzzleState] = useState<PuzzleState>({
     words: [],
     currentRecommendation: [],
@@ -41,6 +45,10 @@ const App: React.FC = () => {
       case 'from-image':
         setCurrentView('image-setup');
         break;
+      case 'view-past-games':
+        // T042: Navigate to game history page
+        setCurrentView('game-history');
+        break;
       case 'toggle-menu':
         // Menu toggle is handled internally by Sidebar component
         // This callback is for logging/analytics if needed
@@ -55,7 +63,10 @@ const App: React.FC = () => {
 
     try {
       const response = await apiService.setupPuzzle(content);
-      
+
+      // Store the session ID for recording game results
+      setSessionId(response.session_id);
+
       setPuzzleState({
         words: response.remaining_words,
         currentRecommendation: [],
@@ -67,7 +78,7 @@ const App: React.FC = () => {
         error: null,
         previousResponses: [], // Fresh start - clear previous game's guess history
       });
-      
+
       // Change view to show the puzzle interface
       setCurrentView('puzzle-active');
     } catch (error) {
@@ -79,7 +90,12 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleImageSetup = useCallback((extractedWords: string[]) => {
+  const handleImageSetup = useCallback((extractedWords: string[], sessionIdFromImage?: string) => {
+    // Store the session ID if provided
+    if (sessionIdFromImage) {
+      setSessionId(sessionIdFromImage);
+    }
+
     // Set up puzzle state with words extracted from image
     setPuzzleState({
       words: extractedWords,
@@ -92,7 +108,7 @@ const App: React.FC = () => {
       error: null,
       previousResponses: [], // Fresh start
     });
-    
+
     // Transition to puzzle interface
     setCurrentView('puzzle-active');
   }, []);
@@ -162,16 +178,16 @@ const App: React.FC = () => {
             <p>Select action in Left Side Bar</p>
           </div>
         );
-      
+
       case 'file-upload':
         return (
-          <FileUpload 
+          <FileUpload
             onFileUpload={handleFileUpload}
             isLoading={puzzleState.isLoading}
             error={puzzleState.error}
           />
         );
-      
+
       case 'image-setup':
         return (
           <ImagePuzzleSetup
@@ -185,7 +201,13 @@ const App: React.FC = () => {
             defaultModel="gpt-4-vision-preview"
             onError={handleImageError}
           />
-        );      case 'puzzle-active':
+        );
+
+      // T042: Game History route
+      case 'game-history':
+        return <GameHistoryPage />;
+
+      case 'puzzle-active':
       case 'puzzle-complete':
         return (
           <EnhancedPuzzleInterface
@@ -204,9 +226,10 @@ const App: React.FC = () => {
             showProviderControls={true}
             puzzleContext={''}
             previousGuesses={[]}
+            sessionId={sessionId}
           />
         );
-      
+
       default:
         return <div className="welcome-message"><p>Select action in Left Side Bar</p></div>;
     }
@@ -218,7 +241,7 @@ const App: React.FC = () => {
         <h1>NYT Connections Puzzle Assistant</h1>
       </header>
 
-      <Sidebar 
+      <Sidebar
         currentView={currentView}
         onNavigationAction={handleNavigationAction}
       />

@@ -1,7 +1,7 @@
 """
 Image-based puzzle setup API endpoint.
 
-Provides POST /api/v2/setup_puzzle_from_image endpoint for extracting words 
+Provides POST /api/v2/setup_puzzle_from_image endpoint for extracting words
 from 4x4 puzzle grid images using LLM vision capabilities.
 """
 
@@ -33,22 +33,22 @@ async def setup_puzzle_from_image(
 ) -> ImageSetupResponse:
     """
     Setup a new puzzle from an uploaded image.
-    
+
     This endpoint:
     1. Validates the image setup request (size, format, provider)
     2. Uses LLM vision models to extract 16 words from the 4x4 grid
     3. Creates a new puzzle session with the extracted words
     4. Returns the words for puzzle gameplay
-    
+
     Args:
         request: Image setup request with base64 image and LLM provider details
         extractor: Injected ImageWordExtractor service
-        
+
     Returns:
         ImageSetupResponse: Success response with extracted words or error details
-        
+
     Raises:
-        HTTPException: 
+        HTTPException:
             - 400: Bad request (extraction failure, wrong word count)
             - 413: Payload too large (image exceeds size limit)
             - 422: Unprocessable entity (validation errors)
@@ -57,16 +57,17 @@ async def setup_puzzle_from_image(
     try:
         # Extract words from image using LLM vision
         extracted_words = await extractor.extract_words(request)
-        
+
         # Create new puzzle session with extracted words
-        session_manager.create_session(extracted_words)
-        
+        session = session_manager.create_session(extracted_words)
+
         # Return successful response
         return ImageSetupResponse(
             remaining_words=extracted_words,
-            status="success"
+            status="success",
+            session_id=session.session_id
         )
-        
+
     except ValueError as e:
         # Handle validation and extraction errors (400 Bad Request)
         error_message = str(e)
@@ -82,14 +83,14 @@ async def setup_puzzle_from_image(
                 status_code=400,
                 detail=error_message
             )
-            
+
     except RuntimeError as e:
         # Handle provider capability/availability errors (500 Internal Server Error)
         raise HTTPException(
             status_code=500,
             detail=str(e)
         )
-        
+
     except Exception as e:
         # Handle unexpected provider/system errors (500 Internal Server Error)
         raise HTTPException(

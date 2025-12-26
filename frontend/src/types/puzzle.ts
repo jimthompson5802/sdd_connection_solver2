@@ -11,6 +11,7 @@ export interface SetupPuzzleRequest {
 export interface SetupPuzzleResponse {
   remaining_words: string[];
   status: string;
+  session_id: string;
 }
 
 export interface NextRecommendationResponse {
@@ -44,6 +45,7 @@ export interface ImageSetupRequest {
 export interface ImageSetupResponse {
   remaining_words: string[];
   status: string;
+  session_id?: string;
   message?: string;
 }
 

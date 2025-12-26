@@ -1,6 +1,6 @@
 /**
  * Navigation types for UI Refactor - Persistent Navigation Layout
- * 
+ *
  * These TypeScript types define the navigation state and actions for the
  * new three-region layout with persistent sidebar navigation.
  */
@@ -8,24 +8,26 @@
 /**
  * Application view states for routing main area content
  */
-export type AppView = 
+export type AppView =
   | 'initial'          // First load, no action taken - shows welcome message
   | 'file-upload'      // File upload interface showing in main area
   | 'image-setup'      // Image upload/paste interface showing in main area
   | 'puzzle-active'    // Game in progress - EnhancedPuzzleInterface showing
-  | 'puzzle-complete'; // Game finished (won/lost) - EnhancedPuzzleInterface with GameSummary
+  | 'puzzle-complete'  // Game finished (won/lost) - EnhancedPuzzleInterface with GameSummary
+  | 'game-history';    // View Past Games - GameHistoryPage showing
 
 /**
  * Navigation actions that can be triggered from the sidebar
  */
-export type NavigationAction = 
+export type NavigationAction =
   | { type: 'from-file' }                    // User clicked "From File" menu item
   | { type: 'from-image' }                   // User clicked "From Image" menu item
+  | { type: 'view-past-games' }              // User clicked "View Past Games" menu item
   | { type: 'toggle-menu'; menu: string };   // User clicked expandable menu header
 
 /**
  * Props for the Sidebar component
- * 
+ *
  * @property currentView - Current application view state (for conditional styling)
  * @property onNavigationAction - Callback when user performs navigation action
  */
@@ -36,7 +38,7 @@ export interface SidebarProps {
 
 /**
  * Props for the NavigationItem component
- * 
+ *
  * @property label - Display text for the navigation item
  * @property isExpanded - Whether the item's children are visible (for expandable items)
  * @property onToggle - Callback when user clicks to expand/collapse (optional, for expandable items)
@@ -55,7 +57,7 @@ export interface NavigationItemProps {
 
 /**
  * Internal state for Sidebar component
- * 
+ *
  * @property expandedMenus - Set of menu identifiers that are currently expanded
  */
 export interface SidebarState {
@@ -64,7 +66,7 @@ export interface SidebarState {
 
 /**
  * Layout state managed by App.tsx
- * 
+ *
  * @property currentView - Current view being displayed in main area
  */
 export interface AppLayoutState {
@@ -98,6 +100,7 @@ export function isActionItem(props: NavigationItemProps): boolean {
  */
 export const NAVIGATION_MENUS = {
   START_NEW_GAME: 'start-new-game',
+  GAME_HISTORY: 'game-history',
 } as const;
 
 /**
