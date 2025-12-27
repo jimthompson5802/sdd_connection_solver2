@@ -2,7 +2,7 @@
 name = "nyt-connections-puzzle-assistant"
 version = "0.1.0"
 description = "NYT Connections Puzzle Assistant Backend API"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.14"
 dependencies = [
     "fastapi>=0.104.0",
     "pydantic>=2.4.0",
