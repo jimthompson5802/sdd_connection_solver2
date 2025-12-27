@@ -47,18 +47,19 @@ Overview of the [High-level Architecture](./docs/diagrams/connection-solver-arch
    ```
 
 4. **Start Backend**
+
+   Execute the following shell script:
+
    ```bash
-   cd backend
-   source .venv/bin/activate
-   export PYTHONPATH=src
-   uvicorn src.main:app --reload --host 127.0.0.1 --port 8000
+   ./utils/start_backend_service.sh
    ```
 
 5. **Start Frontend (new terminal)**
+
+   Execute the following shell script:
+
    ```bash
-   cd frontend
-   npm install
-   npm start
+   ./utils/start_frontend_service.sh
    ```
 
 6. **Access Application**
