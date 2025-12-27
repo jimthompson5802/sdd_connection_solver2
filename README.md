@@ -31,9 +31,14 @@ Overview of the [High-level Architecture](./docs/diagrams/connection-solver-arch
 2. **Backend Setup**
    ```bash
    cd backend
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   pip install -e .
+   uv sync
+   ```
+
+   For development setup
+   ```bash
+   uv sync --extra dev        # if you want dev deps too
+
+   uv pip install -e ".[dev]"
    ```
 
 3. **Configure LLM Provider**
@@ -54,7 +59,14 @@ Overview of the [High-level Architecture](./docs/diagrams/connection-solver-arch
    ./utils/start_backend_service.sh
    ```
 
-5. **Start Frontend (new terminal)**
+5. **Frontend setup**
+
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+6. **Start Frontend (new terminal)**
 
    Execute the following shell script:
 
@@ -62,7 +74,7 @@ Overview of the [High-level Architecture](./docs/diagrams/connection-solver-arch
    ./utils/start_frontend_service.sh
    ```
 
-6. **Access Application**
+7. **Access Application**
    - Open http://localhost:3000
    - Backend API docs: http://localhost:8000/docs
 
