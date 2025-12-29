@@ -10,7 +10,7 @@ This module provides endpoints for:
 import logging
 import sqlite3
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, validator
