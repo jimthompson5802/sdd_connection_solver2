@@ -570,6 +570,97 @@ class TestExportGameResultsCSV:
             if response.status_code != 409:
                 assert response.status_code == 201, f"Failed to record game: {response.text}"
 
+    @pytest.fixture
+    def mixed_solved_unsolved_games_for_csv(self, client, session_manager):
+        """
+        Create games with both solved (true) and unsolved (false) puzzles for CSV testing.
+
+        This fixture specifically tests the bug fix where puzzle_solved='false' was incorrectly
+        converted to 'true' in CSV exports due to Python truthiness evaluation.
+
+        Returns:
+            dict with 'expected_puzzle_solved' list containing the expected values
+        """
+        from src.models import ResponseResult
+
+        test_cases = [
+            {
+                "words": [
+                    "north", "south", "east", "west",
+                    "hot", "cold", "warm", "cool",
+                    "big", "small", "large", "tiny",
+                    "fast", "slow", "quick", "rapid"
+                ],
+                "date": "2025-12-26T10:00:00-08:00",
+                "solved": True,  # Complete all 4 groups
+                "provider": "openai",
+                "model": "gpt-4"
+            },
+            {
+                "words": [
+                    "happy", "sad", "angry", "calm",
+                    "love", "hate", "like", "dislike",
+                    "peace", "war", "battle", "fight",
+                    "win", "lose", "draw", "tie"
+                ],
+                "date": "2025-12-26T14:00:00-08:00",
+                "solved": False,  # Only complete 1 group, make 4 mistakes (unsolved)
+                "provider": "ollama",
+                "model": "qwen2.5:32b"
+            },
+            {
+                "words": [
+                    "run", "walk", "jog", "sprint",
+                    "swim", "dive", "float", "sink",
+                    "fly", "soar", "glide", "hover",
+                    "jump", "leap", "hop", "skip"
+                ],
+                "date": "2025-12-26T18:00:00-08:00",
+                "solved": True,  # Complete all 4 groups
+                "provider": "openai",
+                "model": "gpt-5-mini"
+            }
+        ]
+
+        expected_values = []
+
+        for puzzle_data in test_cases:
+            # Create session
+            session = session_manager.create_session(puzzle_data["words"])
+
+            if puzzle_data["solved"]:
+                # Complete all 4 groups (solved puzzle)
+                session.record_attempt(puzzle_data["words"][0:4], ResponseResult.CORRECT, color="yellow")
+                session.record_attempt(puzzle_data["words"][4:8], ResponseResult.CORRECT, color="green")
+                session.record_attempt(puzzle_data["words"][8:12], ResponseResult.CORRECT, color="blue")
+                session.record_attempt(puzzle_data["words"][12:16], ResponseResult.CORRECT, color="purple")
+                expected_values.append("true")
+            else:
+                # Incomplete game with exactly 4 mistakes (unsolved puzzle)
+                # Make 4 incorrect attempts - game ends after 4 mistakes
+                session.record_attempt(puzzle_data["words"][0:4], ResponseResult.INCORRECT, color=None)
+                session.record_attempt(puzzle_data["words"][4:8], ResponseResult.INCORRECT, color=None)
+                session.record_attempt(puzzle_data["words"][8:12], ResponseResult.INCORRECT, color=None)
+                session.record_attempt(puzzle_data["words"][1:5], ResponseResult.INCORRECT, color=None)
+                # Game ends with 4 mistakes, 0 groups found - unsolved
+                expected_values.append("false")
+
+            # Set LLM info
+            session.set_llm_info(puzzle_data["provider"], puzzle_data["model"])
+
+            # Record the game
+            request_data = {
+                "session_id": session.session_id,
+                "game_date": puzzle_data["date"]
+            }
+            response = client.post("/api/v2/game_results", json=request_data)
+
+            # Skip if duplicate (from previous test run)
+            if response.status_code != 409:
+                assert response.status_code == 201, f"Failed to record game: {response.text}"
+
+        return {"expected_puzzle_solved": expected_values}
+
     @pytest.mark.contract
     def test_export_csv_with_data_contract(self, client, recorded_games_for_csv):
         """
@@ -668,3 +759,72 @@ class TestExportGameResultsCSV:
         ]
         for column in expected_columns:
             assert column in header, f"Missing column '{column}' in header: {header}"
+
+    @pytest.mark.contract
+    def test_export_csv_puzzle_solved_field_accuracy(self, client, mixed_solved_unsolved_games_for_csv):
+        """
+        Test CSV export correctly represents puzzle_solved field for both solved and unsolved puzzles.
+
+        This test specifically addresses the bug where puzzle_solved='false' was incorrectly
+        converted to 'true' due to Python truthiness evaluation of the non-empty string 'false'.
+
+        The bug was in v2_game_results.py line 340:
+            OLD (buggy): "true" if result.puzzle_solved else "false"
+            NEW (fixed): result.puzzle_solved
+
+        Validates:
+        - CSV export contains "true" for solved puzzles (regression test)
+        - CSV export contains "false" for unsolved puzzles (bug fix test)
+        - Values match the actual game state from database
+        - Values are exactly "true" or "false" (not "True", "False", or other variants)
+        """
+        response = client.get("/api/v2/game_results?format=csv")
+
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
+
+        # Parse CSV content
+        csv_content = response.text
+        lines = csv_content.strip().split('\n')
+
+        # Should have header + at least 3 data rows from fixture
+        assert len(lines) >= 4, f"Expected at least 4 lines (header + 3 test rows), got {len(lines)}"
+
+        # Parse header to find puzzle_solved column index
+        header = lines[0].split(',')
+        assert 'puzzle_solved' in header, f"Missing 'puzzle_solved' column in header: {header}"
+        puzzle_solved_idx = header.index('puzzle_solved')
+
+        # Extract puzzle_solved values from CSV data rows
+        csv_puzzle_solved_values = []
+        for line in lines[1:]:
+            if line.strip():
+                fields = line.split(',')
+                if len(fields) > puzzle_solved_idx:
+                    csv_puzzle_solved_values.append(fields[puzzle_solved_idx])
+
+        # Verify we extracted some values
+        assert len(csv_puzzle_solved_values) >= 3, \
+            f"Expected at least 3 puzzle_solved values from test data, got {len(csv_puzzle_solved_values)}"
+
+        # Get expected values from fixture
+        expected_values = mixed_solved_unsolved_games_for_csv['expected_puzzle_solved']
+
+        # Verify each expected value appears in CSV output
+        # Note: We look for presence, not exact ordering, since other tests may have added data
+        for expected in expected_values:
+            assert expected in csv_puzzle_solved_values, \
+                f"Expected puzzle_solved='{expected}' not found in CSV output. Found: {csv_puzzle_solved_values}"
+
+        # CRITICAL: Specifically verify at least one "false" value exists
+        # This is the main bug fix validation - ensuring "false" doesn't become "true"
+        assert "false" in csv_puzzle_solved_values, \
+            f"CSV export should contain at least one 'false' value for unsolved puzzles. Found: {csv_puzzle_solved_values}"
+
+        # Regression test: Verify at least one "true" value exists
+        assert "true" in csv_puzzle_solved_values, \
+            f"CSV export should contain at least one 'true' value for solved puzzles. Found: {csv_puzzle_solved_values}"
+
+        # Verify all values are exactly "true" or "false" (lowercase strings)
+        for value in csv_puzzle_solved_values:
+            assert value in ["true", "false"], \
+                f"puzzle_solved should be exactly 'true' or 'false', got '{value}'"

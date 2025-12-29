@@ -329,7 +329,7 @@ def _export_csv(results: List[GameResult]) -> StreamingResponse:
             result.result_id,
             result.puzzle_id,
             result.game_date,
-            "true" if result.puzzle_solved else "false",  # Boolean as string per spec
+            result.puzzle_solved,  # Already validated as "true" or "false" string
             result.count_groups_found,
             result.count_mistakes,
             result.total_guesses,
