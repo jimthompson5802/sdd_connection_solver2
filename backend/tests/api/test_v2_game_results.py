@@ -818,7 +818,7 @@ class TestExportGameResultsCSV:
         # CRITICAL: Specifically verify at least one "false" value exists
         # This is the main bug fix validation - ensuring "false" doesn't become "true"
         assert "false" in csv_puzzle_solved_values, \
-            f"CSV export should contain at least one 'false' value for unsolved puzzles. Found: {csv_puzzle_solved_values}"
+            f"CSV export should contain at least one 'false' value for unsolved puzzles. Found: {csv_puzzle_solved_values}"  # noqa: E501
 
         # Regression test: Verify at least one "true" value exists
         assert "true" in csv_puzzle_solved_values, \
