@@ -62,6 +62,22 @@ title: Connection Solver Backend API
                                         8000
                                             </td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <b>Protocol</b>
+                                    </td>
+                                    <td>
+                                        HTTP
+                                            </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <b>Cors Origins</b>
+                                    </td>
+                                    <td>
+                                        http://localhost:3000, http://127.0.0.1:3000
+                                            </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -745,4 +761,208 @@ classDef highlight fill:#f2bbae;
     _No controls defined._
 
 ## Metadata
-  _No Metadata defined._
+  <div className="table-container">
+      <table>
+          <thead>
+          <tr>
+              <th>Key</th>
+              <th>Value</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+              <td>
+                  <b>Authentication</b>
+              </td>
+              <td>
+                  None - API keys for LLM providers configured via environment variables only
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Environment Variables</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>OPENAI_API_KEY</b>
+                              </td>
+                              <td>
+                                  Required for OpenAI provider (format: sk-*)
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>OPENAI_MODEL_NAME</b>
+                              </td>
+                              <td>
+                                  Optional, default: gpt-4o-mini
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>OPENAI_TIMEOUT</b>
+                              </td>
+                              <td>
+                                  Optional, default: 300s
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>OLLAMA_BASE_URL</b>
+                              </td>
+                              <td>
+                                  Optional, default: http://localhost:11434
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>BACKEND_CORS_ORIGINS</b>
+                              </td>
+                              <td>
+                                  Optional, comma-separated origins
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Performance</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>Non Llm Api Response</b>
+                              </td>
+                              <td>
+                                  &lt; 100ms
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Simple Provider</b>
+                              </td>
+                              <td>
+                                  &lt; 100ms
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Database Insert</b>
+                              </td>
+                              <td>
+                                  &lt; 10ms
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Database Query</b>
+                              </td>
+                              <td>
+                                  &lt; 50ms
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Error Handling</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>Validation Errors</b>
+                              </td>
+                              <td>
+                                  HTTP 400 with error details
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Llm Provider Errors</b>
+                              </td>
+                              <td>
+                                  HTTP 503 with provider-specific error code
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Timeout Errors</b>
+                              </td>
+                              <td>
+                                  HTTP 504
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Configuration Errors</b>
+                              </td>
+                              <td>
+                                  HTTP 500
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Retry Policy</b>
+                              </td>
+                              <td>
+                                  No automatic retry - error returned to client
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Fallback Policy</b>
+                              </td>
+                              <td>
+                                  No automatic fallback between providers
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Service Ownership</b>
+              </td>
+              <td>
+                  Unknown
+                      </td>
+          </tr>
+          </tbody>
+      </table>
+  </div>

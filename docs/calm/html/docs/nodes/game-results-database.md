@@ -62,6 +62,14 @@ title: Game Results SQLite Database
                                         puzzle_results.db
                                             </td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <b>Protocol</b>
+                                    </td>
+                                    <td>
+                                        JDBC
+                                            </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -84,4 +92,114 @@ classDef highlight fill:#f2bbae;
     _No controls defined._
 
 ## Metadata
-  _No Metadata defined._
+  <div className="table-container">
+      <table>
+          <thead>
+          <tr>
+              <th>Key</th>
+              <th>Value</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+              <td>
+                  <b>Authentication</b>
+              </td>
+              <td>
+                  None - file-based local access
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Database Type</b>
+              </td>
+              <td>
+                  SQLite 3.x
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Schema Version</b>
+              </td>
+              <td>
+                  Unknown
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Tables</b>
+              </td>
+              <td>
+                  game_results
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Performance</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>Insert Time</b>
+                              </td>
+                              <td>
+                                  &lt; 10ms
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Query Time</b>
+                              </td>
+                              <td>
+                                  &lt; 50ms (up to 100 records)
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Csv Export Time</b>
+                              </td>
+                              <td>
+                                  &lt; 100ms (100 records)
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Data Retention</b>
+              </td>
+              <td>
+                  Unknown - no automatic cleanup
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Backup Strategy</b>
+              </td>
+              <td>
+                  Unknown
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Service Ownership</b>
+              </td>
+              <td>
+                  Unknown
+                      </td>
+          </tr>
+          </tbody>
+      </table>
+  </div>

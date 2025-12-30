@@ -8,10 +8,40 @@
             "version": "2.0.0",
             "created-by": "Architecture Team",
             "created-date": "2025-12-18",
-            "updated-date": "2025-12-25",
+            "updated-date": "2025-12-29",
             "environment": "production",
             "tech-stack": "React, TypeScript, FastAPI, Python 3.11+, LangChain, SQLite",
-            "deployment-model": "Full-stack web application with frontend and backend services"
+            "deployment-model": "Full-stack web application with frontend and backend services",
+            "authentication": "No authentication required - single-user local deployment",
+            "performance-targets": {
+                "api-response-time": "< 100ms for non-LLM operations",
+                "llm-response-time": "Indefinite loading (no timeout enforced per design)",
+                "simple-provider-response": "< 100ms",
+                "openai-typical-response": "2-5 seconds",
+                "ollama-typical-response": "10-60 seconds (hardware dependent)",
+                "database-operations": "< 50ms for queries, < 10ms for inserts"
+            },
+            "dependency-versions": {
+                "python": "3.11+",
+                "react": "18.x",
+                "fastapi": "Unknown",
+                "langchain": "Unknown",
+                "openai-api": "v1",
+                "openai-model-default": "gpt-4o-mini",
+                "ollama-model-default": "qwen2.5:32b",
+                "sqlite": "3.x"
+            },
+            "error-handling": {
+                "retry-policy": "No automatic retry - user-initiated retry only",
+                "timeout-strategy": "No timeout for LLM requests (indefinite loading indicator)",
+                "fallback-behavior": "No automatic fallback between providers",
+                "error-propagation": "All LLM failures return HTTP 503 with error details"
+            },
+            "service-ownership": {
+                "owner": "Unknown",
+                "team": "Unknown",
+                "contact": "Unknown"
+            }
         }
     ],
     "nodes": [
@@ -36,13 +66,24 @@
                 {
                     "unique-id": "frontend-http-interface",
                     "hostname": "localhost",
-                    "port": 3000
+                    "port": 3000,
+                    "protocol": "HTTP"
                 },
                 {
                     "unique-id": "frontend-api-client",
-                    "url": "http://localhost:8000"
+                    "url": "http://localhost:8000",
+                    "timeout-ms": 300000
                 }
-            ]
+            ],
+            "metadata": {
+                "authentication": "None - unauthenticated local access",
+                "performance": {
+                    "initial-load": "< 2s",
+                    "api-timeout": "300000ms (5 minutes) for LLM requests"
+                },
+                "browser-compatibility": "Chrome 66+, Firefox 63+, Safari 13.1+, Edge 79+",
+                "error-handling": "Network errors displayed to user with retry option"
+            }
         },
         {
             "unique-id": "backend-api-service",
@@ -53,7 +94,9 @@
                 {
                     "unique-id": "backend-rest-api",
                     "hostname": "localhost",
-                    "port": 8000
+                    "port": 8000,
+                    "protocol": "HTTP",
+                    "cors-origins": "http://localhost:3000, http://127.0.0.1:3000"
                 },
                 {
                     "unique-id": "health-endpoint",
@@ -111,7 +154,32 @@
                     "unique-id": "v2-game-results-get-endpoint",
                     "url": "http://localhost:8000/api/v2/game_results"
                 }
-            ]
+            ],
+            "metadata": {
+                "authentication": "None - API keys for LLM providers configured via environment variables only",
+                "environment-variables": {
+                    "OPENAI_API_KEY": "Required for OpenAI provider (format: sk-*)",
+                    "OPENAI_MODEL_NAME": "Optional, default: gpt-4o-mini",
+                    "OPENAI_TIMEOUT": "Optional, default: 300s",
+                    "OLLAMA_BASE_URL": "Optional, default: http://localhost:11434",
+                    "BACKEND_CORS_ORIGINS": "Optional, comma-separated origins"
+                },
+                "performance": {
+                    "non-llm-api-response": "< 100ms",
+                    "simple-provider": "< 100ms",
+                    "database-insert": "< 10ms",
+                    "database-query": "< 50ms"
+                },
+                "error-handling": {
+                    "validation-errors": "HTTP 400 with error details",
+                    "llm-provider-errors": "HTTP 503 with provider-specific error code",
+                    "timeout-errors": "HTTP 504",
+                    "configuration-errors": "HTTP 500",
+                    "retry-policy": "No automatic retry - error returned to client",
+                    "fallback-policy": "No automatic fallback between providers"
+                },
+                "service-ownership": "Unknown"
+            }
         },
         {
             "unique-id": "openai-llm-service",
@@ -121,9 +189,27 @@
             "interfaces": [
                 {
                     "unique-id": "openai-api-interface",
-                    "url": "https://api.openai.com/v1"
+                    "url": "https://api.openai.com/v1",
+                    "protocol": "HTTPS"
                 }
-            ]
+            ],
+            "metadata": {
+                "authentication": "API Key (sk-* format) via OPENAI_API_KEY environment variable",
+                "api-version": "v1",
+                "default-model": "gpt-4o-mini",
+                "supported-models": "gpt-4o-mini, gpt-4, gpt-4-turbo, gpt-4-vision-preview",
+                "performance": {
+                    "typical-response-time": "2-5 seconds",
+                    "timeout": "300 seconds (configurable)",
+                    "rate-limits": "Unknown - dependent on OpenAI account tier"
+                },
+                "error-handling": {
+                    "invalid-api-key": "Returns HTTP 401, mapped to HTTP 503 by backend",
+                    "rate-limit-exceeded": "Returns HTTP 429, mapped to HTTP 503 by backend",
+                    "model-unavailable": "Returns HTTP 503, propagated to client"
+                },
+                "service-ownership": "OpenAI (external service)"
+            }
         },
         {
             "unique-id": "ollama-llm-service",
@@ -134,9 +220,26 @@
                 {
                     "unique-id": "ollama-api-interface",
                     "hostname": "localhost",
-                    "port": 11434
+                    "port": 11434,
+                    "protocol": "HTTP"
                 }
-            ]
+            ],
+            "metadata": {
+                "authentication": "None - local service",
+                "default-model": "qwen2.5:32b",
+                "supported-models": "qwen2.5:32b, llama2, llava (for vision), bakllava",
+                "deployment": "Local service on same host as backend",
+                "performance": {
+                    "typical-response-time": "10-60 seconds (hardware dependent)",
+                    "timeout": "300 seconds (configurable)",
+                    "hardware-requirements": "Varies by model (GPU recommended for faster inference)"
+                },
+                "error-handling": {
+                    "connection-failed": "Returns connection error, mapped to HTTP 503 by backend",
+                    "model-not-found": "Returns model error, mapped to HTTP 503 by backend"
+                },
+                "service-ownership": "Local deployment"
+            }
         },
         {
             "unique-id": "game-results-database",
@@ -147,9 +250,24 @@
                 {
                     "unique-id": "sqlite-db-interface",
                     "hostname": "localhost",
-                    "database": "puzzle_results.db"
+                    "database": "puzzle_results.db",
+                    "protocol": "JDBC"
                 }
-            ]
+            ],
+            "metadata": {
+                "authentication": "None - file-based local access",
+                "database-type": "SQLite 3.x",
+                "schema-version": "Unknown",
+                "tables": "game_results",
+                "performance": {
+                    "insert-time": "< 10ms",
+                    "query-time": "< 50ms (up to 100 records)",
+                    "csv-export-time": "< 100ms (100 records)"
+                },
+                "data-retention": "Unknown - no automatic cleanup",
+                "backup-strategy": "Unknown",
+                "service-ownership": "Unknown"
+            }
         }
     ],
     "relationships": [
