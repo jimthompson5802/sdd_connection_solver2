@@ -128,35 +128,6 @@ graph LR
 | `/api/v2/setup_puzzle_from_image` | POST | Setup puzzle from image |
 | `/api/v2/game_results` | POST/GET | Store/retrieve game history |
 
-## Data Flow: Recommendation Generation
-
-```mermaid
-sequenceDiagram
-    actor Player
-    participant Frontend as Web App<br/>(React)
-    participant Backend as Backend API<br/>(FastAPI)
-    participant Factory as Provider<br/>Factory
-    participant Provider as LLM Provider<br/>(Simple/OpenAI/Ollama)
-    participant External as External LLM<br/>(if applicable)
-
-    Player->>Frontend: Click "Get Recommendation"
-    Frontend->>Backend: POST /api/v2/recommendations<br/>{provider_type, remaining_words}
-    Backend->>Factory: create_provider(provider_type)
-    Factory->>Provider: Instantiate provider
-    Factory-->>Backend: Return provider instance
-    Backend->>Provider: generate_recommendation(prompt)
-
-    alt External Provider (OpenAI/Ollama)
-        Provider->>External: Send LLM request
-        External-->>Provider: Return response
-    else Internal Provider (Simple)
-        Provider->>Provider: Return hardcoded response
-    end
-
-    Provider-->>Backend: LLMRecommendationResponse
-    Backend-->>Frontend: {words, explanation, metadata}
-    Frontend-->>Player: Display recommendation
-```
 
 ## Database Schema
 
