@@ -98,7 +98,7 @@ C4Deployment
                   <b>Updated Date</b>
               </td>
               <td>
-                  2025-12-25
+                  2025-12-29
                       </td>
           </tr>
           <tr>
@@ -124,6 +124,258 @@ C4Deployment
               <td>
                   Full-stack web application with frontend and backend services
                       </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Authentication</b>
+              </td>
+              <td>
+                  No authentication required - single-user local deployment
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Performance Targets</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>Api Response Time</b>
+                              </td>
+                              <td>
+                                  &lt; 100ms for non-LLM operations
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Llm Response Time</b>
+                              </td>
+                              <td>
+                                  Indefinite loading (no timeout enforced per design)
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Simple Provider Response</b>
+                              </td>
+                              <td>
+                                  &lt; 100ms
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Openai Typical Response</b>
+                              </td>
+                              <td>
+                                  2-5 seconds
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Ollama Typical Response</b>
+                              </td>
+                              <td>
+                                  10-60 seconds (hardware dependent)
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Database Operations</b>
+                              </td>
+                              <td>
+                                  &lt; 50ms for queries, &lt; 10ms for inserts
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Dependency Versions</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>Python</b>
+                              </td>
+                              <td>
+                                  3.11+
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>React</b>
+                              </td>
+                              <td>
+                                  18.x
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Fastapi</b>
+                              </td>
+                              <td>
+                                  Unknown
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Langchain</b>
+                              </td>
+                              <td>
+                                  Unknown
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Openai Api</b>
+                              </td>
+                              <td>
+                                  v1
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Openai Model Default</b>
+                              </td>
+                              <td>
+                                  gpt-4o-mini
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Ollama Model Default</b>
+                              </td>
+                              <td>
+                                  qwen2.5:32b
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Sqlite</b>
+                              </td>
+                              <td>
+                                  3.x
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Error Handling</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>Retry Policy</b>
+                              </td>
+                              <td>
+                                  No automatic retry - user-initiated retry only
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Timeout Strategy</b>
+                              </td>
+                              <td>
+                                  No timeout for LLM requests (indefinite loading indicator)
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Fallback Behavior</b>
+                              </td>
+                              <td>
+                                  No automatic fallback between providers
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Error Propagation</b>
+                              </td>
+                              <td>
+                                  All LLM failures return HTTP 503 with error details
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Service Ownership</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>Owner</b>
+                              </td>
+                              <td>
+                                  Unknown
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Team</b>
+                              </td>
+                              <td>
+                                  Unknown
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Contact</b>
+                              </td>
+                              <td>
+                                  Unknown
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
           </tr>
           </tbody>
       </table>

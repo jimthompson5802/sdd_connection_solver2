@@ -62,6 +62,14 @@ title: Ollama LLM Service
                                         11434
                                             </td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <b>Protocol</b>
+                                    </td>
+                                    <td>
+                                        HTTP
+                                            </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -84,4 +92,133 @@ classDef highlight fill:#f2bbae;
     _No controls defined._
 
 ## Metadata
-  _No Metadata defined._
+  <div className="table-container">
+      <table>
+          <thead>
+          <tr>
+              <th>Key</th>
+              <th>Value</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+              <td>
+                  <b>Authentication</b>
+              </td>
+              <td>
+                  None - local service
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Default Model</b>
+              </td>
+              <td>
+                  qwen2.5:32b
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Supported Models</b>
+              </td>
+              <td>
+                  qwen2.5:32b, llama2, llava (for vision), bakllava
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Deployment</b>
+              </td>
+              <td>
+                  Local service on same host as backend
+                      </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Performance</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>Typical Response Time</b>
+                              </td>
+                              <td>
+                                  10-60 seconds (hardware dependent)
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Timeout</b>
+                              </td>
+                              <td>
+                                  300 seconds (configurable)
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Hardware Requirements</b>
+                              </td>
+                              <td>
+                                  Varies by model (GPU recommended for faster inference)
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Error Handling</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>Connection Failed</b>
+                              </td>
+                              <td>
+                                  Returns connection error, mapped to HTTP 503 by backend
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Model Not Found</b>
+                              </td>
+                              <td>
+                                  Returns model error, mapped to HTTP 503 by backend
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
+                  <b>Service Ownership</b>
+              </td>
+              <td>
+                  Local deployment
+                      </td>
+          </tr>
+          </tbody>
+      </table>
+  </div>
