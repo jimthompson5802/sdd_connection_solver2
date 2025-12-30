@@ -7,7 +7,7 @@ This document provides a visual representation of the system architecture based 
 ```mermaid
 graph TB
     %% Actors
-    Player[("Puzzle Player<br/>(Actor)")]
+    Player["Puzzle Player<br/>(Actor)"]
 
     %% Frontend
     Frontend["Connection Solver<br/>Web Application<br/>(React/TypeScript)<br/>localhost:3000"]
@@ -44,12 +44,12 @@ graph TB
     Backend -->|"JDBC<br/>SQLite"| Database
 
     %% Styling
-    classDef actor fill:#e1f5ff,stroke:#01579b,stroke-width:3px
-    classDef frontend fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef backend fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    classDef external fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
-    classDef database fill:#fce4ec,stroke:#880e4f,stroke-width:2px
-    classDef provider fill:#fff9c4,stroke:#f57f17,stroke-width:1px,stroke-dasharray: 5 5
+    classDef actor fill:lightskyblue,stroke:darkblue,stroke-width:3px
+    classDef frontend fill:lavender,stroke:purple,stroke-width:2px
+    classDef backend fill:wheat,stroke:darkorange,stroke-width:2px
+    classDef external fill:lightgreen,stroke:darkgreen,stroke-width:2px
+    classDef database fill:pink,stroke:crimson,stroke-width:2px
+    classDef provider fill:lightyellow,stroke:gold,stroke-width:1px,stroke-dasharray: 5 5
 
     class Player actor
     class Frontend frontend
