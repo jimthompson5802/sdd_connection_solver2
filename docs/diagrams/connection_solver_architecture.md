@@ -136,14 +136,16 @@ graph LR
 ```mermaid
 erDiagram
     GAME_RESULTS {
-        string session_id PK
-        date puzzle_date
-        json words
-        json recommendations
-        json responses
-        string final_status
+        int result_id PK
+        string puzzle_id
+        date game_date
+        string puzzle_solved
+        int count_groups_found
+        int count_mistakes
+        int total_guesses
+        string llm_provider_name
+        string llm_model_name
         timestamp created_at
-        timestamp updated_at
     }
 ```
 
