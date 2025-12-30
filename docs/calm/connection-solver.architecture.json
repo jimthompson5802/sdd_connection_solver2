@@ -178,6 +178,69 @@
                     "retry-policy": "No automatic retry - error returned to client",
                     "fallback-policy": "No automatic fallback between providers"
                 },
+                "llm-providers": {
+                    "supported-types": ["simple", "openai", "ollama"],
+                    "provider-architecture": "Factory pattern with BaseLLMProvider abstract base class",
+                    "provider-factory": {
+                        "class": "LLMProviderFactory",
+                        "location": "backend/src/services/llm_provider_factory.py",
+                        "responsibilities": "Provider instantiation, configuration management, validation"
+                    },
+                    "simple": {
+                        "type": "internal",
+                        "class": "SimpleLLMProvider",
+                        "description": "Built-in rule-based provider using LangChain FakeListLLM with predefined word groups for testing and development",
+                        "implementation": "backend/src/services/llm_provider_factory.py",
+                        "requires-external-service": false,
+                        "requires-api-key": false,
+                        "requires-configuration": false,
+                        "configuration-keys": [],
+                        "use-cases": ["Testing and development", "Baseline recommendations without external dependencies", "Quick validation without API costs"],
+                        "response-time": "< 100ms (in-process, synchronous)",
+                        "capabilities": ["basic_recommendations"],
+                        "limitations": ["No AI intelligence - returns hardcoded patterns", "No connection explanations", "Limited to 4 predefined word groups"],
+                        "predefined-responses": [
+                            "BASS, FLOUNDER, SALMON, TROUT",
+                            "PIANO, GUITAR, VIOLIN, DRUMS",
+                            "RED, BLUE, GREEN, YELLOW",
+                            "APPLE, BANANA, ORANGE, GRAPE"
+                        ],
+                        "error-handling": "Returns SimpleProviderError for internal failures"
+                    },
+                    "openai": {
+                        "type": "external",
+                        "class": "OpenAILLMProvider",
+                        "description": "Integration with OpenAI API service for production-quality AI-powered recommendations",
+                        "implementation": "backend/src/services/llm_provider_factory.py",
+                        "requires-external-service": true,
+                        "requires-api-key": true,
+                        "requires-configuration": true,
+                        "configuration-keys": ["OPENAI_API_KEY", "OPENAI_MODEL_NAME", "OPENAI_TIMEOUT"],
+                        "external-service-node": "openai-llm-service",
+                        "use-cases": ["Production AI recommendations", "High-quality puzzle solving with explanations", "Vision API for image-based puzzle setup"],
+                        "response-time": "2-5 seconds (network dependent)",
+                        "capabilities": ["ai_recommendations", "connection_explanations", "vision_api"],
+                        "error-handling": "Returns OpenAIAPIError, maps HTTP 401/429/503 to HTTP 503"
+                    },
+                    "ollama": {
+                        "type": "local-service",
+                        "class": "OllamaLLMProvider",
+                        "description": "Integration with local Ollama service for privacy-focused, on-premise AI recommendations",
+                        "implementation": "backend/src/services/llm_provider_factory.py",
+                        "requires-external-service": true,
+                        "requires-api-key": false,
+                        "requires-configuration": false,
+                        "configuration-keys": ["OLLAMA_BASE_URL"],
+                        "external-service-node": "ollama-llm-service",
+                        "use-cases": ["Privacy-focused AI recommendations", "No external API costs", "Local deployment scenarios"],
+                        "response-time": "10-60 seconds (hardware dependent)",
+                        "capabilities": ["ai_recommendations", "connection_explanations", "vision_models"],
+                        "error-handling": "Returns OllamaConnectionError for connectivity issues"
+                    },
+                    "selection-mechanism": "User selects provider via frontend dropdown, passed in LLMProvider model with API requests",
+                    "validation": "Provider configuration validated via POST /api/v2/providers/validate endpoint",
+                    "response-normalization": "All providers return LLMRecommendationResponse with consistent structure"
+                },
                 "service-ownership": "Unknown"
             }
         },

@@ -957,6 +957,527 @@ classDef highlight fill:#f2bbae;
           </tr>
           <tr>
               <td>
+                  <b>Llm Providers</b>
+              </td>
+              <td>
+                  <div className="table-container">
+                      <table>
+                          <thead>
+                          <tr>
+                              <th>Key</th>
+                              <th>Value</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                              <td>
+                                  <b>Supported Types</b>
+                              </td>
+                              <td>
+                                  <ul>
+                                      <li>simple</li>
+                                      <li>openai</li>
+                                      <li>ollama</li>
+                                  </ul>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Provider Architecture</b>
+                              </td>
+                              <td>
+                                  Factory pattern with BaseLLMProvider abstract base class
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Provider Factory</b>
+                              </td>
+                              <td>
+                                  <div className="table-container">
+                                      <table>
+                                          <thead>
+                                          <tr>
+                                              <th>Key</th>
+                                              <th>Value</th>
+                                          </tr>
+                                          </thead>
+                                          <tbody>
+                                          <tr>
+                                              <td>
+                                                  <b>Class</b>
+                                              </td>
+                                              <td>
+                                                  LLMProviderFactory
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Location</b>
+                                              </td>
+                                              <td>
+                                                  backend/src/services/llm_provider_factory.py
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Responsibilities</b>
+                                              </td>
+                                              <td>
+                                                  Provider instantiation, configuration management, validation
+                                                      </td>
+                                          </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Simple</b>
+                              </td>
+                              <td>
+                                  <div className="table-container">
+                                      <table>
+                                          <thead>
+                                          <tr>
+                                              <th>Key</th>
+                                              <th>Value</th>
+                                          </tr>
+                                          </thead>
+                                          <tbody>
+                                          <tr>
+                                              <td>
+                                                  <b>Type</b>
+                                              </td>
+                                              <td>
+                                                  internal
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Class</b>
+                                              </td>
+                                              <td>
+                                                  SimpleLLMProvider
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Description</b>
+                                              </td>
+                                              <td>
+                                                  Built-in rule-based provider using LangChain FakeListLLM with predefined word groups for testing and development
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Implementation</b>
+                                              </td>
+                                              <td>
+                                                  backend/src/services/llm_provider_factory.py
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Requires External Service</b>
+                                              </td>
+                                              <td>
+                                                  false
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Requires Api Key</b>
+                                              </td>
+                                              <td>
+                                                  false
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Requires Configuration</b>
+                                              </td>
+                                              <td>
+                                                  false
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Configuration Keys</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Use Cases</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                      <li>Testing and development</li>
+                                                      <li>Baseline recommendations without external dependencies</li>
+                                                      <li>Quick validation without API costs</li>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Response Time</b>
+                                              </td>
+                                              <td>
+                                                  &lt; 100ms (in-process, synchronous)
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Capabilities</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                      <li>basic_recommendations</li>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Limitations</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                      <li>No AI intelligence - returns hardcoded patterns</li>
+                                                      <li>No connection explanations</li>
+                                                      <li>Limited to 4 predefined word groups</li>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Predefined Responses</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                      <li>BASS, FLOUNDER, SALMON, TROUT</li>
+                                                      <li>PIANO, GUITAR, VIOLIN, DRUMS</li>
+                                                      <li>RED, BLUE, GREEN, YELLOW</li>
+                                                      <li>APPLE, BANANA, ORANGE, GRAPE</li>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Error Handling</b>
+                                              </td>
+                                              <td>
+                                                  Returns SimpleProviderError for internal failures
+                                                      </td>
+                                          </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Openai</b>
+                              </td>
+                              <td>
+                                  <div className="table-container">
+                                      <table>
+                                          <thead>
+                                          <tr>
+                                              <th>Key</th>
+                                              <th>Value</th>
+                                          </tr>
+                                          </thead>
+                                          <tbody>
+                                          <tr>
+                                              <td>
+                                                  <b>Type</b>
+                                              </td>
+                                              <td>
+                                                  external
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Class</b>
+                                              </td>
+                                              <td>
+                                                  OpenAILLMProvider
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Description</b>
+                                              </td>
+                                              <td>
+                                                  Integration with OpenAI API service for production-quality AI-powered recommendations
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Implementation</b>
+                                              </td>
+                                              <td>
+                                                  backend/src/services/llm_provider_factory.py
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Requires External Service</b>
+                                              </td>
+                                              <td>
+                                                  true
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Requires Api Key</b>
+                                              </td>
+                                              <td>
+                                                  true
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Requires Configuration</b>
+                                              </td>
+                                              <td>
+                                                  true
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Configuration Keys</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                      <li>OPENAI_API_KEY</li>
+                                                      <li>OPENAI_MODEL_NAME</li>
+                                                      <li>OPENAI_TIMEOUT</li>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>External Service Node</b>
+                                              </td>
+                                              <td>
+                                                  openai-llm-service
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Use Cases</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                      <li>Production AI recommendations</li>
+                                                      <li>High-quality puzzle solving with explanations</li>
+                                                      <li>Vision API for image-based puzzle setup</li>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Response Time</b>
+                                              </td>
+                                              <td>
+                                                  2-5 seconds (network dependent)
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Capabilities</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                      <li>ai_recommendations</li>
+                                                      <li>connection_explanations</li>
+                                                      <li>vision_api</li>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Error Handling</b>
+                                              </td>
+                                              <td>
+                                                  Returns OpenAIAPIError, maps HTTP 401/429/503 to HTTP 503
+                                                      </td>
+                                          </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Ollama</b>
+                              </td>
+                              <td>
+                                  <div className="table-container">
+                                      <table>
+                                          <thead>
+                                          <tr>
+                                              <th>Key</th>
+                                              <th>Value</th>
+                                          </tr>
+                                          </thead>
+                                          <tbody>
+                                          <tr>
+                                              <td>
+                                                  <b>Type</b>
+                                              </td>
+                                              <td>
+                                                  local-service
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Class</b>
+                                              </td>
+                                              <td>
+                                                  OllamaLLMProvider
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Description</b>
+                                              </td>
+                                              <td>
+                                                  Integration with local Ollama service for privacy-focused, on-premise AI recommendations
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Implementation</b>
+                                              </td>
+                                              <td>
+                                                  backend/src/services/llm_provider_factory.py
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Requires External Service</b>
+                                              </td>
+                                              <td>
+                                                  true
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Requires Api Key</b>
+                                              </td>
+                                              <td>
+                                                  false
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Requires Configuration</b>
+                                              </td>
+                                              <td>
+                                                  false
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Configuration Keys</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                      <li>OLLAMA_BASE_URL</li>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>External Service Node</b>
+                                              </td>
+                                              <td>
+                                                  ollama-llm-service
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Use Cases</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                      <li>Privacy-focused AI recommendations</li>
+                                                      <li>No external API costs</li>
+                                                      <li>Local deployment scenarios</li>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Response Time</b>
+                                              </td>
+                                              <td>
+                                                  10-60 seconds (hardware dependent)
+                                                      </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Capabilities</b>
+                                              </td>
+                                              <td>
+                                                  <ul>
+                                                      <li>ai_recommendations</li>
+                                                      <li>connection_explanations</li>
+                                                      <li>vision_models</li>
+                                                  </ul>
+                                              </td>
+                                          </tr>
+                                          <tr>
+                                              <td>
+                                                  <b>Error Handling</b>
+                                              </td>
+                                              <td>
+                                                  Returns OllamaConnectionError for connectivity issues
+                                                      </td>
+                                          </tr>
+                                          </tbody>
+                                      </table>
+                                  </div>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Selection Mechanism</b>
+                              </td>
+                              <td>
+                                  User selects provider via frontend dropdown, passed in LLMProvider model with API requests
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Validation</b>
+                              </td>
+                              <td>
+                                  Provider configuration validated via POST /api/v2/providers/validate endpoint
+                                      </td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Response Normalization</b>
+                              </td>
+                              <td>
+                                  All providers return LLMRecommendationResponse with consistent structure
+                                      </td>
+                          </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </td>
+          </tr>
+          <tr>
+              <td>
                   <b>Service Ownership</b>
               </td>
               <td>
