@@ -4,7 +4,7 @@ This is a testbed for using specification driven development (SDD) to create a v
 
 The SDD approach involves writing detailed specifications for the desired behavior of the virtual assistant, and then using those specifications to guide the development process. This allows for a more structured and systematic approach to development, ensuring that the final product meets the user's needs and expectations.
 
-Demonstration of the virtual assistant can be found in this [YouTube video](https://youtu.be/SI92EEvwtVI?t=1308).
+Demonstration of the virtual assistant can be found in this [YouTube video](https://www.youtube.com/watch?v=yDezJFzdeo0&t=57s).
 
 The SDD process is based on Github's [spec-kit framework](https://github.com/github/spec-kit).
 
