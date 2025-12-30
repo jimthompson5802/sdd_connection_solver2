@@ -84,11 +84,22 @@ sequenceDiagram
 
     %% Puzzle Setup Flow
     rect rgb(230, 245, 255)
-        note right of P: Puzzle Setup Flow
+        note right of P: Puzzle Setup Flow (CSV)
         P->>F: Upload CSV file (16 words)
         F->>B: POST /api/puzzle/setup_puzzle
         B-->>F: Session created
         F-->>P: Display puzzle interface
+    end
+
+    %% Image Puzzle Setup Flow
+    rect rgb(220, 240, 255)
+        note right of P: Puzzle Setup Flow (Image)
+        P->>F: Upload puzzle image
+        F->>B: POST /api/v2/setup_puzzle_from_image
+        B->>L: Extract words via Vision API
+        L-->>B: Return 16 extracted words
+        B-->>F: Session created with word list
+        F-->>P: Display extracted words & puzzle interface
     end
 
     %% Recommendation Flow
