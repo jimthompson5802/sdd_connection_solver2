@@ -400,25 +400,21 @@ sequenceDiagram
 
     alt Valid Configuration
         OpenAI-->>Backend: HTTP 200 - Success
-        deactivate OpenAI
         Backend->>Backend: Mark provider as available
         Backend-->>Frontend: {valid: true, status: "available"}
-        deactivate Backend
         Frontend-->>Player: ✅ OpenAI provider configured successfully
     else Invalid API Key
         OpenAI-->>Backend: HTTP 401 - Unauthorized
-        deactivate OpenAI
         Backend-->>Frontend: {valid: false, error: "Invalid API key"}
-        deactivate Backend
         Frontend-->>Player: ❌ Invalid API key - check configuration
     else Connection Error
-        OpenAI--XBackend: Connection timeout
-        deactivate OpenAI
+        Note over Backend,OpenAI: Connection times out
         Backend-->>Frontend: {valid: false, error: "Connection failed"}
-        deactivate Backend
         Frontend-->>Player: ❌ Cannot reach OpenAI - check network
     end
 
+    deactivate OpenAI
+    deactivate Backend
     deactivate Frontend
 ```
 
