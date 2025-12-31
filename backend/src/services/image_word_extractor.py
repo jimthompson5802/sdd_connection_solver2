@@ -20,16 +20,18 @@ class ImageWordExtractor:
 
     async def extract_words(self, request: ImageSetupRequest) -> List[str]:
         """
-        Extract 16 words from a 4x4 puzzle grid image using LLM vision capabilities.
+        Extract 16 items (cell contents) from a 4x4 puzzle grid image using LLM vision capabilities.
+        Each cell may contain single or multi-word phrases.
 
         Args:
             request: Image setup request containing base64 image and LLM provider details
 
         Returns:
-            List[str]: 16 words extracted from the image in reading order
+            List[str]: 16 items (cell contents) extracted from the image in reading order,
+                      where each item is the complete text from one grid cell
 
         Raises:
-            ValueError: If extraction fails or doesn't return exactly 16 words
+            ValueError: If extraction fails or doesn't return exactly 16 items
             RuntimeError: If LLM provider doesn't support vision capabilities
         """
         try:
@@ -119,13 +121,13 @@ class ImageWordExtractor:
 
     def _validate_extracted_words(self, words: List[str]) -> None:
         """
-        Validate that extracted words are valid puzzle words, not error messages.
+        Validate that extracted items are valid puzzle cell contents, not error messages.
 
         Args:
-            words: List of 16 extracted words to validate
+            words: List of 16 extracted items (cell contents) to validate
 
         Raises:
-            ValueError: If words appear to be an error message or invalid puzzle words
+            ValueError: If items appear to be an error message or invalid puzzle content
         """
         # Check 1: Detect common error/refusal patterns
         error_indicators = {
@@ -175,47 +177,57 @@ class ImageWordExtractor:
         Returns:
             str: Complete prompt for LLM vision model
         """
-        return '''Your task is to extract 16 words from a 4x4 puzzle grid image.
+        return '''Your task is to extract the TEXT CONTENT from each of the 16 cells in a 4x4 puzzle grid image.
 
 **CRITICAL: Grid Detection**
-Before extracting words, you MUST determine if this image contains a visible 4x4 grid of TEXT WORDS.
-- Set grid_detected = True ONLY if you can see a clear 4x4 grid layout with readable text words
+Before extracting content, you MUST determine if this image contains a visible 4x4 grid of TEXT.
+- Set grid_detected = True ONLY if you can see a clear 4x4 grid layout with readable text
 - Set grid_detected = False if:
   * The image shows objects, scenes, or photos without text
   * There is no visible grid structure
   * Text is not arranged in a 4x4 grid pattern
   * You cannot clearly read text in the image
 
-**If grid_detected = False**: You must still provide 16 placeholder words (use "INVALID" repeated), but the grid_detected flag will cause the request to be rejected.
+**If grid_detected = False**: You must still provide 16 placeholder values (use "INVALID" repeated), but the grid_detected flag will cause the request to be rejected.
 
-**If grid_detected = True**: Extract words using these strategies:
+**If grid_detected = True**: Extract cell contents using these strategies:
 
 **STRATEGY 1 - Grid Layout Verification:**
-Verify you can see a 4x4 grid of words arranged in rows and columns. The grid should be clearly visible with text in each cell.
+Verify you can see a 4x4 grid with text arranged in rows and columns. The grid should be clearly visible with text in each cell.
 
-**STRATEGY 2 - Word Extraction (Reading Order):**
-Extract each word exactly as it appears, reading left-to-right, top-to-bottom:
-- Row 1: positions 1, 2, 3, 4
-- Row 2: positions 5, 6, 7, 8
-- Row 3: positions 9, 10, 11, 12
-- Row 4: positions 13, 14, 15, 16
+**STRATEGY 2 - Cell Content Extraction (Reading Order):**
+Extract the COMPLETE text from each cell exactly as it appears, reading left-to-right, top-to-bottom:
+- Row 1: cells at positions 1, 2, 3, 4
+- Row 2: cells at positions 5, 6, 7, 8
+- Row 3: cells at positions 9, 10, 11, 12
+- Row 4: cells at positions 13, 14, 15, 16
 
-**STRATEGY 3 - Expected Word Format:**
+**IMPORTANT**: Each cell may contain ONE or MORE words. Extract ALL words from each cell as a SINGLE STRING.
+
+**STRATEGY 3 - Expected Content Format:**
 This is typically a New York Times Connections puzzle:
-- Words are common nouns, verbs, adjectives
-- May include proper nouns, brand names
-- Usually single words, occasionally hyphenated
-- No numbers or symbols
-- Words should be EXACTLY as shown in the image, not invented or inferred
+- Each cell contains a phrase or concept (e.g., "GRAND PIANO", "SWIFT", "EIFFEL TOWER")
+- May be single words OR multi-word phrases
+- Common patterns: compound nouns, proper nouns, brand names, phrases
+- Extract EXACTLY what you see - keep all words within a cell together
+- Do NOT split multi-word phrases into separate entries
+- Preserve spacing between words within a cell
+- No numbers or symbols typically appear
+
+**EXAMPLES of correct extraction:**
+- Cell shows "GRAND PIANO" → extract as "GRAND PIANO" (not "GRAND" and "PIANO" separately)
+- Cell shows "SWIFT" → extract as "SWIFT"
+- Cell shows "EIFFEL TOWER" → extract as "EIFFEL TOWER" (not "EIFFEL" and "TOWER" separately)
 
 **STRATEGY 4 - Quality Check:**
-- All 16 words must be distinct
-- Words must be EXTRACTED from visible text, not generated based on image content
-- If you're inventing words based on what you see in the image (not reading text), set grid_detected = False
+- You must extract exactly 16 items (one per grid cell)
+- Each item should be the complete text from one cell
+- Items must be EXTRACTED from visible text, not generated based on image content
+- If you're inventing content based on what you see in the image (not reading text), set grid_detected = False
 
 **Confidence Levels:**
-- high: Clear, readable 4x4 grid with all words easily visible
-- medium: Grid structure visible but some words unclear
-- low: Uncertain if this is a puzzle grid or if words are correct
+- high: Clear, readable 4x4 grid with all cell contents easily visible
+- medium: Grid structure visible but some cell contents unclear
+- low: Uncertain if this is a puzzle grid or if cell contents are correct
 
-Return the words in exact reading order (left-to-right, top-to-bottom).'''
+Return the 16 cell contents in exact reading order (left-to-right, top-to-bottom).'''

@@ -53,13 +53,13 @@ class SetupPuzzleRequest(BaseModel):
 
 
 class ExtractedWords(BaseModel):
-    """Pydantic model for LLM structured output from image word extraction."""
+    """Pydantic model for LLM structured output from image cell content extraction."""
 
     words: List[str] = Field(
         ...,
         min_items=16,
         max_items=16,
-        description="16 words from 4x4 grid in reading order"
+        description="16 items (cell contents) from 4x4 grid in reading order. Each item is the complete text from one cell, which may contain single or multi-word phrases."
     )
     grid_detected: bool = Field(
         ...,
